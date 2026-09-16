@@ -1,4 +1,4 @@
-# TUNER — Interval 1.3.0-rc.2
+# TUNER — Interval 1.3.0-rc.3
 
 Release candidate: code and automated checks passed; real-device sign-off remains open. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
 
@@ -21,3 +21,6 @@ The old amplitude gate discarded quiet strings before pitch analysis. The silenc
 See RELEASE-CHECKLIST.md, release-report.json and tests/. Run the Node test files from this package directory. These use mocked browser APIs and synthetic signals; they do not certify real microphone hardware or actual offline installation.
 
 Source baseline: recovered guitar-tuner-modern-final application. Fonts and icons have licenses in assets/. No deployment has been performed.
+
+## Microphone compatibility update
+Quiet input (automatic gain) is now the default; Settings → Input sensitivity can restore unprocessed capture. A muted destination keeps the audio graph connected without playing the microphone. Interrupted audio shows Resume audio. Pitch detail reports build, audio state, input dBFS, detector rejection reason and confidence for device troubleshooting. Browser generated-input capture and all seven test scripts pass; the reported real-device failure has not yet been confirmed resolved.

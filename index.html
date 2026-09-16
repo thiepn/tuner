@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
   <title>TUNER — Guitar Tuner</title>
-  <meta name="app-version" content="1.3.0-rc.2">
+  <meta name="app-version" content="1.3.0-rc.3">
   <style>@font-face{font-family:Interval Display;src:url('./assets/BarlowCondensed-Bold.woff') format('woff');font-weight:700;font-display:swap}@font-face{font-family:Interval Sans;src:url('./assets/NimbusSans-Regular.woff') format('woff');font-weight:400;font-display:swap}@font-face{font-family:Interval Mono;src:url('./assets/IBMPlexMono-Regular.woff') format('woff');font-weight:400;font-display:swap}
 :root{color-scheme:light;--bg:#f4f5ee;--text:#101311;--muted:#565b60;--accent:#204ff3;--accent-soft:#e5ebff;--indicator:#e4f955;--line:#cbd0c9;--panel:#fffef8;--danger:#b52d36;--ui:'Interval Sans',sans-serif;--readout:'Interval Mono',monospace;--display:'Interval Display',Impact,sans-serif}
 :root[data-theme=dark]{color-scheme:dark;--bg:#101d50;--text:#f4f5ee;--muted:#b9c5e4;--accent:#4670ff;--accent-soft:#21376f;--line:#455585;--panel:#18285b;--danger:#ffb2b8}
@@ -123,7 +123,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         </div>
         <button class="quick-settings" id="quickSettingsBtn" type="button" aria-label="Open tuner settings" hidden="">Settings</button>
       </section>
-    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
+    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><p id="captureDiagnostics" style="font:12px/1.6 var(--readout);overflow-wrap:anywhere">Build 1.3.0-rc.3 · Microphone stopped</p><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
           <div class="precision-heading">
             <span>Fine pitch</span>
             <strong id="fineCents">±0.0¢</strong>
@@ -243,7 +243,10 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
                 </select>
                 <div class="setting-meta" id="micDeviceHelp">Available inputs appear after microphone permission is granted.</div>
               </div>
-              <label class="haptic-control setting-cell" id="hapticControl">
+              <div class="setting-cell"><label for="captureMode">Input sensitivity</label>
+<select id="captureMode"><option value="boost">Quiet input · automatic gain</option><option value="raw">Music · unprocessed</option></select>
+<div class="setting-meta">Automatic gain asks your microphone to boost quiet strings. Switch to unprocessed input if it sounds unstable.</div></div>
+<label class="haptic-control setting-cell" id="hapticControl">
                 <span><strong>Haptic lock</strong><small>Short confirmation when pitch settles inside the selected window.</small></span>
                 <input type="checkbox" id="hapticToggle">
               </label>
@@ -571,6 +574,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       let analyser = null;
       let mediaStream = null;
       let sourceNode = null;
+      let silentOutput = null;
       let highpassNode = null;
       let lowpassNode = null;
       let rafId = null;
@@ -2373,6 +2377,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       }
 
       function updatePitch(result) {
+        const inputDb = result?.rms > 0 ? (20 * Math.log10(result.rms)).toFixed(0) + ' dBFS' : 'no audio samples';
+        $('captureDiagnostics').textContent = `Build 1.3.0-rc.3 · Audio ${audioContext?.state || 'stopped'} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}%`;
         updateSignalVisual(result);
         if (!result?.pitch) {
           noPitchFrames++;
@@ -2458,6 +2464,10 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
       function loop(timestamp) {
         if (!running || !analyser || !detector) return;
+        if (audioContext?.state !== 'running') {
+          rafId = requestAnimationFrame(loop);
+          return;
+        }
 
         if (timestamp - lastAnalysisAt >= ANALYSIS_INTERVAL_MS) {
           lastAnalysisAt = timestamp;
@@ -2472,7 +2482,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         const baseAudio = {
           echoCancellation: false,
           noiseSuppression: false,
-          autoGainControl: false,
+          autoGainControl: safeStorageGet('guitarTuner.captureMode', 'boost') !== 'raw',
           channelCount: 1
         };
         const requestedAudio = selectedDeviceId
@@ -2563,7 +2573,19 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
           if (!AudioContextCtor) throw new Error('Web Audio is not supported in this browser.');
           audioContext = new AudioContextCtor({ latencyHint: 'interactive' });
+          audioContext.addEventListener('statechange', () => {
+            if (!running || !audioContext || document.hidden) return;
+            const active = audioContext.state === 'running';
+            setStatus(active, active ? 'Listening' : 'Audio paused', !active);
+            startBtn.textContent = active ? 'Stop' : 'Resume audio';
+            if (!active) {
+              resetDisplay();
+              hint.textContent = 'Audio was interrupted. Tap Resume audio to continue.';
+              $('captureDiagnostics').textContent = `Build 1.3.0-rc.3 · Audio ${audioContext.state}`;
+            }
+          });
           await audioContext.resume();
+          if (audioContext && audioContext.state !== 'running') throw new Error('Audio context did not start');
           if (epoch !== captureEpoch) return false;
 
           sourceNode = audioContext.createMediaStreamSource(mediaStream);
@@ -2584,6 +2606,12 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           sourceNode.connect(highpassNode);
           highpassNode.connect(lowpassNode);
           lowpassNode.connect(analyser);
+          // Keep the capture graph pulled by the audio destination on mobile engines.
+          // Zero gain prevents microphone monitoring/feedback.
+          silentOutput = audioContext.createGain();
+          silentOutput.gain.value = 0;
+          analyser.connect(silentOutput);
+          silentOutput.connect(audioContext.destination);
 
           analysisBuffer = new Float32Array(analyser.fftSize);
           detector = new GuitarPitchDetector(audioContext.sampleRate, analyser.fftSize);
@@ -2641,11 +2669,12 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           mediaStream = null;
         }
 
-        for (const node of [sourceNode, highpassNode, lowpassNode, analyser]) {
+        for (const node of [sourceNode, highpassNode, lowpassNode, analyser, silentOutput]) {
           if (node) {
             try { node.disconnect(); } catch (_) {}
           }
         }
+        silentOutput = null;
         sourceNode = null;
         highpassNode = null;
         lowpassNode = null;
@@ -2676,7 +2705,18 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         ignoreTrackEnded = false;
       }
 
-      startBtn.addEventListener('click', () => running ? stop() : start());
+      startBtn.addEventListener('click', () => {
+        if (running && audioContext?.state !== 'running') {
+          audioContext.resume().then(() => {
+            if (audioContext?.state === 'running') { startBtn.textContent = 'Stop'; setStatus(true,'Listening'); }
+          }).catch(() => stop({message:'Audio could not resume. Try starting again.',status:'Audio paused',error:true}));
+        } else { running ? stop() : start(); }
+      });
+      $('captureMode').value = safeStorageGet('guitarTuner.captureMode','boost');
+      $('captureMode').addEventListener('change', async () => {
+        safeStorageSet('guitarTuner.captureMode', $('captureMode').value);
+        if (running || starting) { await stop(); await start(); }
+      });
 
       updateToleranceMarkers();
       if (!('vibrate' in navigator)) {hapticControl.classList.add('unsupported'); hapticToggle.disabled=true; hapticControl.querySelector('small').textContent='Haptic feedback is not available in this browser.';}
