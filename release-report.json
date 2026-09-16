@@ -1,7 +1,8 @@
 {
-  "version": "1.3.0-rc.1",
+  "version": "1.3.0-rc.2",
   "status": "release-candidate-device-signoff-pending",
   "fixes": [
+    "Lower silence cutoff for quiet microphone signals; periodicity checks retained",
     "Bass presets and low-frequency capture configuration",
     "Bass-specific recognition anchors",
     "Readable uncondensed control and navigation typography",

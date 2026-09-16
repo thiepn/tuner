@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'guitar-tuner-' + encodeURIComponent(self.registration.scope) + '-';
-const CACHE_NAME = CACHE_PREFIX + '1.3.0-rc.1';
+const CACHE_NAME = CACHE_PREFIX + '1.3.0-rc.2';
 const APP_SHELL = [
   "./",
   "./index.html",

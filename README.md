@@ -1,4 +1,4 @@
-# TUNER — Interval 1.3.0-rc.1
+# TUNER — Interval 1.3.0-rc.2
 
 Release candidate: code and automated checks passed; real-device sign-off remains open. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
 
@@ -13,6 +13,9 @@ The separate guitar-tuner-interval.html download embeds visual assets and does n
 
 ## Controls
 Tap the tuning name and search “Bass” to choose a bass preset, or choose any guitar/custom tuning. Tap a string for a manual target; Auto restores detection. Tools contains guided tuning, reference tones and metronome. Settings contains themes, calibration, tolerance, microphone, haptics and installation. Pitch detail expands measurements. The ribbon runs from +50 cents at the top to −50 at the bottom; yellow marks the detected pitch. Audio processing stays on the device.
+
+## Quiet microphone fix
+The old amplitude gate discarded quiet strings before pitch analysis. The silence cutoff is now 0.0001 RMS; YIN periodicity and correlation still reject unpitched noise. Verified against 900 quiet, decaying synthetic frames plus broadband noise and silence. Real-device confirmation is still required.
 
 ## Release verification
 See RELEASE-CHECKLIST.md, release-report.json and tests/. Run the Node test files from this package directory. These use mocked browser APIs and synthetic signals; they do not certify real microphone hardware or actual offline installation.

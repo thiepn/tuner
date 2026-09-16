@@ -1,4 +1,4 @@
-# Release gate — 1.3.0-rc.1
+# Release gate — 1.3.0-rc.2
 
 ## Passed here
 - Detector algorithm retained; frequency floor extended to 25 Hz, bass analysis window increased to 8192 samples, bass input high-pass set to 18 Hz and bass-specific recognition anchors added.

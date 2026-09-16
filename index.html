@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
   <title>TUNER — Guitar Tuner</title>
-  <meta name="app-version" content="1.3.0-rc.1">
+  <meta name="app-version" content="1.3.0-rc.2">
   <style>@font-face{font-family:Interval Display;src:url('./assets/BarlowCondensed-Bold.woff') format('woff');font-weight:700;font-display:swap}@font-face{font-family:Interval Sans;src:url('./assets/NimbusSans-Regular.woff') format('woff');font-weight:400;font-display:swap}@font-face{font-family:Interval Mono;src:url('./assets/IBMPlexMono-Regular.woff') format('woff');font-weight:400;font-display:swap}
 :root{color-scheme:light;--bg:#f4f5ee;--text:#101311;--muted:#565b60;--accent:#204ff3;--accent-soft:#e5ebff;--indicator:#e4f955;--line:#cbd0c9;--panel:#fffef8;--danger:#b52d36;--ui:'Interval Sans',sans-serif;--readout:'Interval Mono',monospace;--display:'Interval Display',Impact,sans-serif}
 :root[data-theme=dark]{color-scheme:dark;--bg:#101d50;--text:#f4f5ee;--muted:#b9c5e4;--accent:#4670ff;--accent-soft:#21376f;--line:#455585;--panel:#18285b;--danger:#ffb2b8}
@@ -1973,7 +1973,11 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
             sumSquares += centered * centered;
           }
           const rms = Math.sqrt(sumSquares / this.size);
-          const gate = clamp(this.noiseFloor * 2.2, 0.0035, 0.024);
+          // Only discard near-digital silence before testing periodicity. A phone's
+          // unprocessed microphone can deliver clear strings below the old 0.0035
+          // floor. Noise loudness alone must not prevent a quiet periodic note
+          // from reaching YIN and its independent correlation check.
+          const gate = 0.0001;
 
           if (rms < gate) {
             this.learnNoise(rms, 0.055);
