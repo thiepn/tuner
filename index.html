@@ -1,0 +1,3051 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f5ee">
+  <meta name="description" content="A precise, offline-capable guitar tuner with alternate tunings, guided tuning, reference tones and metronome.">
+  <meta name="application-name" content="Guitar Tuner">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Guitar Tuner">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+  <title>TUNER — Guitar Tuner</title>
+  <meta name="app-version" content="1.3.0-rc.1">
+  <style>@font-face{font-family:Interval Display;src:url('./assets/BarlowCondensed-Bold.woff') format('woff');font-weight:700;font-display:swap}@font-face{font-family:Interval Sans;src:url('./assets/NimbusSans-Regular.woff') format('woff');font-weight:400;font-display:swap}@font-face{font-family:Interval Mono;src:url('./assets/IBMPlexMono-Regular.woff') format('woff');font-weight:400;font-display:swap}
+:root{color-scheme:light;--bg:#f4f5ee;--text:#101311;--muted:#565b60;--accent:#204ff3;--accent-soft:#e5ebff;--indicator:#e4f955;--line:#cbd0c9;--panel:#fffef8;--danger:#b52d36;--ui:'Interval Sans',sans-serif;--readout:'Interval Mono',monospace;--display:'Interval Display',Impact,sans-serif}
+:root[data-theme=dark]{color-scheme:dark;--bg:#101d50;--text:#f4f5ee;--muted:#b9c5e4;--accent:#4670ff;--accent-soft:#21376f;--line:#455585;--panel:#18285b;--danger:#ffb2b8}
+*{box-sizing:border-box}html{background:var(--bg);scrollbar-gutter:stable}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--ui);font-size:16px;-webkit-font-smoothing:antialiased}button,input,select{font:inherit}button{color:inherit;background:none;border:0;cursor:pointer;min-height:44px;border-radius:4px}button:disabled{cursor:not-allowed;opacity:.5}button:hover:not(:disabled){background:var(--accent-soft)}button:active:not(:disabled){transform:translateY(1px)}button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:4px}input,select{accent-color:var(--accent)}[hidden]{display:none!important}img{display:block}button img{width:25px;height:25px}:root[data-theme=dark] button img{filter:invert(1)}.app{max-width:1120px;margin:auto;padding:28px 40px 16px}header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:20px}.brand{display:flex;align-items:center;gap:8px}.brand-icon{height:48px;width:32px;object-fit:cover;object-position:center}.brand-name{font:700 38px/.95 var(--display);letter-spacing:-1px}.app-nav{display:flex;gap:14px;align-items:center}.nav-btn{font:700 21px var(--display);padding:8px 12px}.nav-btn.active{color:var(--accent)}#navTunerBtn{display:none}#navSettingsBtn{display:grid;place-items:center;width:44px;padding:8px}.mobile-nav{display:none}main{display:grid;grid-template-columns:minmax(0,1fr) 280px;column-gap:64px;align-items:start}.tuning-context{grid-column:1;display:flex;align-items:center;gap:2px;margin-bottom:20px;min-width:0}.tuning-context-main{text-align:left;padding:0;min-width:0}.context-kicker{display:none}.context-name{display:block;font:700 28px/1.1 var(--display)}.context-notes{display:block;margin-top:7px;font:12px var(--readout);letter-spacing:.07em;color:var(--muted)}.context-change{align-self:flex-start;display:grid;place-items:center;min-width:44px}.modern-a4{margin-left:auto;text-align:right;font:12px var(--readout);padding:4px}.modern-a4 span{display:block;color:var(--muted);font-size:10px;margin-bottom:5px}.modern-a4 strong{font-weight:400}.tuner{grid-column:1;grid-row:2 / span 4;display:grid;grid-template-columns:48% 52%;height:530px;min-width:0;position:relative}.readout{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0;padding-right:12px;padding-bottom:25px}.eyebrow{font:11px var(--readout);color:var(--muted);margin-bottom:20px;min-height:14px;max-width:100%}.note-row{display:flex;align-items:baseline;white-space:nowrap;line-height:.8;margin-left:-6px}.note{font:700 clamp(140px,20vw,260px)/.8 var(--display);letter-spacing:-.055em}.note.idle{font-size:150px;letter-spacing:0;color:var(--muted)}.octave{font:700 86px/.8 var(--display);margin-left:8px}.cents-line{display:flex;flex-direction:column;margin-top:28px}.cents{font:700 76px/.9 var(--display);font-variant-numeric:tabular-nums}.cents-unit{font:20px var(--readout);margin-top:3px}.tuning-state{font:700 29px/1.05 var(--display);margin-top:26px;display:flex;align-items:center;gap:9px;min-height:34px}.tuning-state.flat:before,.tuning-state.sharp:before,.tuning-state.in-tune:before{content:'';width:25px;height:28px;flex-shrink:0;background:var(--accent);mask:url('./assets/ArrowUp.svg') center/contain no-repeat}.tuning-state.sharp:before{mask-image:url('./assets/ArrowDown.svg')}.tuning-state.in-tune:before{mask-image:url('./assets/Check.svg')}.frequency{font:15px/1.4 var(--readout);margin-top:19px;color:var(--muted);max-width:200px}.meter{position:relative;width:100%;height:100%;padding-right:75px}.ribbon{height:100%;background:var(--accent);position:relative;clip-path:polygon(0 0,100% 0,100% 92%,0 100%)}.ribbon-scale{position:absolute;top:8%;bottom:16%;left:0;right:0}.zero-line{position:absolute;top:50%;height:1px;left:0;right:0;background:var(--text);z-index:2}.tolerance-marker{position:absolute;left:0;right:0;border-top:1px solid #ffffff38}.needle-wrap{position:absolute;left:0;right:0;height:13px;background:var(--indicator);transform:translateY(-50%);top:50%;transition:top 80ms ease;opacity:0}.meter.has-pitch .needle-wrap{opacity:1}.meter.in-tune .needle-wrap{height:17px}.meter-labels{position:absolute;top:8%;bottom:16%;right:0;width:64px}.meter-labels span{position:absolute;transform:translateY(-50%);display:flex;align-items:center;gap:10px;font:700 25px var(--display);white-space:nowrap}.meter-labels i{display:block;width:16px;height:1px;background:var(--text)}.strings-wrap{grid-column:2;grid-row:2;position:relative;padding-top:12px}.string-heading{display:flex;justify-content:space-between;align-items:center;font:12px var(--readout);letter-spacing:.08em;min-height:44px;margin-bottom:14px}.section-label{display:none}.strings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;position:relative}.string-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px 0;min-width:0;min-height:68px}.string-note{font:700 32px/1 var(--display)}.string-meta{font:12px var(--readout)}.string-wire{display:none}.string-btn.active{background:var(--accent);color:white}.string-btn.detected:not(.active){box-shadow:inset 0 -3px var(--accent)}.string-btn[data-mode=auto]{position:absolute;right:0;top:-57px;min-height:36px;padding:4px 11px;display:block}.string-btn[data-mode=auto] .string-note{font:14px var(--readout)}.string-btn[data-mode=auto] .string-meta{display:none}.strings[data-count="0"]{min-height:80px}.strings[data-count="0"]:after{content:'Chromatic · all notes';font:13px var(--readout);grid-column:1/-1;color:var(--muted)}.mic-panel{grid-column:2;grid-row:3;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-top:28px;gap:12px}.status-pill{display:flex;align-items:center;gap:8px;font:13px var(--readout);max-width:47%}.status-dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex-shrink:0}.status-pill.live .status-dot{background:var(--accent)}.status-pill.error{color:var(--danger)}.status-pill.error .status-dot{background:var(--danger)}.start-btn{background:var(--accent);color:#fff;font:700 22px/1.1 var(--display);padding:12px 18px;max-width:65%;min-height:52px}.start-btn:hover:not(:disabled){background:#133dd0}.mic-copy{order:3;width:100%}.mic-copy>strong{display:none}.hint{font:12px/1.5 var(--readout);color:var(--muted)}.error{color:var(--danger)}.precision-details{grid-column:2;grid-row:4;margin-top:25px;font-size:13px}.precision-details summary{cursor:pointer;min-height:44px;padding:13px 0;font:14px var(--readout);color:var(--muted)}.precision-module{padding:12px 0}.precision-heading,.precision-telemetry{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0}.precision-heading{font:14px var(--readout)}.signal-block{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.precision-label{font-size:11px;color:var(--muted)}.signal-bars{display:flex;align-items:end;gap:3px;height:15px}.signal-bars span{height:100%;width:4px;background:var(--line)}.signal-bars span.on{background:var(--accent)}.signal-bars.hot span.on{background:var(--danger)}.signal-caption{font:11px var(--readout)}.pitch-trail{width:100px;height:32px;display:block}.pitch-trail-zero{stroke:var(--line)}.pitch-trail-line{stroke:var(--accent);stroke-width:2;fill:none}.confidence-readout{font:11px var(--readout);color:var(--muted);margin-top:8px}.drift-strip{height:16px;overflow:hidden;position:relative;background:var(--accent-soft)}.drift-mover{width:9px;height:100%;position:absolute;left:50%;background:var(--accent);transform:translateX(var(--fine-static-shift,0px))!important}.drift-center{position:absolute;left:50%;height:100%;border-left:1px solid var(--text)}.guided-panel{grid-column:1/-1;grid-row:6;margin-top:24px;padding:20px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:20px}.guided-kicker,.guided-hold-head{font:12px var(--readout);color:var(--muted)}.guided-target{display:flex;gap:15px;margin:8px 0}.guided-target strong{font:700 24px var(--display)}.guided-target span{font:13px var(--readout)}.guided-actions{display:flex;flex-wrap:wrap;align-items:center}.guided-progress{display:flex;gap:10px;margin-top:10px}.guided-step{font:12px var(--readout);padding:4px}.guided-step.done,.guided-step.active{background:var(--accent-soft);color:var(--accent)}.guided-hold-track{height:4px;background:var(--line);margin:8px 0}.guided-hold-fill{display:block;height:100%;background:var(--accent);width:0}.guided-hold-head{display:flex;justify-content:space-between;gap:20px}footer{margin:28px 0 8px;font:11px/1.5 var(--readout);color:var(--muted)}
+/* Sheets and utility screens share the same editorial system. */
+dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 0 0 auto;width:min(570px,100%);max-width:100%;height:100dvh;max-height:100dvh;padding:0;box-shadow:-10px 0 60px #0002}dialog::backdrop{background:#10172b66}dialog[open]{animation:sheet-in 160ms ease-out}.section-dialog-shell,.dialog-shell{min-height:100%;display:flex;flex-direction:column}.section-dialog-header,.dialog-header{display:flex;align-items:start;justify-content:space-between;gap:20px;padding:28px 28px 22px;background:var(--bg);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)}.section-dialog-title,.dialog-title{font:700 40px/1 var(--display)}.section-dialog-subtitle,.dialog-subtitle{font:13px/1.5 var(--readout);color:var(--muted);margin-top:8px}.dialog-close{display:grid;place-items:center;min-width:44px}.section-dialog-body,.dialog-body{padding:24px 28px 40px}.ui-kicker,.settings-group-index,.tool-index,.browser-count,.setting-meta,.settings-footer-note,.option-label{font:11px/1.5 var(--readout);color:var(--muted)}.ui-kicker{display:block;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}.tuning-browser-hero{display:flex;justify-content:space-between;gap:15px;padding-bottom:24px;border-bottom:1px solid var(--line)}#dialogCurrentTuningName{font:700 30px var(--display)}.tuning-summary{font:12px/1.6 var(--readout);margin-top:8px;color:var(--muted)}.browser-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:28px 0 12px}.browser-section-head strong{font:700 26px var(--display)}.tuning-preset-grid{display:flex;flex-direction:column;gap:2px}.tuning-preset-card{padding:15px 12px;text-align:left;border-bottom:1px solid var(--line);border-radius:0}.tuning-preset-card.active{background:var(--accent-soft);border-left:4px solid var(--accent);padding-left:8px}.tuning-preset-top{display:flex;justify-content:space-between;gap:12px;align-items:center}.tuning-preset-top strong{font:700 24px var(--display)}.tuning-preset-badge,.tuning-preset-action{font:11px var(--readout);color:var(--accent)}.tuning-preset-notes{display:block;font:12px var(--readout);margin:7px 0;color:var(--muted)}.tuning-select-compat{display:none}.tuning-browser-footnote{font:12px/1.6 var(--readout);color:var(--muted);padding:24px 0;display:flex;gap:12px}.ui-info-mark{display:none}.settings-group,.tool-surface{padding:24px 0;border-bottom:1px solid var(--line)}.settings-group:first-child,.tool-surface:first-child{padding-top:0}.settings-group-head,.tool-surface-head{display:flex;gap:16px;align-items:start;margin-bottom:20px}.settings-group-head strong,.tool-surface-head strong{font:700 28px/1 var(--display)}.tool-surface-head em{margin-left:auto;font:12px var(--readout);color:var(--muted)}.settings-group-index,.tool-index{color:var(--accent);padding-top:4px}.settings-group-content{display:grid;gap:22px}.setting-cell{display:block}.setting-cell label,.setting-name{font-size:15px}.setting-row,.cal-row,.haptic-control{display:flex;align-items:center;justify-content:space-between;gap:14px}.cal-row{margin-top:12px}.cal-row input{flex:1;min-width:0}.cal-value{font:13px var(--readout)}.tolerance-buttons{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.tolerance-btn{font:12px var(--readout);padding:10px}.tolerance-btn.active{background:var(--accent);color:white}select,input[type=text],input:not([type]){background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--text);padding:12px;min-height:44px;max-width:100%}.device-select,.tone-mode,#themeSelect,.custom-name-input{display:block;width:100%;margin-top:10px}.setting-meta{margin-top:9px}.haptic-control small{display:block;color:var(--muted);font:12px/1.5 var(--readout);margin-top:5px}.haptic-control input{width:22px;height:22px;flex-shrink:0}.app-status{font:12px var(--readout);color:var(--accent)}.settings-footer-note{margin:24px 0}.secondary-btn,.dialog-btn,.tool-primary,.tool-secondary,.install-button,.guided-action,.metro-step{padding:10px 14px;font:700 20px/1.2 var(--display);background:var(--accent-soft)}.tool-primary,.dialog-btn.primary,.install-button{background:var(--accent);color:white}.tool-primary:hover:not(:disabled),.dialog-btn.primary:hover:not(:disabled),.install-button:hover:not(:disabled){background:#133dd0}.install-button{margin-top:12px}.tool-grid{display:grid;gap:18px}.tool-note,.tone-status{font:12px/1.6 var(--readout);color:var(--muted)}.tone-toolbar,.metro-controls{display:flex;gap:10px;align-items:center}.tone-mode{flex:1;min-width:0;margin:0}.tone-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(48px,1fr));gap:5px}.tone-btn{background:var(--accent-soft);display:flex;flex-direction:column;gap:5px;padding:12px 4px}.tone-btn strong{font:700 25px var(--display)}.tone-btn span{font:11px var(--readout)}.tone-btn.active{background:var(--accent);color:white}.metro-top{display:flex;align-items:center;justify-content:space-between;gap:15px}.metro-top>div{flex:1;text-align:center}.metro-bpm strong{font:700 80px/.9 var(--display)}.metro-bpm span{font:12px var(--readout);margin-left:8px}.metro-range{width:100%;margin-top:18px}.metro-beats{display:flex;gap:8px}.metro-beat{height:6px;background:var(--line);flex:1}.metro-beat.active{background:var(--accent)}.custom-form{display:grid;gap:20px}.field-label{display:block;font:13px var(--readout)}.custom-string-list{display:grid;gap:8px}.custom-string-row{display:flex;align-items:center;gap:10px}.custom-string-row input{min-width:0;width:100px}.custom-string-row .custom-string-frequency{font:12px var(--readout);color:var(--muted)}.custom-row-actions,.dialog-actions{display:flex;justify-content:space-between;gap:10px;align-items:center}.custom-error{font:12px/1.5 var(--readout);color:var(--danger)}.saved-customs{margin-top:30px;border-top:1px solid var(--line);padding-top:22px}.saved-customs-heading{font:700 24px var(--display);margin-bottom:10px}.saved-custom-item{padding:15px 0;border-bottom:1px solid var(--line)}.saved-custom-empty{font:12px/1.6 var(--readout);color:var(--muted)}.saved-custom-name{font:700 22px var(--display)}.saved-custom-notes{font:12px var(--readout)}.saved-custom-actions{display:flex;gap:8px;margin-top:10px}
+@keyframes sheet-in{from{transform:translateX(20px);opacity:.5}to{transform:none;opacity:1}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media(max-width:760px){html{scrollbar-gutter:auto}.app{padding:max(24px,env(safe-area-inset-top)) 26px max(16px,env(safe-area-inset-bottom));max-width:520px}header{margin-bottom:25px;gap:10px}.brand-name{font-size:32px}.brand-icon{width:24px;height:40px}.app-nav{gap:4px}.nav-btn{font-size:19px;padding:8px}#navTuningsBtn{display:none}main{display:flex;flex-direction:column;gap:0}.tuning-context{width:100%;margin-bottom:18px}.context-name{font-size:27px}.context-notes{font-size:11px;letter-spacing:.04em}.modern-a4{display:none}.tuner{width:100%;height:clamp(370px,56svh,510px);grid-template-columns:52% 48%;flex-shrink:0}.readout{padding-bottom:22px;padding-right:12px;justify-content:center}.eyebrow{font-size:10px;margin-bottom:18px;min-height:12px}.note{font-size:clamp(150px,46vw,210px)}.note.idle{font-size:130px}.octave{font-size:64px;margin-left:6px}.note-row{margin-left:-3px}.cents-line{margin-top:26px}.cents{font-size:64px}.cents-unit{font-size:18px}.tuning-state{font-size:25px;margin-top:22px;gap:6px;min-height:28px}.tuning-state:before{width:22px!important;height:24px!important}.frequency{font-size:13px;line-height:1.4;margin-top:20px;max-width:150px}.meter{padding-right:57px}.meter-labels{width:47px}.meter-labels span{font-size:23px;gap:8px}.meter-labels i{width:12px}.needle-wrap{height:12px}.strings-wrap{width:100%;padding-top:6px;margin-top:12px}.string-heading{margin-bottom:6px;font-size:11px;min-height:36px}.strings{grid-template-columns:repeat(var(--string-count,6),minmax(0,1fr));gap:5px}.string-btn{min-height:58px;padding:6px 0;gap:4px}.string-note{font-size:29px}.string-meta{font-size:11px}.string-btn[data-mode=auto]{top:-42px;min-height:32px}.string-btn[data-mode=auto] .string-note{font-size:12px}.mic-panel{margin-top:23px;width:100%;gap:9px}.start-btn{font-size:22px;min-height:48px;padding:11px 18px}.status-pill{font-size:12px}.mic-copy{padding-top:3px}.hint{font-size:10px}.precision-details{margin-top:5px;width:100%}.precision-details summary{font-size:12px;min-height:38px;padding:12px 0}footer{font-size:10px;margin-top:12px}.guided-panel{order:3;width:100%;flex-direction:column;margin-top:18px;gap:8px}.section-dialog-header,.dialog-header{padding:24px 24px 20px}.section-dialog-body,.dialog-body{padding:24px}.section-dialog-title,.dialog-title{font-size:36px}.tolerance-btn{font-size:11px;padding:8px}.browser-count{display:none}}
+@media(max-width:355px){.app{padding-left:18px;padding-right:18px}.tuner{grid-template-columns:53% 47%;height:390px}.note{font-size:145px}.octave{font-size:48px}.meter{padding-right:49px}.meter-labels{width:41px}.meter-labels span{font-size:20px}.frequency{font-size:12px}.tuning-state{font-size:22px}.strings{gap:2px}.string-note{font-size:25px}.tolerance-buttons{gap:2px}.tone-toolbar{flex-wrap:wrap}}
+/* Match the approved note proportions and let the pitch ribbon rise alongside the preset. */
+@media(max-width:760px){.eyebrow{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.note{font-size:clamp(210px,65vw,285px)}.note.idle{font-size:150px}.octave{font-size:76px}.meter{height:calc(100% + 45px);margin-top:-45px}.tuning-context-main{max-width:calc(52% - 4px)}.context-notes{white-space:nowrap;font-size:10px;letter-spacing:0}.context-change{margin-left:0;min-width:32px}.context-change img{width:18px}.strings[data-count="7"],.strings[data-count="8"]{grid-template-columns:repeat(4,minmax(0,1fr))}.readout{padding-bottom:0}.cents-line{margin-top:24px}.start-btn[data-live=true]{display:flex;gap:9px;align-items:center}.start-btn[data-live=true]:before{content:'';width:20px;height:24px;background:white;mask:url('./assets/Mic.svg') center/contain no-repeat}}
+@media(max-width:355px){.note{font-size:205px}.octave{font-size:57px}.tuning-context-main{max-width:50%}.context-notes{font-size:9px}.tuner{height:400px}.cents{font-size:56px}.tuning-state{margin-top:16px}.frequency{margin-top:14px}}
+@media(max-width:760px){html{scrollbar-width:none}.tuner{grid-template-columns:54% 46%}.meter{padding-right:70px}.meter-labels{width:57px}.meter-labels span{gap:10px}.meter-labels i{width:16px}.context-change{display:none}.context-name{display:flex;align-items:center;gap:12px}.context-name:after{content:'';display:block;width:17px;height:17px;background:var(--text);mask:url('./assets/ChevronDown.svg') center/contain no-repeat}.tuning-context-main{max-width:52%}.context-notes{white-space:normal;line-height:1.5}.brand-name{font-size:36px}.frequency{font-size:14px}.status-pill{font-size:13px}.start-btn[data-live=true]{min-width:110px;justify-content:center}}
+@media(max-width:355px){.meter{padding-right:48px}.meter-labels{width:40px}.meter-labels i{width:11px}.meter-labels span{gap:6px}.tuner{grid-template-columns:53% 47%}}
+.tone-btn.playing{background:var(--accent);color:#fff}.guided-step.current{box-shadow:inset 0 -2px var(--accent);color:var(--accent)}.custom-string-row.invalid input{border-color:var(--danger)}.haptic-control.unsupported{opacity:.6}
+:root[data-theme=dark]{--accent:#7896ff}.brand-icon{mix-blend-mode:multiply}:root[data-theme=dark] .brand-icon{filter:invert(1) hue-rotate(180deg);mix-blend-mode:screen}:root[data-theme=dark] .start-btn,:root[data-theme=dark] .string-btn.active,:root[data-theme=dark] .tool-primary,:root[data-theme=dark] .dialog-btn.primary,:root[data-theme=dark] .tolerance-btn.active,:root[data-theme=dark] .install-button,:root[data-theme=dark] .tone-btn.playing{color:#101d50}:root[data-theme=dark] .start-btn[data-live=true]:before{background:#101d50}
+</style><style id="interval-refinement">/* Interval 1.1: measured refinements to the approved visual system. */
+.app{--mic-dock-height:110px;padding-top:36px}.brand-name{font-size:42px}.brand-icon{width:25px;height:42px;object-fit:cover}.context-name{font-size:31px}.context-notes{font-size:12px;letter-spacing:.02em}.tuner{grid-template-columns:56% 44%;height:560px}.meter{max-width:230px}.note{font-size:290px}.octave{font-size:90px}.idle-prompt{display:none;font:700 82px/.89 var(--display);letter-spacing:-.03em;color:var(--text);margin:6px 0 20px}.idle-prompt span{display:block;font:13px/1.5 var(--readout);letter-spacing:0;color:var(--muted);margin-top:23px;max-width:170px}.readout:has(.note.idle) .idle-prompt{display:block}.readout:has(.note.idle) .note-row,.readout:has(.note.idle) .cents-line{display:none}.readout:has(.note.idle) .tuning-state{font-size:23px;margin-top:10px;color:var(--muted)}.readout:has(.note.idle) .frequency{display:none}.readout:has(.note.idle) .eyebrow{margin-bottom:20px}.tuner[data-target-mode=manual][data-pitch-state=waiting] .note-row{opacity:.48}.tuner[data-target-mode=manual][data-pitch-state=waiting] .tuning-state{font-size:24px;color:var(--muted)}.tuner[data-target-mode=manual][data-pitch-state=waiting] .cents-line{opacity:.45}.readout{transition:opacity 120ms ease}.needle-wrap{height:12px;box-shadow:0 0 0 1px #10131114}.meter.in-tune .needle-wrap{height:20px}.tuner.confirmed-lock .zero-line{background:#101311;height:2px}.tuner.confirmed-lock .tuning-state{color:var(--accent)}.meter-labels span:nth-child(3){font-size:30px}.meter-labels span:nth-child(3) i{height:2px;width:20px}.tolerance-marker{border-color:#ffffff55}.string-heading{font-size:12px;letter-spacing:.07em;display:flex;gap:14px;padding-right:64px}.selection-caption{font:11px var(--readout);color:var(--muted);letter-spacing:0;margin-left:auto}.strings{gap:10px}.string-btn{min-height:76px;border-radius:3px;transition:background-color 100ms,color 100ms}.string-note{font-size:40px}.string-meta{font-size:12px}.string-btn.detected:not(.active){background:var(--accent-soft);box-shadow:inset 0 -3px var(--accent)}.string-btn[data-mode=auto]{min-height:44px;top:-60px}.string-btn[data-mode=auto].active{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 -2px var(--accent)}.mic-panel{display:grid;grid-template-columns:1fr;gap:12px}.status-pill{max-width:none;font-size:13px;min-height:22px}.start-btn{max-width:none;width:100%;min-height:56px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:24px}.start-btn:before{content:'';width:21px;height:23px;background:currentColor;mask:url('./assets/Mic.svg') center/contain no-repeat}.start-btn[data-live=true]:before{mask:url('./assets/Mic.svg') center/contain no-repeat}.hint{font:12px/1.6 var(--readout)}.start-btn:disabled{opacity:.5}.precision-details{border-top:1px solid var(--line);margin-top:28px}.precision-details summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;font-size:13px;min-height:48px}.precision-details summary::-webkit-details-marker{display:none}.precision-details summary:before{content:'';width:15px;height:15px;background:var(--muted);mask:url('./assets/ChevronDown.svg') center/contain no-repeat;flex-shrink:0;transition:transform 140ms}.precision-details[open] summary:before{transform:rotate(180deg)}#detailSummary{margin-left:auto;font-size:10px;color:var(--muted)}.precision-telemetry{align-items:flex-start;flex-wrap:wrap}.precision-heading{font-size:14px}.signal-caption{font-size:12px}.signal-bars{height:20px}.signal-bars span:nth-child(1){height:6px}.signal-bars span:nth-child(2){height:9px}.signal-bars span:nth-child(3){height:12px}.signal-bars span:nth-child(4){height:16px}.signal-bars span:nth-child(5){height:20px}.signal-bars.hot~.signal-caption{color:var(--danger)}.signal-block{max-width:140px}.pitch-trail{width:120px}.tuning-search{margin:14px 0}.tuning-search label{font:12px var(--readout);display:block;margin-bottom:8px;color:var(--muted)}.tuning-search>div{display:flex;gap:8px}.tuning-search input{width:100%;min-width:0;padding:13px;background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--text);font:15px var(--ui);min-height:48px}.tuning-search button{font:14px var(--ui);color:var(--accent);padding:0 10px}.tuning-search p{font:13px/1.6 var(--readout);color:var(--muted);padding:20px 0}.tuning-preset-card{min-height:94px}.tuning-preset-top strong{font-size:26px}.tuning-preset-badge,.tuning-preset-action{font-size:12px}.tuning-preset-notes{font-size:13px;line-height:1.5}.section-dialog-subtitle,.dialog-subtitle{max-width:390px}.section-dialog-body,.dialog-body{padding-bottom:max(40px,env(safe-area-inset-bottom))}.setting-meta{font-size:12px}.ui-kicker{font-size:12px}.settings-footer-note{line-height:1.7}.custom-string-number{font:12px var(--readout);white-space:nowrap}.custom-string-row input{flex:1}.custom-string-row .custom-string-frequency{min-width:66px;font-size:12px}.haptic-control.unsupported{opacity:1}.haptic-control.unsupported strong{color:var(--muted)}.guided-panel{background:var(--accent-soft);border:0;padding:18px 20px;border-radius:4px}.guided-target{align-items:baseline}.guided-kicker{color:var(--accent)}.guided-progress{flex-wrap:wrap}.guided-action{min-width:55px}.guided-step.current{font-weight:bold}.guided-hold.locked .guided-hold-fill{background:var(--text)}.dialog-close{border-radius:3px}.tool-primary.stop-state{background:var(--text);color:var(--bg)}
+@media(min-width:761px){.tuning-context{margin-bottom:28px}.app{max-width:1140px}main{grid-template-columns:minmax(0,1fr) 300px;column-gap:76px}.tuner{height:min(62svh,620px);min-height:490px}.strings-wrap{padding-top:4px}.readout{padding-right:30px}.note-row{margin-bottom:2px}.cents-line{flex-direction:row;align-items:baseline;gap:12px}.cents{font-size:88px}.cents-unit{font-size:19px}.tuning-state{font-size:34px}.frequency{font-size:16px}.precision-details{grid-row:4}.mic-panel{grid-row:3;margin-top:32px}.guided-panel{margin-top:28px}}
+@media(max-width:760px){.app{padding:20px 24px calc(var(--mic-dock-height) + 24px);max-width:520px}header{margin-bottom:24px;padding-top:0}.brand-name{font-size:37px}.brand-icon{width:22px;height:38px}.app-nav{gap:10px}.nav-btn{min-width:44px}.context-name{font-size:29px}.tuning-context{margin-bottom:16px}.context-notes{font-size:11px;line-height:1.7;max-width:195px}.tuner{height:clamp(330px,calc(100svh - 365px),480px);grid-template-columns:54% 46%;margin-bottom:9px}.meter{height:calc(100% + 37px);margin-top:-37px;max-width:none;padding-right:61px}.meter-labels{width:48px}.meter-labels span{font-size:24px;gap:8px}.meter-labels span:nth-child(3){font-size:28px}.meter-labels span:nth-child(3) i{width:15px}.meter-labels i{width:15px}.idle-prompt{font-size:67px;margin:0 0 16px;line-height:.9}.idle-prompt span{font-size:12px;margin-top:19px;max-width:135px}.readout:has(.note.idle) .tuning-state{font-size:20px;max-width:140px;line-height:1.1;margin-top:4px}.readout{padding-right:14px;justify-content:center}.note{font-size:clamp(195px,62vw,260px)}.octave{font-size:65px}.cents{font-size:60px}.cents-line{margin-top:22px}.cents-unit{font-size:17px}.tuning-state{font-size:26px;margin-top:20px}.frequency{font-size:14px;margin-top:17px}.strings-wrap{padding-top:0;margin-top:0}.string-heading{min-height:44px;margin-bottom:8px;font-size:11px;gap:8px}.selection-caption{font-size:10px}.strings{gap:6px}.string-btn{min-height:65px;padding:8px 0;gap:5px}.string-note{font-size:34px}.string-meta{font-size:12px}.string-btn[data-mode=auto]{top:-52px;min-height:44px;min-width:55px;padding:9px}.mic-panel{position:fixed;z-index:8;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);margin:0;padding:14px 24px max(14px,env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px 14px;align-items:center}.status-pill{font-size:12px;line-height:1.35;min-width:0}.start-btn{font-size:22px;min-height:50px;min-width:123px;width:auto;padding:12px 14px;max-width:195px}.mic-copy{grid-column:1/-1;order:3;padding:0}.hint{font-size:10px;line-height:1.5}.precision-details{margin-top:21px;width:100%}.precision-details summary{min-height:44px;font-size:12px}.precision-details[open]{padding-bottom:12px}#detailSummary{font-size:10px}.guided-panel{margin-top:15px;padding:16px;gap:12px}.guided-copy{width:100%}.guided-actions{gap:6px}.guided-action{flex:1;font-size:18px;padding:8px}.section-dialog-header,.dialog-header{padding:22px 22px 20px}.section-dialog-body,.dialog-body{padding:22px}.custom-string-row{gap:7px}.custom-string-row input{width:80px}.tone-toolbar{flex-wrap:wrap}.tone-toolbar select{min-width:190px}.tool-surface-head{gap:10px}.tool-surface-head em{font-size:11px;max-width:130px;text-align:right}.tuning-state,.context-name{overflow-wrap:anywhere}}
+@media(max-width:355px){.app{padding-left:18px;padding-right:18px}.brand-name{font-size:34px}.idle-prompt{font-size:57px}.tuner{height:clamp(310px,calc(100svh - 355px),390px);grid-template-columns:53% 47%}.meter{padding-right:48px}.meter-labels{width:39px}.meter-labels span{font-size:21px}.meter-labels i{width:10px}.meter-labels span:nth-child(3) i{width:10px}.note{font-size:195px}.octave{font-size:55px}.cents{font-size:52px}.cents-line{margin-top:18px}.tuning-state{font-size:23px;margin-top:16px}.frequency{font-size:12px}.mic-panel{padding-left:18px;padding-right:18px}.status-pill{font-size:11px}.start-btn{font-size:21px;min-width:115px;max-width:168px}.string-heading{padding-right:60px;gap:4px}.selection-caption{font-size:9px}.strings{gap:3px}.string-note{font-size:30px}.string-btn{min-height:62px}.context-notes{font-size:10px}.context-name{font-size:26px}.custom-row-actions{align-items:flex-start;flex-direction:column}.tolerance-buttons{flex-direction:column}.tolerance-btn{text-align:left;font-size:13px}.tuning-preset-notes{font-size:12px}}
+@media(max-width:760px) and (max-height:710px){.tuner{height:300px}.note{font-size:190px}.octave{font-size:55px}.cents{font-size:46px}.cents-line{margin-top:12px}.cents-unit{font-size:15px}.tuning-state{margin-top:13px;font-size:23px}.frequency{margin-top:12px}.idle-prompt{font-size:58px}.tuning-context{margin-bottom:12px}header{margin-bottom:20px}.string-btn{min-height:59px}}
+@media(prefers-reduced-motion:reduce){.readout,.string-btn,.precision-details summary:before{transition:none!important}}
+@media(max-width:760px){.tuner{height:clamp(250px,calc(100svh - var(--mic-dock-height) - 310px),480px)}.context-notes{white-space:nowrap;letter-spacing:.07em}.idle-prompt span{max-width:165px}.readout:has(.note.idle) .tuning-state{max-width:165px}.tuning-context-main{max-width:54%}}
+@media(max-width:760px) and (max-height:710px){.tuner{height:clamp(250px,calc(100svh - var(--mic-dock-height) - 275px),345px)}}
+</style>
+<style id="readability-fix">
+:root{--controls:Arial,Helvetica,sans-serif}
+.nav-btn,.start-btn,.secondary-btn,.dialog-btn,.tool-primary,.tool-secondary,.install-button,.guided-action,.metro-step{font-family:var(--controls);font-weight:600;font-size:16px;line-height:1.4;letter-spacing:normal;font-stretch:normal;font-synthesis:none}
+.start-btn{font-size:17px;line-height:1.35;min-width:0;white-space:normal;overflow-wrap:normal;text-align:center}
+.context-name,#dialogCurrentTuningName,.browser-section-head strong,.tuning-preset-top strong,.settings-group-head strong,.tool-surface-head strong,.saved-customs-heading,.saved-custom-name,.guided-target strong,.tone-btn strong{font-family:var(--controls);font-size:20px;line-height:1.3;font-weight:600;letter-spacing:normal}
+.tuning-state,.readout:has(.note.idle) .tuning-state,.tuner[data-target-mode=manual][data-pitch-state=waiting] .tuning-state{font-family:var(--controls);font-weight:600;font-size:20px;line-height:1.35;letter-spacing:normal}
+.meter-labels span,.meter-labels span:nth-child(3){font-family:var(--controls);font-weight:600;font-size:19px;line-height:1.2;letter-spacing:normal}
+@media(max-width:760px){.nav-btn{font-size:16px;padding:8px}.start-btn{font-size:16px;max-width:195px;min-width:110px}.context-name{font-size:23px}.tuning-state,.readout:has(.note.idle) .tuning-state,.tuner[data-target-mode=manual][data-pitch-state=waiting] .tuning-state{font-size:18px}.meter-labels span,.meter-labels span:nth-child(3){font-size:18px}}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand"><img class="brand-icon" src="./icons/favicon-64.png" alt=""><span class="brand-name">TUNER</span></div><nav class="app-nav" aria-label="Primary">
+          <button class="nav-btn active" id="navTunerBtn" type="button" aria-current="page">Tuner</button>
+          <button class="nav-btn" id="navTuningsBtn" type="button">Tunings</button>
+          <button class="nav-btn" id="navToolsBtn" type="button">Tools</button>
+          <button class="nav-btn" id="navSettingsBtn" type="button" aria-label="Settings"><img src="./assets/SlidersHorizontal.svg" alt=""></button>
+        </nav>
+        </header>
+
+    <main id="tunerView">
+      <section class="tuning-context" aria-label="Current tuning">
+        <button class="tuning-context-main" id="tuningChangeBtn" type="button">
+          <span class="context-kicker"></span>
+          <strong class="context-name" id="currentTuningName">Standard</strong>
+          <span class="context-notes" id="currentTuningNotes">E2 · A2 · D3 · G3 · B3 · E4</span>
+        </button>
+        <button class="context-change" id="tuningChangeBtnAlt" type="button" aria-label="Change tuning"><img src="./assets/ChevronDown.svg" alt=""></button>
+      <button class="modern-a4" id="quickCalibrationBtn" type="button" aria-label="Open A4 calibration settings">
+            <span>A4 reference</span><strong id="modernA4Value">440 Hz</strong>
+          </button>
+        </section>
+
+      <section class="tuner" aria-label="Pitch tuner">
+        <div class="readout">
+          <div class="eyebrow" id="targetLabel">Auto chromatic</div>
+          <div class="idle-prompt" aria-hidden="true">LET IT<br>RING<span>One string at a time.</span></div><div class="note-row">
+            <div class="note idle" id="note">—</div>
+            <div class="octave" id="octave"></div>
+          </div>
+          <div class="cents-line">
+          <span class="cents" id="cents">0</span><span class="cents-unit">cents</span>
+        </div>
+        <div class="tuning-state" id="tuningState" aria-live="polite">Waiting for note</div>
+      <div class="frequency" id="frequency">Play a clear single note</div>
+            </div>
+
+        <div id="meter" class="meter" role="meter" aria-label="Pitch deviation" aria-valuemin="-50" aria-valuemax="50" aria-valuenow="0" aria-valuetext="Waiting for note"><div class="ribbon" aria-hidden="true"><div class="ribbon-scale"><div class="zero-line"></div><div id="toleranceLeft" class="tolerance-marker"></div><div id="toleranceRight" class="tolerance-marker"></div><div id="needleWrap" class="needle-wrap"></div></div></div><div class="meter-labels" aria-hidden="true"><span style="top:0%"><i></i>+50</span><span style="top:25%"><i></i>+25</span><span style="top:50%"><i></i>0</span><span style="top:75%"><i></i>−25</span><span style="top:100%"><i></i>−50</span></div><div id="ticks" hidden></div></div></section>
+
+      <section class="guided-panel" id="guidedPanel" aria-label="Guided tuning progress" hidden>
+        <div class="guided-copy">
+          <div class="guided-kicker" id="guidedKicker">Guided tune</div>
+          <div class="guided-target"><strong id="guidedTarget">String 6 · E2</strong><span id="guidedTargetHz">82.4 Hz</span></div>
+          <div class="guided-hold" id="guidedHold" aria-live="polite">
+            <div class="guided-hold-head"><span id="guidedHoldLabel">Center the pitch</span><strong id="guidedHoldPercent">0%</strong></div>
+            <div class="guided-hold-track" aria-hidden="true"><span class="guided-hold-fill" id="guidedHoldFill"></span></div>
+          </div>
+          <div class="guided-progress" id="guidedProgress" aria-label="String tuning progress"></div>
+        </div>
+        <div class="guided-actions">
+          <button class="guided-action" id="guidedPrevBtn" type="button">Prev</button>
+          <button class="guided-action" id="guidedNextBtn" type="button">Next</button>
+          <button class="guided-action" id="guidedRestartBtn" type="button">Restart</button>
+          <button class="guided-action stop" id="guidedStopBtn" type="button">Stop</button>
+        </div>
+      </section>
+
+      <section class="strings-wrap" aria-label="Instrument tuning targets">
+        <div class="string-heading"><span>STRINGS</span><span id="selectionCaption" class="selection-caption" aria-live="polite">Auto detect</span><div id="autoSlot"></div></div><div class="section-label"><span>Strings</span><span id="tuningLabel"></span></div>
+        <div class="strings" id="strings"></div>
+      </section>
+
+      <section class="mic-panel" aria-label="Microphone">
+        <div class="status-pill" id="statusPill" role="status" aria-live="polite" aria-atomic="true"><span class="status-dot"></span><span id="statusText">Mic off</span></div>
+      <button class="start-btn" id="startBtn" type="button">Enable microphone</button>
+        <div class="mic-copy">
+          <strong>Microphone input</strong>
+          <div class="hint" id="hint" role="status" aria-live="polite" aria-atomic="true">Tap Enable microphone to start tuning.</div>
+        </div>
+        <button class="quick-settings" id="quickSettingsBtn" type="button" aria-label="Open tuner settings" hidden="">Settings</button>
+      </section>
+    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
+          <div class="precision-heading">
+            <span>Fine pitch</span>
+            <strong id="fineCents">±0.0¢</strong>
+          </div>
+          <div class="drift-strip" id="driftStrip" aria-hidden="true">
+            <div class="drift-mover" id="driftMover"></div>
+            <div class="drift-fade drift-fade-left"></div>
+            <div class="drift-fade drift-fade-right"></div>
+            <div class="drift-center"></div>
+            <div class="drift-lock-zone"></div>
+          </div>
+          <div class="precision-telemetry">
+            <div class="signal-block">
+              <span class="precision-label">Signal</span>
+              <div class="signal-bars" id="signalBars" aria-label="Input signal level" role="img">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span class="signal-caption" id="signalCaption">Waiting</span>
+            </div>
+            <div class="stability-block">
+              <span class="precision-label">Stability · last 1s</span>
+              <svg class="pitch-trail" id="pitchTrail" viewbox="0 0 120 32" preserveaspectratio="none" aria-hidden="true">
+                <line class="pitch-trail-zero" x1="0" y1="16" x2="120" y2="16"></line>
+                <polyline class="pitch-trail-line" id="pitchTrailLine" points=""></polyline>
+              </svg>
+            </div>
+          </div>
+        <div class="confidence-readout" id="confidenceReadout" aria-label="Pitch confidence">LOCK --</div>
+          </div>
+
+        </details></main>
+
+    <dialog class="section-dialog" id="tuningDialog" aria-labelledby="tuningDialogTitle">
+      <div class="section-dialog-shell">
+        <div class="section-dialog-header">
+          <div>
+            <div class="section-dialog-title" id="tuningDialogTitle">Tunings</div>
+            <div class="section-dialog-subtitle">Choose the target set used by Auto mode.</div>
+          </div>
+          <button class="dialog-close" id="tuningDialogClose" type="button" aria-label="Close tunings"><img src="./assets/X.svg" alt=""></button>
+        </div>
+        <div class="section-dialog-body tuning-browser-body">
+          <section class="tuning-browser-hero" aria-label="Current tuning">
+            <div>
+              <span class="ui-kicker">Current tuning</span>
+              <strong id="dialogCurrentTuningName">Standard</strong>
+              <div class="tuning-summary" id="tuningSummary" aria-live="polite"></div>
+            </div>
+            <button class="secondary-btn custom-manage-btn" id="customTuningBtn" type="button">Manage custom</button>
+          </section>
+          <section class="tuning-browser-section">
+            <div class="browser-section-head">
+              <div>
+                <span class="ui-kicker">Preset library</span>
+                <strong>Choose a tuning</strong>
+              </div>
+              <span class="browser-count">Guitar & bass · Auto targets</span>
+            </div>
+            <div class="tuning-search"><label for="tuningSearch">Find a tuning</label><div><input id="tuningSearch" type="search" placeholder="Name or notes…" autocomplete="off"><button id="clearTuningSearch" type="button" aria-label="Clear tuning search" hidden>Clear</button></div><p id="tuningSearchEmpty" role="status" hidden>No matching tunings. Try a name such as “Drop D”.</p></div><div class="tuning-preset-grid" id="tuningPresetGrid" role="group" aria-label="Available tunings"></div>
+            <select class="tuning-select tuning-select-compat" id="tuningSelect" aria-label="Select guitar tuning" tabindex="-1" aria-hidden="true"></select>
+          </section>
+          <section class="tuning-browser-footnote">
+            <span class="ui-info-mark" aria-hidden="true">i</span>
+            <span>Auto follows the selected tuning. Tap a string on the main tuner any time to lock that target manually.</span>
+          </section>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="section-dialog" id="settingsDialog" aria-labelledby="settingsDialogTitle">
+      <div class="section-dialog-shell">
+        <div class="section-dialog-header">
+          <div>
+            <div class="section-dialog-title" id="settingsDialogTitle">Tuner settings</div>
+            <div class="section-dialog-subtitle">Calibration, microphone and app preferences.</div>
+          </div>
+          <button class="dialog-close" id="settingsDialogClose" type="button" aria-label="Close settings"><img src="./assets/X.svg" alt=""></button>
+        </div>
+        <div class="section-dialog-body settings-body">
+          <section class="settings-group"><div class="settings-group-head"><span class="settings-group-index">01</span><div><span class="ui-kicker">Appearance</span><strong>Color theme</strong></div></div><div class="settings-group-content"><label class="setting-cell" for="themeSelect">Theme<select id="themeSelect"><option value="light">Mineral</option><option value="dark">Ink</option><option value="system">Match device</option></select></label></div></section><section class="settings-group">
+            <div class="settings-group-head">
+              <span class="settings-group-index">02</span>
+              <div><span class="ui-kicker">Pitch</span><strong>Tuning behavior</strong></div>
+            </div>
+            <div class="settings-group-content">
+              <div class="calibration setting-cell">
+                <label for="calibration">Reference pitch</label>
+                <div class="cal-row">
+                  <input id="calibration" type="range" min="430" max="450" step="1" value="440">
+                  <span class="cal-value" id="calValue">A4 440</span>
+                </div>
+              </div>
+              <div class="tolerance-control setting-cell">
+                <span class="option-label">In-tune window</span>
+                <div class="tolerance-buttons" id="toleranceButtons" role="group" aria-label="In-tune tolerance">
+                  <button type="button" class="tolerance-btn" data-tolerance="2">Precise ±2¢</button>
+                  <button type="button" class="tolerance-btn active" data-tolerance="5">Normal ±5¢</button>
+                  <button type="button" class="tolerance-btn" data-tolerance="10">Relaxed ±10¢</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-group">
+            <div class="settings-group-head">
+              <span class="settings-group-index">03</span>
+              <div><span class="ui-kicker">Input</span><strong>Microphone &amp; feedback</strong></div>
+            </div>
+            <div class="settings-group-content">
+              <div class="device-control setting-cell">
+                <div class="setting-row">
+                  <label for="micSelect">Microphone</label>
+                  <span class="app-status" id="micDeviceState">Default</span>
+                </div>
+                <select class="device-select" id="micSelect" aria-describedby="micDeviceHelp">
+                  <option value="">Default microphone</option>
+                </select>
+                <div class="setting-meta" id="micDeviceHelp">Available inputs appear after microphone permission is granted.</div>
+              </div>
+              <label class="haptic-control setting-cell" id="hapticControl">
+                <span><strong>Haptic lock</strong><small>Short confirmation when pitch settles inside the selected window.</small></span>
+                <input type="checkbox" id="hapticToggle">
+              </label>
+            </div>
+          </section>
+
+          <section class="settings-group">
+            <div class="settings-group-head">
+              <span class="settings-group-index">04</span>
+              <div><span class="ui-kicker">App</span><strong>Install &amp; offline</strong></div>
+            </div>
+            <div class="settings-group-content">
+              <div class="install-control setting-cell">
+                <div class="setting-row">
+                  <span class="setting-name">Application</span>
+                  <span class="app-status" id="appInstallStatus">Browser</span>
+                </div>
+                <button class="install-button" id="installAppBtn" type="button" disabled>Install app</button>
+                <div class="setting-meta" id="offlineStatus" role="status" aria-live="polite">Checking offline support…</div>
+              </div>
+            </div>
+          </section>
+
+          <div class="settings-footer-note">Settings are saved on this device. Reference pitch applies to every tuning.</div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="section-dialog" id="toolsDialog" aria-labelledby="toolsDialogTitle">
+      <div class="section-dialog-shell">
+        <div class="section-dialog-header">
+          <div>
+            <div class="section-dialog-title" id="toolsDialogTitle">Guitar tools</div>
+            <div class="section-dialog-subtitle">Useful helpers kept separate from the core tuner.</div>
+          </div>
+          <button class="dialog-close" id="toolsDialogClose" type="button" aria-label="Close tools"><img src="./assets/X.svg" alt=""></button>
+        </div>
+        <div class="section-dialog-body">
+          <section class="tool-surface tool-surface-guide">
+            <div class="tool-surface-head"><span class="tool-index">01</span><div><span class="ui-kicker">Workflow</span><strong>Guided tune</strong></div><em id="guideToolTuningName">Standard</em></div>
+            <div class="tool-grid">
+              <div class="tool-note" id="guideToolSummary">Tune each string from lowest to highest. A stable in-tune reading is checked off automatically.</div>
+              <button class="tool-primary" id="guidedStartBtn" type="button">Start guided tune</button>
+            </div>
+          </section>
+
+          <section class="tool-surface tool-surface-tone">
+            <div class="tool-surface-head"><span class="tool-index">02</span><div><span class="ui-kicker">Ear reference</span><strong>Reference tone</strong></div><em id="toneTuningName">Standard</em></div>
+            <div class="tool-grid">
+              <div class="tone-toolbar">
+                <select class="tone-mode" id="toneMode" aria-label="Reference tone sound">
+                  <option value="pure">Pure sine · continuous</option>
+                  <option value="clean">Clean harmonic · continuous</option>
+                  <option value="pluck">Plucked · decay</option>
+                </select>
+                <button class="tool-secondary" id="stopToneBtn" type="button">Stop tone</button>
+              </div>
+              <div class="tone-buttons" id="toneButtons" aria-label="Reference string tones"></div>
+              <div class="tone-status" id="toneStatus" role="status" aria-live="polite">Tap a string to hear its calibrated target pitch.</div>
+            </div>
+          </section>
+
+          <section class="tool-surface tool-surface-metro">
+            <div class="tool-surface-head"><span class="tool-index">03</span><div><span class="ui-kicker">Time</span><strong>Metronome</strong></div><em>4 / 4</em></div>
+            <div class="tool-grid">
+              <div class="metro-top">
+                <button class="metro-step" id="metroMinusBtn" type="button" aria-label="Decrease tempo by 5 BPM">−5</button>
+                <div>
+                  <div class="metro-bpm"><strong id="metroBpmValue">100</strong><span>BPM</span></div>
+                  <input class="metro-range" id="metroBpm" type="range" min="40" max="240" step="1" value="100" aria-label="Metronome tempo">
+                </div>
+                <button class="metro-step" id="metroPlusBtn" type="button" aria-label="Increase tempo by 5 BPM">+5</button>
+              </div>
+              <div class="metro-beats" id="metroBeats" aria-hidden="true">
+                <span class="metro-beat accent"></span><span class="metro-beat"></span><span class="metro-beat"></span><span class="metro-beat"></span>
+              </div>
+              <div class="metro-controls">
+                <button class="tool-primary" id="metroStartBtn" type="button">Start metronome</button>
+                <button class="tool-secondary" id="metroTapBtn" type="button">Tap tempo</button>
+              </div>
+              <div class="tool-note">The first beat is accented. Starting playback pauses microphone tuning to prevent the click from being detected as pitch.</div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </dialog>
+
+    <nav class="mobile-nav" aria-label="Primary mobile navigation">
+      <button class="nav-btn active" id="mobileTunerBtn" type="button" aria-current="page">Tuner</button>
+      <button class="nav-btn" id="mobileTuningsBtn" type="button">Tunings</button>
+      <button class="nav-btn" id="mobileToolsBtn" type="button">Tools</button>
+      <button class="nav-btn" id="mobileSettingsBtn" type="button">Settings</button>
+    </nav>
+
+    <dialog id="customDialog" aria-labelledby="customDialogTitle">
+      <div class="dialog-shell">
+        <div class="dialog-header">
+          <div>
+            <div class="dialog-title" id="customDialogTitle">Custom tuning</div>
+            <div class="dialog-subtitle">Create and save 4–8 string tunings on this device.</div>
+          </div>
+          <button class="dialog-close" id="customDialogClose" type="button" aria-label="Close custom tuning editor"><img src="./assets/X.svg" alt=""></button>
+        </div>
+        <div class="dialog-body">
+          <form class="custom-form" id="customForm" novalidate>
+            <label class="field-label" for="customName">Tuning name
+              <input class="custom-name-input" id="customName" maxlength="32" autocomplete="off" placeholder="My tuning">
+            </label>
+
+            <div>
+              <div class="field-label" style="margin-bottom:7px">Strings · low to high</div>
+              <div class="custom-string-list" id="customStringList"></div>
+            </div>
+
+            <div class="custom-row-actions">
+              <div>
+                <button class="dialog-btn" id="removeStringBtn" type="button">− String</button>
+                <button class="dialog-btn" id="addStringBtn" type="button">+ String</button>
+              </div>
+              <span class="option-label" id="customStringCount"></span>
+            </div>
+
+            <div class="custom-error" id="customError" role="alert"></div>
+
+            <div class="dialog-actions">
+              <button class="dialog-btn" id="newCustomBtn" type="button">New</button>
+              <button class="dialog-btn primary" type="submit" id="saveCustomBtn">Save &amp; use</button>
+            </div>
+          </form>
+
+          <section class="saved-customs" aria-label="Saved custom tunings">
+            <div class="saved-customs-heading">Saved custom tunings</div>
+            <div class="saved-custom-list" id="savedCustomList"></div>
+          </section>
+        </div>
+      </div>
+    </dialog>
+
+    </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+      const DETECTOR_MIN_HZ = 25;
+      const DETECTOR_MAX_HZ = 500;
+      const ANALYSIS_INTERVAL_MS = 32;
+      const STORAGE_CUSTOM_TUNINGS = 'guitarTuner.customTunings.v1';
+      const STORAGE_SELECTED_TUNING = 'guitarTuner.selectedTuning.v1';
+      const STORAGE_METRONOME_BPM = 'guitarTuner.metronomeBpm.v1';
+      const STORAGE_REFERENCE_A = 'guitarTuner.referenceA.v1';
+      const STORAGE_TOLERANCE = 'guitarTuner.tolerance.v1';
+      const STORAGE_HAPTIC = 'guitarTuner.haptic.v1';
+      const STORAGE_MIC_DEVICE = 'guitarTuner.microphoneDevice.v1';
+      const STORAGE_TONE_MODE = 'guitarTuner.toneMode.v1';
+      const STORAGE_HAS_DETECTED_PITCH = 'guitarTuner.hasDetectedPitch.v1';
+
+      const BUILTIN_TUNINGS = [
+        { id: 'standard', name: 'Standard', instrument: 'guitar', mode: 'strings', strings: ['E2','A2','D3','G3','B3','E4'] },
+        { id: 'drop-d', name: 'Drop D', instrument: 'guitar', mode: 'strings', strings: ['D2','A2','D3','G3','B3','E4'] },
+        { id: 'drop-c', name: 'Drop C', instrument: 'guitar', mode: 'strings', strings: ['C2','G2','C3','F3','A3','D4'] },
+        { id: 'd-standard', name: 'D Standard / Whole step down', instrument: 'guitar', mode: 'strings', strings: ['D2','G2','C3','F3','A3','D4'] },
+        { id: 'c-standard', name: 'C Standard', instrument: 'guitar', mode: 'strings', strings: ['C2','F2','Bb2','Eb3','G3','C4'] },
+        { id: 'half-step', name: 'Half-step down', instrument: 'guitar', mode: 'strings', strings: ['Eb2','Ab2','Db3','Gb3','Bb3','Eb4'] },
+        { id: 'open-g', name: 'Open G', instrument: 'guitar', mode: 'strings', strings: ['D2','G2','D3','G3','B3','D4'] },
+        { id: 'open-d', name: 'Open D', instrument: 'guitar', mode: 'strings', strings: ['D2','A2','D3','F#3','A3','D4'] },
+        { id: 'open-e', name: 'Open E', instrument: 'guitar', mode: 'strings', strings: ['E2','B2','E3','G#3','B3','E4'] },
+        { id: 'dadgad', name: 'DADGAD', instrument: 'guitar', mode: 'strings', strings: ['D2','A2','D3','G3','A3','D4'] },
+        {"id": "bass-standard", "name": "Bass \u00b7 Standard", "instrument": "bass", "mode": "strings", "strings": ["E1", "A1", "D2", "G2"]},
+        {"id": "bass-five", "name": "Bass \u00b7 5-string", "instrument": "bass", "mode": "strings", "strings": ["B0", "E1", "A1", "D2", "G2"]},
+        {"id": "bass-six", "name": "Bass \u00b7 6-string", "instrument": "bass", "mode": "strings", "strings": ["B0", "E1", "A1", "D2", "G2", "C3"]},
+        {"id": "bass-drop-d", "name": "Bass \u00b7 Drop D", "instrument": "bass", "mode": "strings", "strings": ["D1", "A1", "D2", "G2"]},
+        {"id": "bass-half-step", "name": "Bass \u00b7 Half-step down", "instrument": "bass", "mode": "strings", "strings": ["Eb1", "Ab1", "Db2", "Gb2"]},
+        { id: 'chromatic', name: 'Chromatic', instrument: 'guitar', mode: 'chromatic', strings: ['E2','A2','D3','G3','B3','E4'] }
+      ];
+
+
+      // Recognition anchors describe where strings commonly begin before retuning.
+      // They make large retunes such as Standard -> C Standard work in Auto mode:
+      // an E2 is still recognized as string 6 even though it is temporarily closer
+      // in pitch to the target F2 of string 5.
+      const GUITAR_SOURCE_ANCHORS = {
+        6: [40, 45, 50, 55, 59, 64],
+        7: [35, 40, 45, 50, 55, 59, 64],
+        8: [30, 35, 40, 45, 50, 55, 59, 64]
+      };
+      const BASS_SOURCE_ANCHORS = {4:[28,33,38,43],5:[23,28,33,38,43],6:[23,28,33,38,43,48]};
+      function sourceAnchorsFor(count) {
+        return (currentTuning.instrument === 'bass' ? BASS_SOURCE_ANCHORS : GUITAR_SOURCE_ANCHORS)[count];
+      }
+      function configureAnalysis() {
+        if (!analyser || !audioContext) return;
+        const lowRange = currentTuning.instrument === 'bass' || currentTuning.mode === 'chromatic' || tuningTargets().some(t => t.midi < 32);
+        analyser.fftSize = lowRange ? 8192 : 4096;
+        highpassNode.frequency.value = lowRange ? 18 : 32;
+        analysisBuffer = new Float32Array(analyser.fftSize);
+        detector = new GuitarPitchDetector(audioContext.sampleRate, analyser.fftSize);
+      }
+      const $ = (id) => document.getElementById(id);
+
+      const startBtn = $('startBtn');
+      const noteEl = $('note');
+      const octaveEl = $('octave');
+      const frequencyEl = $('frequency');
+      const centsEl = $('cents');
+      const needleWrap = $('needleWrap');
+      const meter = $('meter');
+      const statusPill = $('statusPill');
+      const statusText = $('statusText');
+      const hint = $('hint');
+      const targetLabel = $('targetLabel');
+      const calibration = $('calibration');
+      const calValue = $('calValue');
+      const strings = $('strings');
+      const ticks = $('ticks');
+      const tuningState = $('tuningState');
+      const confidenceReadout = $('confidenceReadout');
+      const precisionModule = $('precisionModule');
+      const fineCents = $('fineCents');
+      const driftStrip = $('driftStrip');
+      const driftMover = $('driftMover');
+      const signalBars = $('signalBars');
+      const signalCaption = $('signalCaption');
+      const pitchTrailLine = $('pitchTrailLine');
+      const toleranceButtons = $('toleranceButtons');
+      const toleranceLeft = $('toleranceLeft');
+      const toleranceRight = $('toleranceRight');
+      const hapticToggle = $('hapticToggle');
+      const appEl = document.querySelector('.app');
+      const tunerPanel = document.querySelector('.tuner');
+      const micPanel = document.querySelector('.mic-panel');
+      const hapticControl = $('hapticControl');
+      const micSelect = $('micSelect');
+      const micDeviceState = $('micDeviceState');
+      const micDeviceHelp = $('micDeviceHelp');
+      const installAppBtn = $('installAppBtn');
+      const appInstallStatus = $('appInstallStatus');
+      const offlineStatus = $('offlineStatus');
+      const tuningSelect = $('tuningSelect');
+      const tuningPresetGrid = $('tuningPresetGrid');
+      const tuningSummary = $('tuningSummary');
+      const tuningLabel = $('tuningLabel');
+      const customTuningBtn = $('customTuningBtn');
+      const customDialog = $('customDialog');
+      const customDialogClose = $('customDialogClose');
+      const customForm = $('customForm');
+      const customName = $('customName');
+      const customStringList = $('customStringList');
+      const customStringCount = $('customStringCount');
+      const addStringBtn = $('addStringBtn');
+      const removeStringBtn = $('removeStringBtn');
+      const customError = $('customError');
+      const newCustomBtn = $('newCustomBtn');
+      const savedCustomList = $('savedCustomList');
+      const currentTuningName = $('currentTuningName');
+      const currentTuningNotes = $('currentTuningNotes');
+      const dialogCurrentTuningName = $('dialogCurrentTuningName');
+      const tuningDialog = $('tuningDialog');
+      const tuningDialogClose = $('tuningDialogClose');
+      const settingsDialog = $('settingsDialog');
+      const settingsDialogClose = $('settingsDialogClose');
+      const tuningChangeBtn = $('tuningChangeBtn');
+      const tuningChangeBtnAlt = $('tuningChangeBtnAlt');
+      const navTunerBtn = $('navTunerBtn');
+      const navTuningsBtn = $('navTuningsBtn');
+      const navToolsBtn = $('navToolsBtn');
+      const navSettingsBtn = $('navSettingsBtn');
+      const mobileTunerBtn = $('mobileTunerBtn');
+      const mobileTuningsBtn = $('mobileTuningsBtn');
+      const mobileToolsBtn = $('mobileToolsBtn');
+      const mobileSettingsBtn = $('mobileSettingsBtn');
+      const toolsDialog = $('toolsDialog');
+      const toolsDialogClose = $('toolsDialogClose');
+      const guidedPanel = $('guidedPanel');
+      const guidedTarget = $('guidedTarget');
+      const guidedTargetHz = $('guidedTargetHz');
+      const guidedProgress = $('guidedProgress');
+      const guidedHold = $('guidedHold');
+      const guidedHoldLabel = $('guidedHoldLabel');
+      const guidedHoldPercent = $('guidedHoldPercent');
+      const guidedHoldFill = $('guidedHoldFill');
+      const guidedKicker = $('guidedKicker');
+      const guidedPrevBtn = $('guidedPrevBtn');
+      const guidedNextBtn = $('guidedNextBtn');
+      const guidedRestartBtn = $('guidedRestartBtn');
+      const guidedStopBtn = $('guidedStopBtn');
+      const guidedStartBtn = $('guidedStartBtn');
+      const guideToolTuningName = $('guideToolTuningName');
+      const guideToolSummary = $('guideToolSummary');
+      const toneTuningName = $('toneTuningName');
+      const toneMode = $('toneMode');
+      const toneButtons = $('toneButtons');
+      const stopToneBtn = $('stopToneBtn');
+      const toneStatus = $('toneStatus');
+      const metroBpm = $('metroBpm');
+      const metroBpmValue = $('metroBpmValue');
+      const metroMinusBtn = $('metroMinusBtn');
+      const metroPlusBtn = $('metroPlusBtn');
+      const metroStartBtn = $('metroStartBtn');
+      const metroTapBtn = $('metroTapBtn');
+      const metroBeats = $('metroBeats');
+
+      let audioContext = null;
+      let toolAudioContext = null;
+      let activeToneNodes = [];
+      let activeToneMaster = null;
+      let activeToneMidi = null;
+      let toneStopTimer = null;
+      let metronomeTimer = null;
+      let metronomeRunning = false;
+      let metronomeBeat = 0;
+      let metronomeNextTime = 0;
+      let metronomeScheduledNodes = [];
+      let metronomeVisualTimers = [];
+      let metronomeBpm = clamp(Number(safeStorageGet(STORAGE_METRONOME_BPM, '100')) || 100, 40, 240);
+      let tapTimes = [];
+      let guidedActive = false;
+      let guidedIndex = 0;
+      let guidedTuned = new Set();
+      let guidedAdvanceTimer = null;
+      let guidedHoldStartedAt = null;
+      let guidedLockLatched = false;
+      const GUIDED_HOLD_MS = 480;
+      let analyser = null;
+      let mediaStream = null;
+      let sourceNode = null;
+      let highpassNode = null;
+      let lowpassNode = null;
+      let rafId = null;
+      let analysisBuffer = null;
+      let detector = null;
+      let running = false;
+      let starting = false;
+      let captureEpoch = 0;
+      let stopPromise = null;
+      let ignoreTrackEnded = false;
+      let wakeLock = null;
+      let micPermissionState = 'unknown';
+      let micPermissionStatus = null;
+      let hasDetectedPitchBefore = safeStorageGet(STORAGE_HAS_DETECTED_PITCH, '0') === '1';
+      let visualNeedleCents = 0;
+      let confirmedLock = false;
+      let deferredInstallPrompt = null;
+      let serviceWorkerRegistration = null;
+      let offlineCacheFailed = false;
+      let microphoneDevices = [];
+      let referenceA = clamp(Number(safeStorageGet(STORAGE_REFERENCE_A, '440')) || 440, 430, 450);
+      let selectedMidi = null;
+      let selectedName = null;
+      let lastAnalysisAt = 0;
+      const rememberedTolerance = Number(safeStorageGet(STORAGE_TOLERANCE, '5'));
+      let inTuneTolerance = [2, 5, 10].includes(rememberedTolerance) ? rememberedTolerance : 5;
+      let customTunings = [];
+      let currentTuning = BUILTIN_TUNINGS[0];
+      let editingCustomId = null;
+      let customDraftNotes = [...currentTuning.strings];
+
+      // Auto-mode note lock. The detector answers "what pitch is present?"; this
+      // layer answers "which note is the player currently trying to tune?".
+      let autoLockedMidi = null;
+      let autoLockCandidate = null;
+      let autoSwitchCandidate = null;
+      let lockSilenceFrames = 0;
+      let tuneState = 'waiting';
+      let inTuneFrames = 0;
+      let hapticFiredForLock = false;
+
+      // Pitch-tracking state. It is intentionally separate from the raw detector:
+      // detector = "what frequency exists?"; tracker = "what should the UI trust?".
+      let stableLogPitch = null;
+      let pitchHistory = [];
+      let noteChangeCandidate = null;
+      let octaveJumpCandidate = null;
+      let noPitchFrames = 0;
+
+      // Visual-only telemetry. These values never feed back into pitch detection;
+      // they merely render signal strength, fine drift and short-term stability.
+      let visualCentsHistory = [];
+      let visualSignalLevel = 0;
+
+      for (let i = 0; i <= 20; i++) {
+        const tick = document.createElement('span');
+        tick.className = 'tick' + (i % 5 === 0 ? ' major' : '') + (i === 10 ? ' center' : '');
+        tick.style.transform = `rotate(${(i - 10) * 4.2}deg)`;
+        ticks.appendChild(tick);
+      }
+
+      function freqForMidi(midi) {
+        return referenceA * Math.pow(2, (midi - 69) / 12);
+      }
+
+      function midiFromFreq(freq) {
+        return 69 + 12 * Math.log2(freq / referenceA);
+      }
+
+      function centsBetween(freq, targetFreq) {
+        return 1200 * Math.log2(freq / targetFreq);
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function setText(el, value) {
+        const text = String(value);
+        if (el && el.textContent !== text) el.textContent = text;
+      }
+
+      function prefersReducedMotion() {
+        return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+      }
+
+      function safeStorageGet(key, fallback = null) {
+        try { return localStorage.getItem(key) ?? fallback; } catch (_) { return fallback; }
+      }
+
+      function safeStorageSet(key, value) {
+        try { localStorage.setItem(key, value); } catch (_) {}
+      }
+
+      function normalizeNoteText(value) {
+        return String(value ?? '').trim().replace(/♯/g, '#').replace(/♭/g, 'b');
+      }
+
+      function noteToMidi(value) {
+        const text = normalizeNoteText(value);
+        const match = /^([A-Ga-g])([#b]?)(-?\d)$/.exec(text);
+        if (!match) return null;
+        const baseMap = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
+        let semitone = baseMap[match[1].toUpperCase()];
+        if (match[2] === '#') semitone += 1;
+        if (match[2] === 'b') semitone -= 1;
+        const octave = Number(match[3]);
+        let midi = (octave + 1) * 12 + semitone;
+        if (semitone < 0) midi -= 0; // octave arithmetic above already handles negative semitone correctly.
+        if (!Number.isInteger(midi) || midi < 20 || midi > 96) return null;
+        return midi;
+      }
+
+      function midiToNote(midi) {
+        const pitchClass = NOTE_NAMES[((midi % 12) + 12) % 12].replace('♯', '#');
+        return `${pitchClass}${Math.floor(midi / 12) - 1}`;
+      }
+
+      function canonicalNoteLabel(value) {
+        const match = /^([A-Ga-g])([#b]?)(-?\d)$/.exec(normalizeNoteText(value));
+        return match ? `${match[1].toUpperCase()}${match[2]}${match[3]}` : null;
+      }
+
+      function prettyNote(value) {
+        return normalizeNoteText(value).replace('#', '♯').replace('b', '♭');
+      }
+
+      function noteParts(value) {
+        const pretty = prettyNote(value);
+        const match = /^(.+?)(-?\d)$/.exec(pretty);
+        return match ? { note: match[1], octave: match[2] } : { note: pretty, octave: '' };
+      }
+
+      function tuningTargets(tuning = currentTuning) {
+        return tuning.strings
+          .map((label, index) => ({ label, midi: noteToMidi(label), index }))
+          .filter(item => item.midi != null);
+      }
+
+      function getAllTunings() {
+        return [...BUILTIN_TUNINGS, ...customTunings];
+      }
+
+      function getTuningById(id) {
+        return getAllTunings().find(tuning => tuning.id === id) || BUILTIN_TUNINGS[0];
+      }
+
+      function loadCustomTunings() {
+        try {
+          const parsed = JSON.parse(safeStorageGet(STORAGE_CUSTOM_TUNINGS, '[]'));
+          if (!Array.isArray(parsed)) return [];
+          return parsed.filter(item =>
+            item && typeof item.id === 'string' && item.id.startsWith('custom-') && typeof item.name === 'string' && item.name.trim() &&
+            Array.isArray(item.strings) && item.strings.length >= 4 && item.strings.length <= 8 &&
+            item.strings.every(note => {
+              const midi = noteToMidi(note);
+              if (midi == null) return false;
+              const hz = 440 * Math.pow(2, (midi - 69) / 12);
+              return hz >= DETECTOR_MIN_HZ && hz <= DETECTOR_MAX_HZ;
+            })
+          ).map(item => ({
+            id: item.id,
+            name: item.name.slice(0, 32),
+            instrument: item.instrument || 'guitar',
+            mode: 'strings',
+            strings: item.strings.map(note => canonicalNoteLabel(note)).filter(Boolean)
+          }));
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveCustomTunings() {
+        safeStorageSet(STORAGE_CUSTOM_TUNINGS, JSON.stringify(customTunings));
+      }
+
+      function renderTuningSelect() {
+        tuningSelect.innerHTML = '';
+
+        const builtins = document.createElement('optgroup');
+        builtins.label = 'Guitar & bass tunings';
+        BUILTIN_TUNINGS.forEach(tuning => {
+          const option = document.createElement('option');
+          option.value = tuning.id;
+          option.textContent = tuning.name;
+          builtins.appendChild(option);
+        });
+        tuningSelect.appendChild(builtins);
+
+        if (customTunings.length) {
+          const customs = document.createElement('optgroup');
+          customs.label = 'Custom';
+          customTunings.forEach(tuning => {
+            const option = document.createElement('option');
+            option.value = tuning.id;
+            option.textContent = tuning.name;
+            customs.appendChild(option);
+          });
+          tuningSelect.appendChild(customs);
+        }
+
+        tuningSelect.value = currentTuning.id;
+        renderTuningPresetGrid();
+      }
+
+      function renderTuningPresetGrid() {
+        if (!tuningPresetGrid) return;
+        tuningPresetGrid.replaceChildren();
+        getAllTunings().forEach(tuning => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'tuning-preset-card' + (tuning.id === currentTuning.id ? ' active' : '');
+          button.dataset.tuningId = tuning.id;
+          // Native button semantics retained for keyboard and assistive technology.
+          button.setAttribute('aria-pressed', tuning.id === currentTuning.id ? 'true' : 'false');
+
+          const top = document.createElement('span');
+          top.className = 'tuning-preset-top';
+          const name = document.createElement('strong');
+          name.textContent = tuning.name;
+          const badge = document.createElement('span');
+          badge.className = 'tuning-preset-badge';
+          badge.textContent = tuning.id.startsWith('custom-') ? 'CUSTOM' : (tuning.mode === 'chromatic' ? 'CHROMATIC' : `${tuning.strings.length} STRING`);
+          top.append(name, badge);
+
+          const notes = document.createElement('span');
+          notes.className = 'tuning-preset-notes';
+          notes.textContent = tuning.mode === 'chromatic' ? 'Any detected note' : tuning.strings.map(prettyNote).join(' · ');
+
+          const action = document.createElement('span');
+          action.className = 'tuning-preset-action';
+          action.textContent = tuning.id === currentTuning.id ? 'ACTIVE' : 'SELECT';
+          button.append(top, notes, action);
+          button.addEventListener('click', () => {
+            applyTuning(tuning.id);
+            closeSectionDialog(tuningDialog);
+            setNavigationState('tuner');
+          });
+          tuningPresetGrid.appendChild(button);
+        });
+      }
+
+      function renderStringTargets() {
+        const targets = tuningTargets();
+        strings.style.setProperty('--string-count', String(targets.length));
+        strings.dataset.count = String(targets.length);
+        strings.innerHTML = '';
+
+        const autoButton = document.createElement('button');
+        autoButton.className = 'string-btn' + (selectedMidi == null ? ' active' : '');
+        autoButton.dataset.mode = 'auto';
+        autoButton.setAttribute('aria-pressed', String(selectedMidi == null));
+        autoButton.type = 'button';
+        const autoNote = document.createElement('span');
+        autoNote.className = 'string-note';
+        autoNote.textContent = 'Auto';
+        const autoWire = document.createElement('span');
+        autoWire.className = 'string-wire string-wire-auto';
+        autoWire.setAttribute('aria-hidden', 'true');
+        const autoMeta = document.createElement('span');
+        autoMeta.className = 'string-meta';
+        autoMeta.dataset.short = 'AUTO';
+        autoMeta.textContent = 'AUTO';
+        autoButton.replaceChildren(autoWire, autoNote, autoMeta);
+        autoButton.setAttribute('aria-label', currentTuning.mode === 'chromatic' ? 'Automatic chromatic tuning' : `Automatic ${currentTuning.name} tuning`);
+        strings.appendChild(autoButton);
+
+        const total = targets.length;
+        targets.forEach(({ label, midi }, index) => {
+          const parts = noteParts(label);
+          const button = document.createElement('button');
+          button.className = 'string-btn' + (selectedMidi === midi ? ' active' : '');
+          button.setAttribute('aria-pressed', String(selectedMidi === midi));
+          button.dataset.note = midiToNote(midi);
+          button.dataset.displayNote = label;
+          button.dataset.midi = String(midi);
+          button.type = 'button';
+          button.setAttribute('aria-label', `String ${total - index}, ${prettyNote(label)}, ${freqForMidi(midi).toFixed(1)} hertz`);
+          const wireSpan = document.createElement('span');
+          wireSpan.className = 'string-wire';
+          wireSpan.setAttribute('aria-hidden', 'true');
+          const stringNumber = total - index;
+          const weight = total <= 4
+            ? 1.4 + ((total - 1 - index) / Math.max(1, total - 1)) * 2.4
+            : 1.2 + ((total - 1 - index) / Math.max(1, total - 1)) * 3.6;
+          wireSpan.style.setProperty('--wire-weight', `${weight.toFixed(1)}px`);
+          const noteSpan = document.createElement('span');
+          noteSpan.className = 'string-note';
+          noteSpan.textContent = parts.note;
+          const metaSpan = document.createElement('span');
+          metaSpan.className = 'string-meta';
+          metaSpan.dataset.short = String(stringNumber);
+          metaSpan.textContent = String(stringNumber);
+          button.replaceChildren(wireSpan, noteSpan, metaSpan);
+          strings.appendChild(button);
+        });
+      }
+
+      function updateTuningLabels() {
+        const targets = tuningTargets();
+        const notes = targets.map(item => prettyNote(item.label)).join(' · ');
+        tuningLabel.textContent = currentTuning.mode === 'chromatic'
+          ? 'Chromatic · any note'
+          : `${currentTuning.name} · ${targets.length} strings`;
+
+        const summaryDetail = document.createTextNode(
+          currentTuning.mode === 'chromatic'
+            ? 'Any detected note · standard guitar targets remain available manually.'
+            : notes
+        );
+        tuningSummary.replaceChildren(summaryDetail);
+
+        currentTuningName.textContent = currentTuning.name;
+        currentTuningNotes.textContent = currentTuning.mode === 'chromatic' ? 'All notes' : targets.map(item => noteParts(item.label).note).join(' · ');
+        dialogCurrentTuningName.textContent = currentTuning.name;
+      }
+
+      function setAutoTargetLabel() {
+        targetLabel.textContent = currentTuning.mode === 'chromatic'
+          ? 'Auto chromatic'
+          : `Auto · ${currentTuning.name}`;
+      }
+
+      function applyTuning(id, { persist = true } = {}) {
+        if (guidedActive) stopGuidedTune();
+        stopReferenceTone();
+        currentTuning = getTuningById(id);
+        configureAnalysis();
+        selectedMidi = null;
+        selectedName = null;
+        resetTracker();
+        resetAutoLock();
+        renderTuningSelect();
+        renderStringTargets();
+        updateTuningLabels();
+        renderToolTargets();
+        setAutoTargetLabel();
+        centsEl.textContent = '—';
+        setNeedle(0);
+        clearVisualTelemetry();
+        setTuneState(0, false);
+        noteEl.textContent = '—';
+        noteEl.classList.add('idle');
+        octaveEl.textContent = '';
+        frequencyEl.textContent = running ? 'Listening for a clear note…' : 'Play a clear single note';
+        if (persist) safeStorageSet(STORAGE_SELECTED_TUNING, currentTuning.id);
+      }
+
+      function renderCustomDraft() {
+        customStringList.replaceChildren();
+        customStringCount.textContent = `${customDraftNotes.length} strings`;
+        addStringBtn.disabled = customDraftNotes.length >= 8;
+        removeStringBtn.disabled = customDraftNotes.length <= 4;
+
+        customDraftNotes.forEach((note, index) => {
+          const row = document.createElement('div');
+          row.className = 'custom-string-row';
+          const midi = noteToMidi(note);
+          row.classList.toggle('invalid', midi == null);
+
+          const number = document.createElement('div');
+          number.className = 'custom-string-number';
+          number.textContent = `String ${customDraftNotes.length - index}`;
+
+          const input = document.createElement('input');
+          input.className = 'custom-note-input';
+          input.dataset.index = String(index);
+          input.value = String(note);
+          input.inputMode = 'text';
+          input.autocomplete = 'off';
+          input.setAttribute('aria-label', `String ${customDraftNotes.length - index} note`);
+
+          const frequency = document.createElement('div');
+          frequency.className = 'custom-string-frequency';
+          frequency.textContent = midi == null ? 'Invalid' : `${freqForMidi(midi).toFixed(1)} Hz`;
+
+          row.append(number, input, frequency);
+          customStringList.appendChild(row);
+        });
+      }
+
+      function beginNewCustom(base = currentTuning) {
+        editingCustomId = null;
+        customName.value = 'My tuning';
+        const source = base?.strings?.length >= 4 && base.strings.length <= 8 ? base.strings : BUILTIN_TUNINGS[0].strings;
+        customDraftNotes = source.map(note => midiToNote(noteToMidi(note)));
+        customError.textContent = '';
+        renderCustomDraft();
+      }
+
+      function editCustomTuning(tuning) {
+        editingCustomId = tuning.id;
+        customName.value = tuning.name;
+        customDraftNotes = [...tuning.strings];
+        customError.textContent = '';
+        renderCustomDraft();
+      }
+
+      function renderSavedCustoms() {
+        savedCustomList.innerHTML = '';
+        if (!customTunings.length) {
+          const empty = document.createElement('div');
+          empty.className = 'saved-custom-empty';
+          empty.textContent = 'No custom tunings saved yet.';
+          savedCustomList.appendChild(empty);
+          return;
+        }
+
+        customTunings.forEach(tuning => {
+          const item = document.createElement('div');
+          item.className = 'saved-custom-item';
+          item.dataset.id = tuning.id;
+          item.innerHTML = `
+            <div>
+              <div class="saved-custom-name"></div>
+              <div class="saved-custom-notes"></div>
+            </div>
+            <div class="saved-custom-actions">
+              <button type="button" data-action="use">Use</button>
+              <button type="button" data-action="edit">Edit</button>
+              <button type="button" data-action="delete">Delete</button>
+            </div>`;
+          item.querySelector('.saved-custom-name').textContent = tuning.name;
+          item.querySelector('.saved-custom-notes').textContent = tuning.strings.map(prettyNote).join(' · ');
+          savedCustomList.appendChild(item);
+        });
+      }
+
+      function toolTargets() {
+        return tuningTargets(currentTuning);
+      }
+
+      function renderToolTargets() {
+        const targets = toolTargets();
+        guideToolTuningName.textContent = currentTuning.name;
+        toneTuningName.textContent = currentTuning.name;
+        guideToolSummary.textContent = targets.length
+          ? `${targets.length} strings · ${targets.map(item => prettyNote(item.label)).join(' · ')}`
+          : 'No string targets are available.';
+
+        toneButtons.innerHTML = '';
+        toneButtons.style.setProperty('--tone-count', String(Math.max(1, targets.length)));
+        targets.forEach((target, index) => {
+          const button = document.createElement('button');
+          button.className = 'tone-btn' + (activeToneMidi === target.midi ? ' playing' : '');
+          button.type = 'button';
+          button.dataset.midi = String(target.midi);
+          button.dataset.label = target.label;
+          const label = document.createElement('strong');
+          label.textContent = prettyNote(target.label);
+          const stringNumber = document.createElement('span');
+          stringNumber.textContent = `S${targets.length - index}`;
+          button.replaceChildren(label, stringNumber);
+          button.setAttribute('aria-label', `Play ${prettyNote(target.label)} reference tone`);
+          toneButtons.appendChild(button);
+        });
+      }
+
+      function renderGuidedProgress() {
+        const targets = toolTargets();
+        guidedProgress.innerHTML = '';
+        targets.forEach((target, index) => {
+          const step = document.createElement('span');
+          step.className = 'guided-step';
+          if (index === guidedIndex && guidedActive) step.classList.add('current');
+          if (guidedTuned.has(index)) step.classList.add('done');
+          step.textContent = prettyNote(target.label);
+          step.setAttribute('aria-label', `String ${targets.length - index} ${prettyNote(target.label)}${guidedTuned.has(index) ? ', tuned' : ''}`);
+          guidedProgress.appendChild(step);
+        });
+      }
+
+      function setGuidedTarget(index) {
+        const targets = toolTargets();
+        if (!targets.length) return;
+        guidedIndex = clamp(index, 0, targets.length - 1);
+        resetGuidedHold();
+        const target = targets[guidedIndex];
+        selectedMidi = target.midi;
+        selectedName = target.label;
+        resetTracker();
+        resetAutoLock();
+        renderStringTargets();
+        const stringNumber = targets.length - guidedIndex;
+        const parts = noteParts(target.label);
+        noteEl.classList.remove('idle');
+        noteEl.textContent = parts.note;
+        octaveEl.textContent = parts.octave;
+        targetLabel.textContent = `Guided · String ${stringNumber} · ${prettyNote(target.label)}`;
+        guidedKicker.textContent = guidedTuned.size === targets.length ? 'Guided tune · complete' : `Guided tune · ${guidedTuned.size}/${targets.length} tuned`;
+        guidedTarget.textContent = `String ${stringNumber} · ${prettyNote(target.label)}`;
+        guidedTargetHz.textContent = `${freqForMidi(target.midi).toFixed(1)} Hz`;
+        centsEl.textContent = '—';
+        setNeedle(0, { immediate: true });
+        setTuneState(0, false);
+        renderGuidedProgress();
+      }
+
+      function clearGuidedAdvance() {
+        if (guidedAdvanceTimer) clearTimeout(guidedAdvanceTimer);
+        guidedAdvanceTimer = null;
+      }
+
+      function resetGuidedHold(label = 'Center the pitch') {
+        guidedHoldStartedAt = null;
+        guidedLockLatched = false;
+        guidedHold?.classList.remove('locked');
+        if (guidedHoldFill) guidedHoldFill.style.width = '0%';
+        if (guidedHoldLabel) guidedHoldLabel.textContent = label;
+        if (guidedHoldPercent) guidedHoldPercent.textContent = '0%';
+      }
+
+      function renderGuidedHold(now = performance.now()) {
+        if (!guidedActive || !guidedHold || guidedTuned.has(guidedIndex)) return 0;
+        if (tuneState !== 'in-tune') {
+          resetGuidedHold('Center the pitch');
+          return 0;
+        }
+        if (guidedHoldStartedAt == null) guidedHoldStartedAt = now;
+        const elapsed = Math.max(0, now - guidedHoldStartedAt);
+        const progress = clamp(elapsed / GUIDED_HOLD_MS, 0, 1);
+        guidedHoldFill.style.width = `${(progress * 100).toFixed(0)}%`;
+        guidedHoldLabel.textContent = progress >= 1 ? 'String locked' : 'Hold steady…';
+        guidedHoldPercent.textContent = `${Math.round(progress * 100)}%`;
+        return progress;
+      }
+
+      async function startGuidedTune() {
+        stopReferenceTone({ immediate: true });
+        stopMetronome();
+        const targets = toolTargets();
+        if (!targets.length) return;
+        guidedActive = true;
+        guidedTuned = new Set();
+        guidedPanel.hidden = false;
+        clearGuidedAdvance();
+        resetGuidedHold();
+        setGuidedTarget(0);
+        closeSectionDialog(toolsDialog);
+        setNavigationState('tuner');
+        guidedStartBtn.textContent = 'Restart guided tune';
+        if (!running) {
+          const started = await start();
+          if (!started) stopGuidedTune();
+        }
+      }
+
+      function stopGuidedTune({ keepTarget = false } = {}) {
+        clearGuidedAdvance();
+        guidedActive = false;
+        guidedPanel.hidden = true;
+        guidedTuned = new Set();
+        guidedIndex = 0;
+        guidedStartBtn.textContent = 'Start guided tune';
+        resetGuidedHold();
+        if (!keepTarget) {
+          selectedMidi = null;
+          selectedName = null;
+          resetTracker();
+          resetAutoLock();
+          renderStringTargets();
+          setAutoTargetLabel();
+          resetDisplay();
+        }
+      }
+
+      function advanceGuided(delta = 1) {
+        if (!guidedActive) return;
+        clearGuidedAdvance();
+        resetGuidedHold();
+        const targets = toolTargets();
+        if (!targets.length) return;
+        setGuidedTarget(clamp(guidedIndex + delta, 0, targets.length - 1));
+      }
+
+      function registerGuidedLock(now = performance.now()) {
+        if (!guidedActive) return;
+        const targets = toolTargets();
+        if (targets.length && guidedTuned.size === targets.length) {
+          setText(tuningState, 'All strings tuned');
+          return;
+        }
+        if (guidedTuned.has(guidedIndex) || guidedLockLatched) return;
+
+        const holdProgress = renderGuidedHold(now);
+        if (holdProgress < 1) return;
+        guidedLockLatched = true;
+        guidedTuned.add(guidedIndex);
+        guidedHold?.classList.add('locked');
+        guidedHoldFill.style.width = '100%';
+        guidedHoldPercent.textContent = '100%';
+        renderGuidedProgress();
+        guidedKicker.textContent = guidedTuned.size === targets.length ? 'Guided tune · complete' : `Guided tune · ${guidedTuned.size}/${targets.length} tuned`;
+
+        if (guidedTuned.size === targets.length) {
+          clearGuidedAdvance();
+          guidedHoldLabel.textContent = 'All strings tuned';
+          setText(tuningState, 'All strings tuned');
+          if (hapticToggle.checked && navigator.vibrate) navigator.vibrate([30, 45, 45]);
+          return;
+        }
+
+        const nextUntuned = targets.findIndex((_, index) => index > guidedIndex && !guidedTuned.has(index));
+        const fallback = targets.findIndex((_, index) => !guidedTuned.has(index));
+        const next = nextUntuned >= 0 ? nextUntuned : fallback;
+        if (next >= 0) {
+          const nextTarget = targets[next];
+          guidedHoldLabel.textContent = `${prettyNote(targets[guidedIndex].label)} tuned · next ${prettyNote(nextTarget.label)}`;
+          clearGuidedAdvance();
+          guidedAdvanceTimer = setTimeout(() => {
+            guidedAdvanceTimer = null;
+            if (guidedActive) setGuidedTarget(next);
+          }, 850);
+        }
+      }
+
+      async function ensureToolAudio() {
+        const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextCtor) throw new Error('Web Audio is not supported in this browser.');
+        if (!toolAudioContext || toolAudioContext.state === 'closed') {
+          toolAudioContext = new AudioContextCtor({ latencyHint: 'interactive' });
+        }
+        if (toolAudioContext.state === 'suspended') await toolAudioContext.resume();
+        return toolAudioContext;
+      }
+
+      function suspendToolAudio() {
+        if (toolAudioContext?.state === 'running') toolAudioContext.suspend().catch(() => {});
+      }
+
+      function stopReferenceTone({ immediate = false } = {}) {
+        if (toneStopTimer) clearTimeout(toneStopTimer);
+        toneStopTimer = null;
+        const nodes = activeToneNodes;
+        const master = activeToneMaster;
+        const context = toolAudioContext;
+        activeToneNodes = [];
+        activeToneMaster = null;
+        activeToneMidi = null;
+        toneButtons?.querySelectorAll('.tone-btn.playing').forEach(el => el.classList.remove('playing'));
+        if (toneStatus) toneStatus.textContent = 'Tap a string to hear its calibrated target pitch.';
+        if (!nodes.length) return;
+
+        const cleanup = () => nodes.forEach(node => {
+          try { node.stop?.(); } catch (_) {}
+          try { node.disconnect?.(); } catch (_) {}
+        });
+
+        if (!immediate && master?.gain && context?.state === 'running') {
+          const now = context.currentTime;
+          try {
+            master.gain.cancelScheduledValues(now);
+            master.gain.setTargetAtTime(0.0001, now, 0.006);
+            nodes.forEach(node => { try { node.stop?.(now + 0.035); } catch (_) {} });
+            setTimeout(cleanup, 55);
+            return;
+          } catch (_) {}
+        }
+        cleanup();
+      }
+
+      async function playReferenceTone(midi, label) {
+        if (running) await stop();
+        stopMetronome();
+        stopReferenceTone();
+        const ctx = await ensureToolAudio();
+        const now = ctx.currentTime;
+        const freq = freqForMidi(midi);
+        const master = ctx.createGain();
+        activeToneMaster = master;
+        master.connect(ctx.destination);
+        master.gain.setValueAtTime(0.0001, now);
+        master.gain.exponentialRampToValueAtTime(0.095, now + 0.025);
+        activeToneNodes.push(master);
+
+        const addOsc = (type, frequency, level = 1) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(frequency, now);
+          gain.gain.value = level;
+          osc.connect(gain).connect(master);
+          osc.start(now);
+          activeToneNodes.push(osc, gain);
+          return osc;
+        };
+
+        if (toneMode.value === 'clean') {
+          addOsc('sine', freq, 0.85);
+          addOsc('triangle', freq * 2, 0.12);
+          addOsc('sine', freq * 3, 0.045);
+        } else if (toneMode.value === 'pluck') {
+          addOsc('triangle', freq, 0.82);
+          addOsc('sine', freq * 2, 0.13);
+          master.gain.cancelScheduledValues(now);
+          master.gain.setValueAtTime(0.11, now);
+          master.gain.exponentialRampToValueAtTime(0.0001, now + 2.4);
+          toneStopTimer = setTimeout(() => stopReferenceTone({ immediate: true }), 2550);
+        } else {
+          addOsc('sine', freq, 1);
+        }
+
+        activeToneMidi = midi;
+        toneButtons.querySelectorAll('.tone-btn').forEach(btn => btn.classList.toggle('playing', Number(btn.dataset.midi) === midi));
+        toneStatus.textContent = `${prettyNote(label)} · ${freq.toFixed(2)} Hz · ${toneMode.value === 'pluck' ? 'plucked' : 'playing continuously'}`;
+      }
+
+      function setMetronomeBpm(value, { restart = true } = {}) {
+        metronomeBpm = clamp(Math.round(Number(value) || 100), 40, 240);
+        metroBpm.value = String(metronomeBpm);
+        metroBpmValue.textContent = String(metronomeBpm);
+        safeStorageSet(STORAGE_METRONOME_BPM, String(metronomeBpm));
+        if (metronomeRunning && restart) restartMetronomeTimer();
+      }
+
+      function clearMetronomeSchedule() {
+        if (metronomeTimer) clearInterval(metronomeTimer);
+        metronomeTimer = null;
+        metronomeVisualTimers.forEach(timer => clearTimeout(timer));
+        metronomeVisualTimers = [];
+        metronomeScheduledNodes.forEach(node => {
+          try { node.stop?.(); } catch (_) {}
+          try { node.disconnect?.(); } catch (_) {}
+        });
+        metronomeScheduledNodes = [];
+      }
+
+      function scheduleMetronomeClick(ctx, when, beatIndex) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const accent = beatIndex % 4 === 0;
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(accent ? 1550 : 1050, when);
+        gain.gain.setValueAtTime(accent ? 0.13 : 0.075, when);
+        gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.045);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(when);
+        osc.stop(when + 0.055);
+        metronomeScheduledNodes.push(osc, gain);
+        osc.addEventListener?.('ended', () => {
+          metronomeScheduledNodes = metronomeScheduledNodes.filter(node => node !== osc && node !== gain);
+          try { osc.disconnect(); } catch (_) {}
+          try { gain.disconnect(); } catch (_) {}
+        }, { once: true });
+
+        const delay = Math.max(0, (when - ctx.currentTime) * 1000);
+        let timer = null;
+        timer = setTimeout(() => {
+          metronomeVisualTimers = metronomeVisualTimers.filter(id => id !== timer);
+          if (!metronomeRunning) return;
+          const beats = metroBeats.querySelectorAll('.metro-beat');
+          beats.forEach((beat, index) => beat.classList.toggle('active', index === beatIndex));
+        }, delay);
+        metronomeVisualTimers.push(timer);
+      }
+
+      function runMetronomeScheduler() {
+        if (!metronomeRunning || !toolAudioContext || toolAudioContext.state !== 'running') return;
+        const lookAheadSeconds = 0.10;
+        while (metronomeNextTime < toolAudioContext.currentTime + lookAheadSeconds) {
+          scheduleMetronomeClick(toolAudioContext, metronomeNextTime, metronomeBeat);
+          metronomeNextTime += 60 / metronomeBpm;
+          metronomeBeat = (metronomeBeat + 1) % 4;
+        }
+      }
+
+      function restartMetronomeTimer() {
+        clearMetronomeSchedule();
+        if (!metronomeRunning || !toolAudioContext) return;
+        metronomeNextTime = toolAudioContext.currentTime + 0.035;
+        runMetronomeScheduler();
+        metronomeTimer = setInterval(runMetronomeScheduler, 25);
+      }
+
+      async function startMetronome() {
+        if (metronomeRunning) {
+          stopMetronome();
+          return;
+        }
+        if (running) await stop();
+        stopReferenceTone();
+        await ensureToolAudio();
+        metronomeRunning = true;
+        metronomeBeat = 0;
+        metroStartBtn.textContent = 'Stop metronome';
+        metroStartBtn.classList.add('stop-state');
+        restartMetronomeTimer();
+      }
+
+      function stopMetronome() {
+        metronomeRunning = false;
+        clearMetronomeSchedule();
+        metronomeBeat = 0;
+        metroStartBtn.textContent = 'Start metronome';
+        metroStartBtn.classList.remove('stop-state');
+        metroBeats.querySelectorAll('.metro-beat').forEach(beat => beat.classList.remove('active'));
+      }
+
+      function tapTempo() {
+        const now = performance.now();
+        tapTimes = tapTimes.filter(time => now - time < 2200);
+        tapTimes.push(now);
+        if (tapTimes.length < 2) return;
+        const intervals = [];
+        for (let i = 1; i < tapTimes.length; i++) intervals.push(tapTimes[i] - tapTimes[i - 1]);
+        const interval = median(intervals);
+        if (interval) setMetronomeBpm(60000 / interval);
+      }
+
+      function showSectionDialog(dialog, active = 'tuner') {
+        if (!dialog) return;
+        setNavigationState(active);
+        if (dialog.open) return;
+        if (typeof dialog.showModal === 'function') dialog.showModal();
+        else dialog.setAttribute('open', '');
+      }
+
+      function closeSectionDialog(dialog) {
+        if (!dialog || !dialog.open) return;
+        if (typeof dialog.close === 'function') dialog.close();
+        else dialog.removeAttribute('open');
+      }
+
+      function setNavigationState(active = 'tuner') {
+        const map = {
+          tuner: [navTunerBtn, mobileTunerBtn],
+          tunings: [navTuningsBtn, mobileTuningsBtn],
+          tools: [navToolsBtn, mobileToolsBtn],
+          settings: [navSettingsBtn, mobileSettingsBtn]
+        };
+        Object.entries(map).forEach(([name, buttons]) => {
+          buttons.forEach(button => {
+            if (!button) return;
+            const isActive = name === active;
+            button.classList.toggle('active', isActive);
+            if (isActive) button.setAttribute('aria-current', 'page');
+            else button.removeAttribute('aria-current');
+          });
+        });
+      }
+
+      function openTunings() {
+        closeSectionDialog(settingsDialog);
+        closeSectionDialog(toolsDialog);
+        showSectionDialog(tuningDialog, 'tunings');
+      }
+
+      function openTools() {
+        closeSectionDialog(tuningDialog);
+        closeSectionDialog(settingsDialog);
+        renderToolTargets();
+        showSectionDialog(toolsDialog, 'tools');
+      }
+
+      function openSettings() {
+        closeSectionDialog(tuningDialog);
+        closeSectionDialog(toolsDialog);
+        refreshMicrophoneDevices();
+        updateInstallUi();
+        updateOfflineUi();
+        showSectionDialog(settingsDialog, 'settings');
+      }
+
+      function returnToTuner() {
+        closeSectionDialog(tuningDialog);
+        closeSectionDialog(settingsDialog);
+        closeSectionDialog(toolsDialog);
+        setNavigationState('tuner');
+        const tunerPane = document.getElementById('tunerView');
+        if (!tunerPane) return;
+        const behavior = prefersReducedMotion() ? 'auto' : 'smooth';
+        if (window.matchMedia?.('(max-width: 720px)').matches) tunerPane.scrollTo({ top: 0, behavior });
+        else tunerPane.scrollIntoView({ block: 'start', behavior });
+      }
+
+      function openCustomDialog() {
+        const selectedCustom = customTunings.find(tuning => tuning.id === currentTuning.id);
+        if (selectedCustom) editCustomTuning(selectedCustom);
+        else beginNewCustom(currentTuning);
+        renderSavedCustoms();
+        setNavigationState('tunings');
+        if (customDialog.open) return;
+        if (typeof customDialog.showModal === 'function') customDialog.showModal();
+        else customDialog.setAttribute('open', '');
+      }
+
+      function closeCustomDialog() {
+        if (!customDialog.open) return;
+        if (typeof customDialog.close === 'function') customDialog.close();
+        else customDialog.removeAttribute('open');
+      }
+
+      function median(values) {
+        if (!values.length) return null;
+        const sorted = [...values].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+      }
+
+      function setNeedle(cents, { immediate = false } = {}) {
+        const clamped = clamp(cents, -50, 50);
+        const delta = Math.abs(clamped - visualNeedleCents);
+        visualNeedleCents = clamped;
+        const duration = immediate || prefersReducedMotion() ? 0 : delta >= 16 ? 48 : delta >= 6 ? 68 : 96;
+        needleWrap.style.transitionDuration = `${duration}ms`;
+        needleWrap.style.transitionTimingFunction = delta >= 16 ? 'cubic-bezier(.16,.84,.24,1)' : 'cubic-bezier(.2,.72,.28,1)';
+        needleWrap.style.top = `${50 - clamped}%`;
+        meter.setAttribute('aria-valuenow', String(Math.round(clamped)));
+      }
+
+      function updateToleranceMarkers() {
+        toleranceLeft.style.top = `${50 - inTuneTolerance}%`;
+        toleranceRight.style.top = `${50 + inTuneTolerance}%`;
+        precisionModule?.style.setProperty('--fine-lock-width', `${clamp(inTuneTolerance / 12 * 50, 7, 42)}%`);
+      }
+
+      function clearVisualTelemetry() {
+        visualCentsHistory = [];
+        if (pitchTrailLine) pitchTrailLine.setAttribute('points', '');
+        if (fineCents) fineCents.textContent = '—';
+        if (confidenceReadout) confidenceReadout.textContent = 'LOCK --';
+        if (precisionModule) precisionModule.classList.remove('active', 'flat', 'sharp', 'in-tune');
+        if (driftMover) {
+          driftMover.style.animationPlayState = 'paused';
+          driftMover.style.transform = 'translateX(0)';
+        }
+        updateSignalVisual(null);
+      }
+
+      function updateSignalVisual(result) {
+        if (!signalBars || !signalCaption) return;
+        const bars = [...signalBars.children];
+        const rms = Number(result?.rms) || 0;
+        const gate = Math.max(Number(result?.gate) || 0.004, 0.0001);
+        const peak = Number(result?.peak) || 0;
+        const ratio = rms / gate;
+        const dbOverGate = ratio > 0 ? 20 * Math.log10(ratio) : -Infinity;
+
+        let level = 0;
+        if (dbOverGate >= 0) level = 1;
+        if (dbOverGate >= 4) level = 2;
+        if (dbOverGate >= 8) level = 3;
+        if (dbOverGate >= 13) level = 4;
+        if (dbOverGate >= 18) level = 5;
+        visualSignalLevel = level;
+
+        const clipping = peak > 0.985 || rms > 0.42;
+        signalBars.classList.toggle('hot', clipping);
+        bars.forEach((bar, index) => bar.classList.toggle('on', index < level));
+
+        signalCaption.textContent = clipping ? 'Hot' : level === 0 ? 'Waiting' : level <= 1 ? 'Weak' : level >= 5 ? 'Strong' : 'Good';
+        signalBars.setAttribute('aria-label', clipping ? 'Input signal too hot' : `Input signal ${signalCaption.textContent.toLowerCase()}, ${level} of 5`);
+      }
+
+      function renderPitchTrail(cents) {
+        if (!pitchTrailLine || !Number.isFinite(cents)) return;
+        visualCentsHistory.push(clamp(cents, -15, 15));
+        if (visualCentsHistory.length > 32) visualCentsHistory.shift();
+        const count = visualCentsHistory.length;
+        const points = visualCentsHistory.map((value, index) => {
+          const x = count <= 1 ? 120 : (index / (count - 1)) * 120;
+          const y = 16 - (value / 15) * 12;
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(' ');
+        pitchTrailLine.setAttribute('points', points);
+      }
+
+      function updateFineVisuals(cents, result) {
+        if (!precisionModule || !driftStrip || !driftMover) return;
+        const finiteCents = Number.isFinite(cents) ? cents : 0;
+        const abs = Math.abs(finiteCents);
+        const state = tuneState === 'in-tune' ? 'in-tune' : finiteCents < 0 ? 'flat' : 'sharp';
+
+        precisionModule.classList.add('active');
+        precisionModule.classList.remove('flat', 'sharp', 'in-tune');
+        precisionModule.classList.add(state);
+        driftStrip.classList.remove('flat', 'sharp', 'in-tune');
+        driftStrip.classList.add(state);
+
+        fineCents.textContent = `${finiteCents > 0 ? '+' : finiteCents < 0 ? '−' : '±'}${Math.abs(finiteCents).toFixed(1)}¢`;
+        confidenceReadout.textContent = `LOCK ${Math.round((result?.confidence || 0) * 100)}%`;
+
+        // This is a cents-driven *fine drift visualization*, not a claim of a
+        // phase-measured mechanical strobe. Motion slows toward zero and stops in lock.
+        const duration = clamp(2.0 - Math.min(abs, 18) * 0.095, 0.28, 2.0);
+        driftMover.style.animationDuration = `${duration.toFixed(2)}s`;
+        driftMover.style.animationDirection = finiteCents < 0 ? 'reverse' : 'normal';
+        driftMover.style.animationPlayState = state === 'in-tune' || prefersReducedMotion() ? 'paused' : 'running';
+        const staticShift = clamp(finiteCents / 12, -1, 1) * 16;
+        driftMover.style.setProperty('--fine-static-shift', `${staticShift.toFixed(1)}px`);
+
+        updateSignalVisual(result);
+        renderPitchTrail(finiteCents);
+      }
+
+      function clearDetectedString() {
+        strings.querySelectorAll('.string-btn.detected').forEach(el => el.classList.remove('detected'));
+      }
+
+      function highlightDetectedString(midi) {
+        clearDetectedString();
+        if (midi == null) return;
+        const btn = strings.querySelector(`.string-btn[data-midi="${midi}"]`);
+        if (btn) btn.classList.add('detected');
+      }
+
+      function resetAutoLock() {
+        autoLockedMidi = null;
+        autoLockCandidate = null;
+        autoSwitchCandidate = null;
+        lockSilenceFrames = 0;
+        hapticFiredForLock = false;
+        clearDetectedString();
+      }
+
+      function setConfirmedLock(active, { flash = false } = {}) {
+        const next = Boolean(active);
+        if (confirmedLock === next && !flash) return;
+        confirmedLock = next;
+        tunerPanel?.classList.toggle('confirmed-lock', next);
+        if (flash && next && tunerPanel && !prefersReducedMotion()) {
+          tunerPanel.classList.remove('lock-confirm-flash');
+          void tunerPanel.offsetWidth;
+          tunerPanel.classList.add('lock-confirm-flash');
+          window.setTimeout(() => tunerPanel.classList.remove('lock-confirm-flash'), 460);
+        }
+      }
+
+      function setTuneState(cents, hasPitch = true) {
+        meter.classList.toggle('has-pitch', hasPitch);
+        tunerPanel.dataset.pitchState = hasPitch ? 'tracking' : 'waiting';
+        meter.classList.remove('flat', 'sharp', 'in-tune');
+        tuningState.classList.remove('flat', 'sharp', 'in-tune');
+
+        if (!hasPitch) {
+          centsEl.textContent = '—';
+          clearVisualTelemetry();
+          tuneState = 'waiting';
+          inTuneFrames = 0;
+          setConfirmedLock(false);
+          setText(tuningState, running ? 'Play a string' : 'Waiting for note');
+          meter.setAttribute('aria-label', 'Tuning meter');
+          meter.setAttribute('aria-valuetext', tuningState.textContent);
+          return;
+        }
+
+        const previous = tuneState;
+        const absCents = Math.abs(cents);
+        // Once centered, allow a small exit margin so tiny detector fluctuations do
+        // not flash between IN TUNE and FLAT/SHARP while the string is settling.
+        const lockBoundary = tuneState === 'in-tune' ? inTuneTolerance + 1.35 : inTuneTolerance;
+        if (absCents <= lockBoundary) {
+          tuneState = 'in-tune';
+          inTuneFrames++;
+          meter.classList.add('in-tune');
+          tuningState.classList.add('in-tune');
+          setText(tuningState, inTuneFrames >= 4 ? 'In tune' : 'Centering…');
+
+          if (inTuneFrames >= 4) {
+            const newlyConfirmed = !confirmedLock;
+            setConfirmedLock(true, { flash: newlyConfirmed });
+            if (!hapticFiredForLock && hapticToggle.checked && navigator.vibrate) {
+              navigator.vibrate(35);
+              hapticFiredForLock = true;
+            }
+          }
+        } else if (cents < 0) {
+          tuneState = 'flat';
+          inTuneFrames = 0;
+          hapticFiredForLock = false;
+          setConfirmedLock(false);
+          meter.classList.add('flat');
+          tuningState.classList.add('flat');
+          setText(tuningState, 'Tune up');
+        } else {
+          tuneState = 'sharp';
+          inTuneFrames = 0;
+          hapticFiredForLock = false;
+          setConfirmedLock(false);
+          meter.classList.add('sharp');
+          tuningState.classList.add('sharp');
+          setText(tuningState, 'Tune down');
+        }
+
+        const spokenCents = Math.round(cents);
+        meter.setAttribute('aria-valuetext', tuneState === 'in-tune'
+          ? `${confirmedLock ? 'In tune' : 'Centering'}, ${spokenCents} cents`
+          : `${Math.abs(spokenCents)} cents ${tuneState}`);
+        if (previous !== tuneState) {
+          meter.setAttribute('aria-label', tuneState === 'in-tune' ? 'Tuning meter, near center' : `Tuning meter, ${tuneState}`);
+        }
+      }
+
+      function resetTracker() {
+        stableLogPitch = null;
+        pitchHistory = [];
+        noteChangeCandidate = null;
+        octaveJumpCandidate = null;
+        noPitchFrames = 0;
+        inTuneFrames = 0;
+        hapticFiredForLock = false;
+        setConfirmedLock(false);
+      }
+
+      function resetDisplay() {
+        clearVisualTelemetry();
+        noteEl.textContent = '—';
+        noteEl.classList.add('idle');
+        octaveEl.textContent = '';
+        frequencyEl.textContent = running ? 'Listening for a clear note…' : 'Play a clear single note';
+        centsEl.textContent = '—';
+        setNeedle(0, { immediate: true });
+        setTuneState(0, false);
+        if (selectedMidi == null) {
+          resetAutoLock();
+          setAutoTargetLabel();
+        }
+      }
+
+      function setStatus(isLive, text, isError = false) {
+        statusPill.classList.toggle('live', isLive);
+        statusPill.classList.toggle('error', isError);
+        statusText.textContent = text;
+      }
+
+      function applyMicPermissionUi(state = micPermissionState) {
+        micPermissionState = state || 'unknown';
+        if (!micPanel) return;
+        micPanel.dataset.permission = starting ? 'requesting' : micPermissionState;
+        if (running || starting || !navigator.mediaDevices?.getUserMedia || !window.isSecureContext) return;
+
+        hint.classList.remove('error');
+        if (micPermissionState === 'granted') {
+          startBtn.textContent = 'Start tuning';
+          hint.textContent = hasDetectedPitchBefore
+            ? 'Microphone ready. Start, then pluck one string.'
+            : 'Microphone ready. Start, then pluck one string and mute the others.';
+        } else if (micPermissionState === 'denied') {
+          startBtn.textContent = 'Try microphone again';
+          hint.classList.add('error');
+          hint.textContent = 'Microphone is blocked. Allow it in this site’s browser settings, then try again.';
+        } else {
+          startBtn.textContent = 'Enable microphone';
+          hint.textContent = 'Tap Enable microphone to start tuning.';
+        }
+      }
+
+      async function watchMicrophonePermission() {
+        if (micPanel && window.isSecureContext) {
+          micPanel.dataset.permission = 'checking';
+          hint.textContent = 'Checking microphone access…';
+        }
+        if (!navigator.permissions?.query || !navigator.mediaDevices?.getUserMedia) {
+          applyMicPermissionUi('unknown');
+          return;
+        }
+        try {
+          micPermissionStatus = await navigator.permissions.query({ name: 'microphone' });
+          applyMicPermissionUi(micPermissionStatus.state);
+          micPermissionStatus.addEventListener?.('change', () => applyMicPermissionUi(micPermissionStatus.state));
+        } catch (_) {
+          applyMicPermissionUi('unknown');
+        }
+      }
+
+      function focusTunerForPlaying() {
+        if (window.matchMedia?.('(max-width: 720px)').matches) {
+          window.setTimeout(() => {
+            const tunerPane = document.getElementById('tunerView');
+            tunerPane?.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+          }, 80);
+        }
+      }
+
+      function signalHint(result) {
+        switch (result?.reason) {
+          case 'quiet': return 'Play one string a little louder and let it ring.';
+          case 'aperiodic': return 'Mute the other strings and play one clear note.';
+          case 'range': return 'That pitch is outside the supported tuner range.';
+          case 'low-confidence': return 'Hold the note steady and reduce background noise.';
+          default: return 'Listening for a clear note…';
+        }
+      }
+
+      function isStandaloneMode() {
+        return window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      }
+
+      function isIOSLike() {
+        return (/iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) && !window.MSStream;
+      }
+
+      function updateInstallUi() {
+        if (isStandaloneMode()) {
+          appInstallStatus.textContent = 'Installed';
+          installAppBtn.textContent = 'Installed';
+          installAppBtn.disabled = true;
+          return;
+        }
+        appInstallStatus.textContent = 'Browser';
+        if (deferredInstallPrompt) {
+          installAppBtn.textContent = 'Install app';
+          installAppBtn.disabled = false;
+        } else if (isIOSLike()) {
+          installAppBtn.textContent = 'Use Share → Add to Home Screen';
+          installAppBtn.disabled = true;
+        } else {
+          installAppBtn.textContent = 'Install from browser';
+          installAppBtn.disabled = true;
+        }
+      }
+
+      function updateOfflineUi() {
+        if (document.documentElement.dataset.distribution === 'standalone') {
+          offlineStatus.textContent = 'Single-file edition. Use the full PWA package for installation and offline reopening.';
+          return;
+        }
+        if (!('serviceWorker' in navigator)) {
+          offlineStatus.textContent = 'This browser does not support service workers, so offline mode is unavailable.';
+          return;
+        }
+        if (offlineCacheFailed) {
+          offlineStatus.textContent = 'Offline cache could not be prepared. Check your connection and reload.';
+          return;
+        }
+        if (!serviceWorkerRegistration) {
+          offlineStatus.textContent = navigator.onLine ? 'Preparing offline cache…' : 'Offline cache is not ready yet.';
+          return;
+        }
+        offlineStatus.textContent = navigator.onLine
+          ? 'Offline cache ready. The tuner can reopen without a network connection.'
+          : 'Offline mode active · app shell loaded from local cache.';
+      }
+
+      async function registerPwa() {
+        updateInstallUi();
+        updateOfflineUi();
+        if (document.documentElement.dataset.distribution === 'standalone') return;
+        if (!('serviceWorker' in navigator) || !window.isSecureContext) {
+          if (!window.isSecureContext) offlineStatus.textContent = 'Offline installation requires HTTPS or localhost.';
+          return;
+        }
+        try {
+          const registration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+          // Wait for this registration, not an unrelated worker on the origin.
+          if (!registration.active) {
+            const worker = registration.installing || registration.waiting;
+            if (!worker) throw new Error('Offline worker was not created');
+            await new Promise((resolve, reject) => {
+              const check = () => {
+                if (worker.state === 'activated' || worker.state === 'redundant') {
+                  worker.removeEventListener('statechange', check);
+                  if (worker.state === 'activated') resolve();
+                  else reject(new Error('Offline installation failed'));
+                }
+              };
+              worker.addEventListener('statechange', check);
+              check();
+            });
+          }
+          serviceWorkerRegistration = registration;
+          offlineCacheFailed = false;
+          updateOfflineUi();
+          registration.addEventListener('updatefound', () => {
+            const worker = registration.installing;
+            if (!worker) return;
+            worker.addEventListener('statechange', () => {
+              if (worker.state === 'installed') updateOfflineUi();
+            });
+          });
+        } catch (err) {
+          offlineCacheFailed = true;
+          console.error('Service worker registration failed', err);
+          offlineStatus.textContent = 'Offline cache could not be prepared on this host.';
+        }
+      }
+
+      async function refreshMicrophoneDevices({ activeDeviceId = null } = {}) {
+        if (!navigator.mediaDevices?.enumerateDevices) return;
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          microphoneDevices = devices.filter(device => device.kind === 'audioinput');
+          let stored = safeStorageGet(STORAGE_MIC_DEVICE, '');
+          const deviceLabelsVisible = microphoneDevices.some(device => Boolean(device.label));
+          if (stored && deviceLabelsVisible && !microphoneDevices.some(device => device.deviceId === stored)) {
+            stored = '';
+            safeStorageSet(STORAGE_MIC_DEVICE, '');
+          }
+
+          micSelect.replaceChildren();
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Default microphone';
+          micSelect.append(defaultOption);
+
+          if (stored && !microphoneDevices.some(device => device.deviceId === stored)) {
+            const savedOption = document.createElement('option');
+            savedOption.value = stored;
+            savedOption.textContent = 'Saved microphone · permission required';
+            micSelect.append(savedOption);
+          }
+
+          microphoneDevices.forEach((device, index) => {
+            const option = document.createElement('option');
+            option.value = device.deviceId;
+            option.textContent = device.label || `Microphone ${index + 1}`;
+            micSelect.append(option);
+          });
+
+          micSelect.value = stored;
+          const chosenId = stored || activeDeviceId;
+          const chosen = microphoneDevices.find(device => device.deviceId === chosenId);
+          micDeviceState.textContent = stored ? 'Selected' : (activeDeviceId ? 'Active' : 'Default');
+          if (deviceLabelsVisible) {
+            micDeviceHelp.textContent = chosen
+              ? `${stored ? 'Using selected input' : 'Active input'}: ${chosen.label}. Changing this while tuning restarts microphone input.`
+              : `${microphoneDevices.length} microphone${microphoneDevices.length === 1 ? '' : 's'} available. Default follows your browser/system choice.`;
+          }
+        } catch (_) {
+          micDeviceHelp.textContent = 'Microphone devices could not be enumerated in this browser.';
+        }
+      }
+
+      function microphoneErrorMessage(err) {
+        if (!window.isSecureContext) return 'Microphone access needs HTTPS or localhost.';
+        switch (err?.name) {
+          case 'NotAllowedError':
+          case 'SecurityError':
+            return 'Microphone access was denied. Allow microphone permission for this site, then try again.';
+          case 'NotFoundError':
+          case 'DevicesNotFoundError':
+            return 'No microphone was found. Connect or enable an input device, then try again.';
+          case 'NotReadableError':
+          case 'TrackStartError':
+          case 'AbortError':
+            return 'The microphone is unavailable or being used exclusively by another app.';
+          case 'OverconstrainedError':
+          case 'ConstraintNotSatisfiedError':
+            return 'The microphone could not start with the requested audio settings.';
+          default:
+            if (/Web Audio/i.test(err?.message || '')) return 'This browser does not support the Web Audio features required by the tuner.';
+            return 'The microphone could not start. Check site permission and your input device, then try again.';
+        }
+      }
+
+      async function requestWakeLock() {
+        if (!running || document.visibilityState !== 'visible' || !('wakeLock' in navigator) || wakeLock) return;
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+          wakeLock.addEventListener('release', () => { wakeLock = null; }, { once: true });
+        } catch (_) {
+          wakeLock = null;
+        }
+      }
+
+      async function releaseWakeLock() {
+        if (!wakeLock) return;
+        const lock = wakeLock;
+        wakeLock = null;
+        try { await lock.release(); } catch (_) {}
+      }
+
+      class GuitarPitchDetector {
+        constructor(sampleRate, inputSize) {
+          // Guitar fundamentals do not need the full microphone bandwidth. Downsampling
+          // after an analogue-style low-pass filter makes YIN materially cheaper on phones.
+          this.downsampleFactor = 2;
+          this.sampleRate = sampleRate / this.downsampleFactor;
+          this.size = Math.floor(inputSize / this.downsampleFactor);
+          this.samples = new Float32Array(this.size);
+          this.minTau = Math.max(2, Math.floor(this.sampleRate / DETECTOR_MAX_HZ));
+          this.maxTau = Math.min(
+            Math.floor(this.sampleRate / DETECTOR_MIN_HZ),
+            Math.floor(this.size * 0.46)
+          );
+          this.yin = new Float32Array(this.maxTau + 2);
+          this.noiseFloor = 0.0025;
+          this.unvoicedFrames = 0;
+        }
+
+        analyze(input) {
+          let mean = 0;
+          let peak = 0;
+
+          for (let i = 0, j = 0; j < this.size; i += this.downsampleFactor, j++) {
+            // Two-sample box filter before decimation. The Web Audio low-pass does the
+            // heavy lifting; this also softens residual high-frequency pick noise.
+            const value = (input[i] + input[i + 1]) * 0.5;
+            this.samples[j] = value;
+            mean += value;
+            const abs = Math.abs(value);
+            if (abs > peak) peak = abs;
+          }
+          mean /= this.size;
+
+          let sumSquares = 0;
+          for (let i = 0; i < this.size; i++) {
+            const centered = this.samples[i] - mean;
+            this.samples[i] = centered;
+            sumSquares += centered * centered;
+          }
+          const rms = Math.sqrt(sumSquares / this.size);
+          const gate = clamp(this.noiseFloor * 2.2, 0.0035, 0.024);
+
+          if (rms < gate) {
+            this.learnNoise(rms, 0.055);
+            this.unvoicedFrames = 0;
+            return { pitch: null, confidence: 0, rms, gate, peak, reason: 'quiet' };
+          }
+
+          const yin = this.yin;
+          yin.fill(0);
+
+          // Use the same comparison window for every lag. That removes the large-lag
+          // bias of a shrinking window and saves substantial work compared with N-tau.
+          const comparisonLength = this.size - this.maxTau - 1;
+          for (let tau = 1; tau <= this.maxTau; tau++) {
+            let diff = 0;
+            for (let i = 0; i < comparisonLength; i++) {
+              const delta = this.samples[i] - this.samples[i + tau];
+              diff += delta * delta;
+            }
+            yin[tau] = diff;
+          }
+
+          yin[0] = 1;
+          let runningSum = 0;
+          for (let tau = 1; tau <= this.maxTau; tau++) {
+            runningSum += yin[tau];
+            yin[tau] = runningSum > 1e-12 ? (yin[tau] * tau) / runningSum : 1;
+          }
+
+          const threshold = 0.12;
+          let tauEstimate = -1;
+          for (let tau = this.minTau; tau <= this.maxTau; tau++) {
+            if (yin[tau] < threshold) {
+              while (tau + 1 <= this.maxTau && yin[tau + 1] < yin[tau]) tau++;
+              tauEstimate = tau;
+              break;
+            }
+          }
+
+          // A weak/noisy guitar can miss the strict threshold. Fall back only if the
+          // global YIN minimum is still convincingly periodic.
+          if (tauEstimate === -1) {
+            let bestTau = -1;
+            let bestValue = 1;
+            for (let tau = this.minTau; tau <= this.maxTau; tau++) {
+              if (yin[tau] < bestValue) {
+                bestValue = yin[tau];
+                bestTau = tau;
+              }
+            }
+            if (bestTau === -1 || bestValue > 0.27) {
+              this.learnUnvoicedNoise(rms);
+              return { pitch: null, confidence: 0, rms, gate, peak, reason: 'aperiodic' };
+            }
+            tauEstimate = bestTau;
+          }
+
+          // Harmonic safeguard: a guitar fundamental can be much weaker than its
+          // 2nd/3rd harmonic immediately after a pick attack. If the first YIN
+          // minimum is only moderately good but an integer-multiple period is
+          // dramatically better, prefer that longer period. Pure tones are not
+          // spuriously halved because their first minimum is already near zero.
+          const firstMinimum = yin[tauEstimate];
+          if (firstMinimum > 0.012) {
+            // Prefer the *nearest* convincing subharmonic. Later multiples are also
+            // legitimate periodic minima, but choosing the deepest one could turn
+            // a true E3 into E2. The first strong improvement is the useful signal.
+            for (let multiple = 2; multiple <= 4; multiple++) {
+              const center = tauEstimate * multiple;
+              if (center > this.maxTau) break;
+
+              let localTau = Math.round(center);
+              let localValue = yin[localTau];
+              for (let offset = -2; offset <= 2; offset++) {
+                const candidateTau = Math.round(center) + offset;
+                if (candidateTau < this.minTau || candidateTau > this.maxTau) continue;
+                if (yin[candidateTau] < localValue) {
+                  localValue = yin[candidateTau];
+                  localTau = candidateTau;
+                }
+              }
+
+              if (localValue < firstMinimum * 0.45 && localValue < 0.08) {
+                tauEstimate = localTau;
+                break;
+              }
+            }
+          }
+
+          let refinedTau = tauEstimate;
+          if (tauEstimate > 1 && tauEstimate < this.maxTau) {
+            const y0 = yin[tauEstimate - 1];
+            const y1 = yin[tauEstimate];
+            const y2 = yin[tauEstimate + 1];
+            const denominator = y0 - 2 * y1 + y2;
+            if (Math.abs(denominator) > 1e-9) {
+              refinedTau += 0.5 * (y0 - y2) / denominator;
+            }
+          }
+
+          const pitch = this.sampleRate / refinedTau;
+          if (!Number.isFinite(pitch) || pitch < DETECTOR_MIN_HZ || pitch > DETECTOR_MAX_HZ) {
+            return { pitch: null, confidence: 0, rms, gate, peak, reason: 'range' };
+          }
+
+          // Cross-check YIN with normalized autocorrelation at the chosen period.
+          // Noise can occasionally create a YIN dip; a real sustained string is also
+          // strongly self-similar one period later.
+          const lag = Math.max(1, Math.round(refinedTau));
+          const corrLength = this.size - lag;
+          let cross = 0;
+          let energyA = 0;
+          let energyB = 0;
+          for (let i = 0; i < corrLength; i++) {
+            const a = this.samples[i];
+            const b = this.samples[i + lag];
+            cross += a * b;
+            energyA += a * a;
+            energyB += b * b;
+          }
+          const correlation = energyA > 1e-12 && energyB > 1e-12
+            ? clamp(cross / Math.sqrt(energyA * energyB), -1, 1)
+            : 0;
+          const yinConfidence = clamp(1 - yin[tauEstimate], 0, 1);
+          let confidence = clamp(yinConfidence * 0.66 + Math.max(0, correlation) * 0.34, 0, 1);
+
+          // Heavy clipping often creates misleading harmonics. Do not discard the note,
+          // but require a stronger result before the tracker trusts it.
+          if (peak > 0.985) confidence *= 0.86;
+
+          if (confidence < 0.72) {
+            this.learnUnvoicedNoise(rms);
+            return { pitch: null, confidence, rms, gate, peak, reason: 'low-confidence' };
+          }
+
+          this.unvoicedFrames = 0;
+          return { pitch, confidence, rms, gate, peak, reason: 'voiced' };
+        }
+
+        learnNoise(rms, amount) {
+          const target = clamp(rms, 0.0015, 0.02);
+          this.noiseFloor = clamp(
+            this.noiseFloor * (1 - amount) + target * amount,
+            0.0015,
+            0.02
+          );
+        }
+
+        learnUnvoicedNoise(rms) {
+          this.unvoicedFrames++;
+          // If a room contains steady non-pitched noise, slowly learn it instead of
+          // burning CPU forever trying to tune a fan. Guitar attacks reset this counter.
+          if (this.unvoicedFrames > 14 && rms < 0.04) {
+            this.learnNoise(rms * 0.68, 0.018);
+          }
+        }
+      }
+
+      function samePitchRegion(aLog, bLog, cents = 45) {
+        return Math.abs((aLog - bLog) * 1200) <= cents;
+      }
+
+      function correctTargetOctave(rawPitch) {
+        if (selectedMidi == null) return rawPitch;
+
+        const target = freqForMidi(selectedMidi);
+        const rawDistance = Math.abs(centsBetween(rawPitch, target));
+        let bestPitch = rawPitch;
+        let bestDistance = rawDistance;
+
+        // Only repair a single-octave detector error. This deliberately will NOT turn
+        // a genuinely played E4 into target E2 just because E2 is selected.
+        for (const candidate of [rawPitch * 0.5, rawPitch * 2]) {
+          if (candidate < DETECTOR_MIN_HZ || candidate > DETECTOR_MAX_HZ) continue;
+          const distance = Math.abs(centsBetween(candidate, target));
+          if (distance < bestDistance - 500 && distance <= 650) {
+            bestPitch = candidate;
+            bestDistance = distance;
+          }
+        }
+        return bestPitch;
+      }
+
+      function guardOctaveJump(rawPitch) {
+        if (stableLogPitch == null) return rawPitch;
+
+        const stablePitch = Math.pow(2, stableLogPitch);
+        const ratio = rawPitch / stablePitch;
+        const looksLikeOctave = (ratio > 1.86 && ratio < 2.14) || (ratio > 0.467 && ratio < 0.538);
+        if (!looksLikeOctave) {
+          octaveJumpCandidate = null;
+          return rawPitch;
+        }
+
+        const folded = ratio > 1 ? rawPitch * 0.5 : rawPitch * 2;
+        if (Math.abs(centsBetween(folded, stablePitch)) > 90) {
+          octaveJumpCandidate = null;
+          return rawPitch;
+        }
+
+        const rawLog = Math.log2(rawPitch);
+        if (octaveJumpCandidate && samePitchRegion(octaveJumpCandidate.log, rawLog, 35)) {
+          octaveJumpCandidate.count++;
+        } else {
+          octaveJumpCandidate = { log: rawLog, count: 1 };
+        }
+
+        // One or two octave readings are almost always harmonic glitches. Three
+        // consecutive matching frames count as an intentional real octave change.
+        if (octaveJumpCandidate.count < 3) return folded;
+        octaveJumpCandidate = null;
+        return rawPitch;
+      }
+
+      function stabilizePitch(rawPitch, confidence) {
+        rawPitch = correctTargetOctave(rawPitch);
+        rawPitch = guardOctaveJump(rawPitch);
+        const rawLog = Math.log2(rawPitch);
+
+        if (stableLogPitch == null) {
+          pitchHistory = [rawLog];
+          stableLogPitch = rawLog;
+          return rawPitch;
+        }
+
+        const jumpCents = Math.abs((rawLog - stableLogPitch) * 1200);
+
+        // A true note change should feel fast, but random transient errors should not.
+        if (jumpCents > 75) {
+          if (noteChangeCandidate && samePitchRegion(noteChangeCandidate.log, rawLog, 42)) {
+            noteChangeCandidate.count++;
+            noteChangeCandidate.log = (noteChangeCandidate.log + rawLog) * 0.5;
+          } else {
+            noteChangeCandidate = { log: rawLog, count: 1 };
+          }
+
+          if (noteChangeCandidate.count >= 2) {
+            stableLogPitch = noteChangeCandidate.log;
+            pitchHistory = [stableLogPitch];
+            noteChangeCandidate = null;
+          }
+          return Math.pow(2, stableLogPitch);
+        }
+
+        noteChangeCandidate = null;
+        pitchHistory.push(rawLog);
+        if (pitchHistory.length > 3) pitchHistory.shift();
+        const filteredLog = median(pitchHistory);
+        const residualCents = Math.abs((filteredLog - stableLogPitch) * 1200);
+
+        // Adaptive one-pole smoothing: tiny pitch flutter moves slowly, while a real
+        // bend/tuning-peg movement catches up quickly.
+        let alpha = residualCents > 25 ? 0.48 : residualCents > 8 ? 0.30 : 0.17;
+        if (confidence > 0.94) alpha += 0.06;
+        stableLogPitch += clamp(alpha, 0.17, 0.56) * (filteredLog - stableLogPitch);
+
+        return Math.pow(2, stableLogPitch);
+      }
+
+      function nearestTuningTargetMidi(rawMidi) {
+        const targets = tuningTargets();
+        if (!targets.length) return Math.round(rawMidi);
+
+        const sourceAnchors = sourceAnchorsFor(targets.length);
+        let bestMidi = targets[0].midi;
+        let bestScore = Infinity;
+
+        targets.forEach((target, index) => {
+          const targetDistance = Math.abs(rawMidi - target.midi);
+          // A small penalty means the real tuning target wins as soon as the string
+          // gets reasonably close, while the familiar starting pitch still identifies
+          // the correct physical string during a large retune.
+          const sourceDistance = sourceAnchors?.[index] == null
+            ? Infinity
+            : Math.abs(rawMidi - sourceAnchors[index]) + 0.6;
+          const score = Math.min(targetDistance, sourceDistance);
+          if (score < bestScore) {
+            bestScore = score;
+            bestMidi = target.midi;
+          }
+        });
+
+        return bestMidi;
+      }
+
+      function recognitionDistanceSemitones(rawMidi, targetMidi) {
+        const targets = tuningTargets();
+        const index = targets.findIndex(target => target.midi === targetMidi);
+        const targetDistance = Math.abs(rawMidi - targetMidi);
+        const sourceAnchor = sourceAnchorsFor(targets.length)?.[index];
+        return sourceAnchor == null
+          ? targetDistance
+          : Math.min(targetDistance, Math.abs(rawMidi - sourceAnchor) + 0.6);
+      }
+
+      function resolveAutoTarget(pitch) {
+        const rawMidi = midiFromFreq(pitch);
+        let nearestMidi;
+        if (currentTuning.mode === 'chromatic') {
+          nearestMidi = Math.round(rawMidi);
+        } else {
+          nearestMidi = nearestTuningTargetMidi(rawMidi);
+        }
+
+        if (autoLockedMidi == null) {
+          if (autoLockCandidate?.midi === nearestMidi) {
+            autoLockCandidate.count++;
+          } else {
+            autoLockCandidate = { midi: nearestMidi, count: 1 };
+          }
+
+          // Two matching frames (~64 ms) are enough after Phase 1's pitch tracker has
+          // already rejected transients. This feels immediate without flickering.
+          if (autoLockCandidate.count >= 2) {
+            autoLockedMidi = nearestMidi;
+            autoLockCandidate = null;
+            autoSwitchCandidate = null;
+            hapticFiredForLock = false;
+          }
+        } else {
+          const distanceFromLock = Math.abs(centsBetween(pitch, freqForMidi(autoLockedMidi)));
+          const candidateDistance = recognitionDistanceSemitones(rawMidi, nearestMidi) * 100;
+
+          // Do not abandon a target while the player tunes across the chromatic
+          // halfway boundary. Switching requires a clearly different note sustained
+          // for several frames; large guitar-string jumps switch even faster.
+          if (nearestMidi !== autoLockedMidi && distanceFromLock > 80 && candidateDistance < 120) {
+            if (autoSwitchCandidate?.midi === nearestMidi) {
+              autoSwitchCandidate.count++;
+            } else {
+              autoSwitchCandidate = { midi: nearestMidi, count: 1 };
+            }
+
+            const semitoneJump = Math.abs(nearestMidi - autoLockedMidi);
+            const requiredFrames = semitoneJump >= 3 ? 2 : 3;
+            if (autoSwitchCandidate.count >= requiredFrames) {
+              autoLockedMidi = nearestMidi;
+              autoSwitchCandidate = null;
+              autoLockCandidate = null;
+              hapticFiredForLock = false;
+            }
+          } else {
+            autoSwitchCandidate = null;
+          }
+        }
+
+        highlightDetectedString(autoLockedMidi);
+        return autoLockedMidi ?? nearestMidi;
+      }
+
+      function isClearlyDifferentSelectedString(pitch, targetMidi) {
+        if (selectedMidi == null || !Number.isFinite(pitch)) return false;
+        const targets = tuningTargets();
+        if (!sourceAnchorsFor(targets.length)) return false;
+        const rawMidi = midiFromFreq(pitch);
+        const nearest = nearestTuningTargetMidi(rawMidi);
+        const distance = recognitionDistanceSemitones(rawMidi, targetMidi);
+        return nearest !== targetMidi && distance > 2.6;
+      }
+
+      function showDifferentStringPrompt(pitch, targetMidi, targetDisplay, result) {
+        const rawMidi = midiFromFreq(pitch);
+        const detected = midiToNote(Math.round(rawMidi));
+        const targets = tuningTargets();
+        const index = targets.findIndex(target => target.midi === targetMidi);
+        const stringNumber = index >= 0 ? targets.length - index : null;
+        const targetName = prettyNote(targetDisplay);
+        const instruction = stringNumber ? `Play string ${stringNumber} · ${targetName}` : `Play ${targetName}`;
+
+        frequencyEl.textContent = `${pitch.toFixed(2)} Hz · detected ${prettyNote(detected)}`;
+        centsEl.textContent = '—';
+        setNeedle(0, { immediate: true });
+        tuneState = 'waiting';
+        inTuneFrames = 0;
+        hapticFiredForLock = false;
+        setConfirmedLock(false);
+        tunerPanel.dataset.pitchState='waiting';
+        meter.classList.remove('has-pitch', 'flat', 'sharp', 'in-tune');
+        tuningState.classList.remove('flat', 'sharp', 'in-tune');
+        setText(tuningState, instruction);
+        meter.setAttribute('aria-valuenow', '0');
+        meter.setAttribute('aria-valuetext', `${instruction}. Detected ${prettyNote(detected)} instead.`);
+        if (fineCents) fineCents.textContent = `TARGET ${targetName}`;
+        if (confidenceReadout) confidenceReadout.textContent = `LOCK ${Math.round((result?.confidence || 0) * 100)}%`;
+        precisionModule?.classList.remove('flat', 'sharp', 'in-tune');
+        driftStrip?.classList.remove('flat', 'sharp', 'in-tune');
+        if (driftMover) driftMover.style.animationPlayState = 'paused';
+        renderPitchTrail(0);
+        updateSignalVisual(result);
+        resetGuidedHold(instruction);
+        hint.classList.remove('error');
+        hint.textContent = `Detected ${prettyNote(detected)}. ${instruction}.`;
+      }
+
+      function updatePitch(result) {
+        updateSignalVisual(result);
+        if (!result?.pitch) {
+          noPitchFrames++;
+          lockSilenceFrames++;
+          if (noPitchFrames === 8 && running) {
+            frequencyEl.textContent = signalHint(result);
+            hint.textContent = signalHint(result);
+            setTuneState(0, false);
+          }
+          if (selectedMidi == null && lockSilenceFrames > 18) {
+            // Brief microphone dropouts are common while a string decays. Keep the
+            // target stable for about 0.6 s, then release for the next pluck.
+            resetAutoLock();
+          }
+          if (noPitchFrames > 24) {
+            resetTracker();
+            resetDisplay();
+          }
+          return;
+        }
+
+        lockSilenceFrames = 0;
+
+        noPitchFrames = 0;
+        const pitch = stabilizePitch(result.pitch, result.confidence);
+        if (!pitch) return;
+        if (!hasDetectedPitchBefore) {
+          hasDetectedPitchBefore = true;
+          safeStorageSet(STORAGE_HAS_DETECTED_PITCH, '1');
+        }
+
+        let targetMidi;
+        if (selectedMidi == null) {
+          targetMidi = resolveAutoTarget(pitch);
+        } else {
+          targetMidi = selectedMidi;
+        }
+
+        const targetFreq = freqForMidi(targetMidi);
+        const cents = centsBetween(pitch, targetFreq);
+        const tuningTarget = currentTuning.mode === 'chromatic'
+          ? null
+          : tuningTargets().find(target => target.midi === targetMidi);
+        const targetDisplay = tuningTarget?.label || midiToNote(targetMidi);
+        const targetParts = noteParts(targetDisplay);
+
+        if (selectedMidi == null) {
+          noteEl.classList.remove('idle');
+          noteEl.textContent = targetParts.note;
+          octaveEl.textContent = targetParts.octave;
+          if (autoLockedMidi == null) {
+            setAutoTargetLabel();
+          } else {
+            const lock = document.createElement('span');
+            lock.className = 'lock-indicator';
+            lock.textContent = `${currentTuning.mode === 'chromatic' ? 'Auto locked' : currentTuning.name} · ${prettyNote(targetDisplay)}`;
+            targetLabel.replaceChildren(lock);
+          }
+        } else {
+          const parts = noteParts(selectedName);
+          noteEl.classList.remove('idle');
+          noteEl.textContent = parts.note;
+          octaveEl.textContent = parts.octave;
+          targetLabel.textContent = `Target ${prettyNote(selectedName)} · ${targetFreq.toFixed(1)} Hz`;
+        }
+
+        if (selectedMidi != null && isClearlyDifferentSelectedString(pitch, targetMidi)) {
+          showDifferentStringPrompt(pitch, targetMidi, targetDisplay, result);
+          return;
+        }
+
+        frequencyEl.textContent = `${pitch.toFixed(2)} Hz`;
+        hint.classList.remove('error');
+        hint.textContent = 'Pluck one string and let it ring.';
+
+        const displayCents = Math.round(cents);
+        centsEl.textContent = displayCents > 0 ? `+${displayCents}` : `${displayCents}`;
+        setNeedle(cents);
+        setTuneState(cents, true);
+        updateFineVisuals(cents, result);
+        registerGuidedLock(performance.now());
+      }
+
+      function loop(timestamp) {
+        if (!running || !analyser || !detector) return;
+
+        if (timestamp - lastAnalysisAt >= ANALYSIS_INTERVAL_MS) {
+          lastAnalysisAt = timestamp;
+          analyser.getFloatTimeDomainData(analysisBuffer);
+          updatePitch(detector.analyze(analysisBuffer));
+        }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      async function getMicrophoneStream() {
+        const selectedDeviceId = safeStorageGet(STORAGE_MIC_DEVICE, '');
+        const baseAudio = {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          channelCount: 1
+        };
+        const requestedAudio = selectedDeviceId
+          ? { ...baseAudio, deviceId: { exact: selectedDeviceId } }
+          : baseAudio;
+        const recoverableConstraintErrors = ['OverconstrainedError', 'ConstraintNotSatisfiedError', 'TypeError'];
+        const missingDeviceErrors = ['OverconstrainedError', 'ConstraintNotSatisfiedError', 'NotFoundError'];
+        const request = audio => navigator.mediaDevices.getUserMedia({ audio, video: false });
+
+        try {
+          return await request(requestedAudio);
+        } catch (err) {
+          // If a remembered input vanished, clear only that stale preference and retry
+          // the same pitch-friendly constraints against the current default input.
+          if (selectedDeviceId && missingDeviceErrors.includes(err?.name)) {
+            safeStorageSet(STORAGE_MIC_DEVICE, '');
+            await refreshMicrophoneDevices();
+            try {
+              return await request(baseAudio);
+            } catch (fallbackErr) {
+              // Some mobile/browser combinations reject processing constraints even
+              // though ordinary microphone capture is available.
+              if (recoverableConstraintErrors.includes(fallbackErr?.name)) {
+                return request(true);
+              }
+              throw fallbackErr;
+            }
+          }
+          if (recoverableConstraintErrors.includes(err?.name)) {
+            return request(true);
+          }
+          throw err;
+        }
+      }
+
+      async function start() {
+        if (stopPromise) await stopPromise;
+        if (running) return true;
+        if (starting) return false;
+        if (!navigator.mediaDevices?.getUserMedia) {
+          setStatus(false, window.isSecureContext ? 'Unsupported' : 'HTTPS required', true);
+          hint.textContent = window.isSecureContext ? 'This browser does not support microphone input.' : 'Open the app over HTTPS or localhost to enable microphone access.';
+          hint.classList.add('error');
+          return false;
+        }
+        if (!window.isSecureContext) {
+          setStatus(false, 'HTTPS required', true);
+          hint.textContent = 'Microphone access needs HTTPS or localhost.';
+          hint.classList.add('error');
+          return false;
+        }
+
+        const epoch = ++captureEpoch;
+        starting = true;
+        startBtn.disabled = true;
+        startBtn.textContent = 'Connecting…';
+        micPanel.dataset.permission = 'requesting';
+        try {
+          stopReferenceTone({ immediate: true });
+          stopMetronome();
+          hint.classList.remove('error');
+          setStatus(false, 'Connecting…');
+          micPanel.dataset.permission = 'requesting';
+
+          const acquiredStream = await getMicrophoneStream();
+          if (epoch !== captureEpoch) {
+            acquiredStream.getTracks().forEach(track => track.stop());
+            return false;
+          }
+          mediaStream = acquiredStream;
+          const track = mediaStream.getAudioTracks()[0];
+          if (!track) throw new DOMException('No audio track', 'NotFoundError');
+          micPermissionState = 'granted';
+          const activeDeviceId = track.getSettings?.().deviceId || null;
+          await refreshMicrophoneDevices({ activeDeviceId });
+          if (epoch !== captureEpoch) return false;
+          ignoreTrackEnded = false;
+          track.addEventListener('ended', () => {
+            if (!ignoreTrackEnded && (running || starting)) {
+              stop({
+                message: 'The microphone disconnected or became unavailable. Reconnect it, then enable the tuner again.',
+                status: 'Mic lost',
+                error: true
+              }).catch(() => {});
+            }
+          }, { once: true });
+
+          const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextCtor) throw new Error('Web Audio is not supported in this browser.');
+          audioContext = new AudioContextCtor({ latencyHint: 'interactive' });
+          await audioContext.resume();
+          if (epoch !== captureEpoch) return false;
+
+          sourceNode = audioContext.createMediaStreamSource(mediaStream);
+          highpassNode = audioContext.createBiquadFilter();
+          highpassNode.type = 'highpass';
+          highpassNode.frequency.value = 32;
+          highpassNode.Q.value = 0.7;
+
+          lowpassNode = audioContext.createBiquadFilter();
+          lowpassNode.type = 'lowpass';
+          lowpassNode.frequency.value = 1200;
+          lowpassNode.Q.value = 0.7;
+
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 4096;
+          analyser.smoothingTimeConstant = 0;
+
+          sourceNode.connect(highpassNode);
+          highpassNode.connect(lowpassNode);
+          lowpassNode.connect(analyser);
+
+          analysisBuffer = new Float32Array(analyser.fftSize);
+          detector = new GuitarPitchDetector(audioContext.sampleRate, analyser.fftSize);
+          configureAnalysis();
+          resetTracker();
+          lastAnalysisAt = 0;
+          running = true;
+          micPermissionState = 'granted';
+          micPanel.dataset.permission = 'granted';
+          appEl?.classList.add('is-listening');
+
+          startBtn.textContent = 'Stop';
+          startBtn.classList.add('stop');
+          setStatus(true, 'Listening');
+          hint.textContent = hasDetectedPitchBefore
+            ? 'Pluck one string and let it ring.'
+            : 'You’re live — pluck one string and mute the others.';
+          loop(0);
+          focusTunerForPlaying();
+          requestWakeLock();
+          return true;
+        } catch (err) {
+          console.error(err);
+          if (epoch !== captureEpoch) return false;
+          const message = microphoneErrorMessage(err);
+          if (['NotAllowedError', 'SecurityError'].includes(err?.name)) micPermissionState = 'denied';
+          await stop({ message, status: micPermissionState === 'denied' ? 'Mic blocked' : 'Mic unavailable', error: true });
+          return false;
+        } finally {
+          if (epoch === captureEpoch) {
+            starting = false;
+            startBtn.disabled = false;
+            if (!running && !hint.classList.contains('error')) applyMicPermissionUi(micPermissionState);
+          }
+        }
+      }
+
+      function stop(options = {}) {
+        ++captureEpoch;
+        if (stopPromise) return stopPromise;
+        stopPromise = stopSession(options).finally(() => { stopPromise = null; });
+        return stopPromise;
+      }
+
+      async function stopSession({ message = null, status = 'Mic off', error = false } = {}) {
+        running = false;
+        starting = false;
+        appEl?.classList.remove('is-listening');
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+        ignoreTrackEnded = true;
+
+        if (mediaStream) {
+          mediaStream.getTracks().forEach(track => track.stop());
+          mediaStream = null;
+        }
+
+        for (const node of [sourceNode, highpassNode, lowpassNode, analyser]) {
+          if (node) {
+            try { node.disconnect(); } catch (_) {}
+          }
+        }
+        sourceNode = null;
+        highpassNode = null;
+        lowpassNode = null;
+        analyser = null;
+        detector = null;
+        analysisBuffer = null;
+
+        if (audioContext) {
+          const context = audioContext;
+          audioContext = null;
+          try { await context.close(); } catch (_) {}
+        }
+        await releaseWakeLock();
+
+        startBtn.disabled = false;
+        startBtn.classList.remove('stop');
+        setStatus(false, status, error);
+        if (message) {
+          hint.classList.toggle('error', error);
+          hint.textContent = message;
+          micPanel.dataset.permission = error && micPermissionState === 'denied' ? 'denied' : micPermissionState;
+          startBtn.textContent = micPermissionState === 'granted' ? 'Start tuning' : micPermissionState === 'denied' ? 'Try microphone again' : 'Enable microphone';
+        } else {
+          applyMicPermissionUi(micPermissionState);
+        }
+        resetTracker();
+        resetDisplay();
+        ignoreTrackEnded = false;
+      }
+
+      startBtn.addEventListener('click', () => running ? stop() : start());
+
+      updateToleranceMarkers();
+      if (!('vibrate' in navigator)) {hapticControl.classList.add('unsupported'); hapticToggle.disabled=true; hapticControl.querySelector('small').textContent='Haptic feedback is not available in this browser.';}
+
+      toleranceButtons.addEventListener('click', (event) => {
+        const btn = event.target.closest('.tolerance-btn');
+        if (!btn) return;
+        inTuneTolerance = Number(btn.dataset.tolerance);
+        safeStorageSet(STORAGE_TOLERANCE, String(inTuneTolerance));
+        toleranceButtons.querySelectorAll('.tolerance-btn').forEach(el => {
+          const active = el === btn;
+          el.classList.toggle('active', active);
+          el.setAttribute('aria-pressed', String(active));
+        });
+        updateToleranceMarkers();
+        inTuneFrames = 0;
+        hapticFiredForLock = false;
+      });
+
+      calibration.addEventListener('input', () => {
+        if (activeToneMidi != null) stopReferenceTone();
+        referenceA = Number(calibration.value);
+        safeStorageSet(STORAGE_REFERENCE_A, String(referenceA));
+        calValue.textContent = `A4 ${referenceA}`;
+        renderStringTargets();
+        renderCustomDraft();
+        renderToolTargets();
+        if (selectedMidi != null && selectedName) {
+          targetLabel.textContent = `Target ${prettyNote(selectedName)} · ${freqForMidi(selectedMidi).toFixed(1)} Hz`;
+        }
+      });
+
+      hapticToggle.addEventListener('change', () => {
+        safeStorageSet(STORAGE_HAPTIC, hapticToggle.checked ? '1' : '0');
+      });
+
+      micSelect.addEventListener('change', async () => {
+        safeStorageSet(STORAGE_MIC_DEVICE, micSelect.value);
+        micDeviceState.textContent = micSelect.value ? 'Selected' : 'Default';
+        const wasRunning = running;
+        if (wasRunning) {
+          await stop({ message: 'Switching microphone…', status: 'Switching mic' });
+          await start();
+        } else {
+          await refreshMicrophoneDevices();
+        }
+      });
+
+      installAppBtn.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+        const promptEvent = deferredInstallPrompt;
+        deferredInstallPrompt = null;
+        installAppBtn.disabled = true;
+        try {
+          await promptEvent.prompt();
+          await promptEvent.userChoice;
+        } catch (_) {}
+        updateInstallUi();
+      });
+
+      window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        updateInstallUi();
+      });
+      window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        updateInstallUi();
+      });
+      window.matchMedia?.('(display-mode: standalone)').addEventListener?.('change', updateInstallUi);
+      window.addEventListener('online', updateOfflineUi);
+      window.addEventListener('offline', updateOfflineUi);
+
+      strings.addEventListener('click', (event) => {
+        const btn = event.target.closest('.string-btn');
+        if (!btn) return;
+        if (guidedActive) stopGuidedTune({ keepTarget: true });
+
+        strings.querySelectorAll('.string-btn').forEach(el => {el.classList.remove('active');el.setAttribute('aria-pressed','false');});
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed','true');
+        resetTracker();
+        resetAutoLock();
+
+        if (btn.dataset.mode === 'auto') {
+          selectedMidi = null;
+          selectedName = null;
+          resetDisplay();
+          setAutoTargetLabel();
+        } else {
+          selectedMidi = Number(btn.dataset.midi);
+          const displayName = btn.dataset.displayNote || btn.dataset.note;
+          selectedName = displayName;
+          const parts = noteParts(displayName);
+          targetLabel.textContent = `Target ${prettyNote(displayName)} · ${freqForMidi(selectedMidi).toFixed(1)} Hz`;
+          noteEl.classList.remove('idle');
+          noteEl.textContent = parts.note;
+          octaveEl.textContent = parts.octave;
+        }
+        centsEl.textContent = '—';
+        setNeedle(0);
+        setTuneState(0, false);
+      });
+
+      tuningSelect.addEventListener('change', () => {
+        applyTuning(tuningSelect.value);
+        closeSectionDialog(tuningDialog);
+        setNavigationState('tuner');
+      });
+      customTuningBtn.addEventListener('click', () => {
+        closeSectionDialog(tuningDialog);
+        openCustomDialog();
+      });
+      customDialogClose.addEventListener('click', closeCustomDialog);
+      customDialog.addEventListener('click', (event) => {
+        if (event.target === customDialog) closeCustomDialog();
+      });
+      customDialog.addEventListener('close', () => setNavigationState('tuner'));
+
+      [tuningChangeBtn, tuningChangeBtnAlt, navTuningsBtn, mobileTuningsBtn].forEach(button => {
+        button?.addEventListener('click', openTunings);
+      });
+      [navToolsBtn, mobileToolsBtn].forEach(button => {
+        button?.addEventListener('click', openTools);
+      });
+      [navSettingsBtn, mobileSettingsBtn].forEach(button => {
+        button?.addEventListener('click', openSettings);
+      });
+      [navTunerBtn, mobileTunerBtn].forEach(button => {
+        button?.addEventListener('click', returnToTuner);
+      });
+      tuningDialogClose.addEventListener('click', () => closeSectionDialog(tuningDialog));
+      settingsDialogClose.addEventListener('click', () => closeSectionDialog(settingsDialog));
+      toolsDialogClose.addEventListener('click', () => closeSectionDialog(toolsDialog));
+      tuningDialog.addEventListener('click', (event) => {
+        if (event.target === tuningDialog) closeSectionDialog(tuningDialog);
+      });
+      settingsDialog.addEventListener('click', (event) => {
+        if (event.target === settingsDialog) closeSectionDialog(settingsDialog);
+      });
+      toolsDialog.addEventListener('click', (event) => {
+        if (event.target === toolsDialog) closeSectionDialog(toolsDialog);
+      });
+      tuningDialog.addEventListener('close', () => setNavigationState('tuner'));
+      settingsDialog.addEventListener('close', () => setNavigationState('tuner'));
+      toolsDialog.addEventListener('close', () => setNavigationState('tuner'));
+
+      guidedStartBtn.addEventListener('click', () => { startGuidedTune().catch(console.error); });
+      guidedPrevBtn.addEventListener('click', () => advanceGuided(-1));
+      guidedNextBtn.addEventListener('click', () => advanceGuided(1));
+      guidedRestartBtn.addEventListener('click', () => {
+        if (!guidedActive) return;
+        guidedTuned = new Set();
+        setGuidedTarget(0);
+      });
+      guidedStopBtn.addEventListener('click', () => stopGuidedTune());
+
+      toneButtons.addEventListener('click', (event) => {
+        const button = event.target.closest('.tone-btn');
+        if (!button) return;
+        const midi = Number(button.dataset.midi);
+        const label = button.dataset.label;
+        if (activeToneMidi === midi && toneMode.value !== 'pluck') stopReferenceTone();
+        else playReferenceTone(midi, label).catch(console.error);
+      });
+      stopToneBtn.addEventListener('click', stopReferenceTone);
+      toneMode.value = safeStorageGet(STORAGE_TONE_MODE, 'pure');
+      if (!['pure', 'clean', 'pluck'].includes(toneMode.value)) toneMode.value = 'pure';
+      toneMode.addEventListener('change', () => {
+        safeStorageSet(STORAGE_TONE_MODE, toneMode.value);
+        stopReferenceTone();
+      });
+
+      setMetronomeBpm(metronomeBpm, { restart: false });
+      metroBpm.addEventListener('input', () => setMetronomeBpm(metroBpm.value));
+      metroMinusBtn.addEventListener('click', () => setMetronomeBpm(metronomeBpm - 5));
+      metroPlusBtn.addEventListener('click', () => setMetronomeBpm(metronomeBpm + 5));
+      metroStartBtn.addEventListener('click', () => { startMetronome().catch(console.error); });
+      metroTapBtn.addEventListener('click', tapTempo);
+
+      newCustomBtn.addEventListener('click', () => beginNewCustom(currentTuning));
+
+      addStringBtn.addEventListener('click', () => {
+        if (customDraftNotes.length >= 8) return;
+        const lastMidi = noteToMidi(customDraftNotes[customDraftNotes.length - 1]);
+        const nextMidi = clamp((lastMidi ?? 64) + 5, 20, 96);
+        customDraftNotes.push(midiToNote(nextMidi));
+        renderCustomDraft();
+      });
+
+      removeStringBtn.addEventListener('click', () => {
+        if (customDraftNotes.length <= 4) return;
+        customDraftNotes.pop();
+        renderCustomDraft();
+      });
+
+      customStringList.addEventListener('input', (event) => {
+        const input = event.target.closest('.custom-note-input');
+        if (!input) return;
+        const index = Number(input.dataset.index);
+        customDraftNotes[index] = input.value;
+        const row = input.closest('.custom-string-row');
+        const midi = noteToMidi(input.value);
+        row.classList.toggle('invalid', midi == null);
+        row.querySelector('.custom-string-frequency').textContent = midi == null ? 'Invalid' : `${freqForMidi(midi).toFixed(1)} Hz`;
+        customError.textContent = '';
+      });
+
+      customForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const name = customName.value.trim();
+        const parsed = customDraftNotes.map(noteToMidi);
+
+        if (!name) {
+          customError.textContent = 'Give this tuning a name.';
+          customName.focus();
+          return;
+        }
+        if (customDraftNotes.length < 4 || customDraftNotes.length > 8) {
+          customError.textContent = 'Custom tunings must have 4–8 strings.';
+          return;
+        }
+        if (parsed.some(midi => midi == null)) {
+          customError.textContent = 'Use notes such as E2, F#3, Bb3, or C4.';
+          return;
+        }
+        if (parsed.some(midi => {
+          const hz = freqForMidi(midi);
+          return hz < DETECTOR_MIN_HZ || hz > DETECTOR_MAX_HZ;
+        })) {
+          customError.textContent = 'Keep string pitches within the tuner range (about 25–500 Hz).';
+          return;
+        }
+        for (let i = 1; i < parsed.length; i++) {
+          if (parsed[i] <= parsed[i - 1]) {
+            customError.textContent = 'Enter strings from lowest pitch to highest pitch.';
+            return;
+          }
+        }
+
+        const tuning = {
+          id: editingCustomId || `custom-${Date.now().toString(36)}`,
+          name: name.slice(0, 32),
+          instrument: 'guitar',
+          mode: 'strings',
+          strings: customDraftNotes.map(note => canonicalNoteLabel(note))
+        };
+
+        const existingIndex = customTunings.findIndex(item => item.id === tuning.id);
+        if (existingIndex >= 0) customTunings[existingIndex] = tuning;
+        else customTunings.push(tuning);
+
+        saveCustomTunings();
+        editingCustomId = tuning.id;
+        renderSavedCustoms();
+        applyTuning(tuning.id);
+        closeCustomDialog();
+      });
+
+      savedCustomList.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const item = button.closest('.saved-custom-item');
+        const tuning = customTunings.find(entry => entry.id === item?.dataset.id);
+        if (!tuning) return;
+
+        if (button.dataset.action === 'use') {
+          applyTuning(tuning.id);
+          closeCustomDialog();
+        } else if (button.dataset.action === 'edit') {
+          editCustomTuning(tuning);
+        } else if (button.dataset.action === 'delete') {
+          customTunings = customTunings.filter(entry => entry.id !== tuning.id);
+          saveCustomTunings();
+          if (currentTuning.id === tuning.id) applyTuning('standard');
+          else renderTuningSelect();
+          renderSavedCustoms();
+          if (editingCustomId === tuning.id) beginNewCustom(currentTuning);
+        }
+      });
+
+      calibration.value = String(referenceA);
+      calValue.textContent = `A4 ${referenceA}`;
+      hapticToggle.checked = safeStorageGet(STORAGE_HAPTIC, '1') !== '0';
+      toleranceButtons.querySelectorAll('.tolerance-btn').forEach(el => {
+        const active = Number(el.dataset.tolerance) === inTuneTolerance;
+        el.classList.toggle('active', active);
+        el.setAttribute('aria-pressed', String(active));
+      });
+      updateToleranceMarkers();
+
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setStatus(false, window.isSecureContext ? 'Unsupported' : 'HTTPS required', true);
+        hint.classList.add('error');
+        hint.textContent = window.isSecureContext ? 'This browser does not support microphone input.' : 'Open the app over HTTPS or localhost to enable microphone access.';
+        startBtn.disabled = true;
+      } else if (!window.isSecureContext) {
+        setStatus(false, 'HTTPS required', true);
+        hint.classList.add('error');
+        hint.textContent = 'Microphone access needs HTTPS or localhost.';
+      } else {
+        watchMicrophonePermission();
+      }
+
+      customTunings = loadCustomTunings();
+      const rememberedTuning = safeStorageGet(STORAGE_SELECTED_TUNING, 'standard');
+      currentTuning = getTuningById(rememberedTuning);
+      applyTuning(currentTuning.id, { persist: false });
+
+      refreshMicrophoneDevices();
+      navigator.mediaDevices?.addEventListener?.('devicechange', () => refreshMicrophoneDevices());
+      registerPwa();
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopReferenceTone({ immediate: true });
+          stopMetronome();
+          suspendToolAudio();
+          releaseWakeLock();
+        }
+        if (document.hidden && running && audioContext?.state === 'running') {
+          audioContext.suspend().catch(() => {});
+        } else if (!document.hidden && running) {
+          if (audioContext?.state === 'suspended') audioContext.resume().catch(() => {});
+          requestWakeLock();
+        }
+      });
+
+      window.addEventListener('pagehide', () => {
+        stopReferenceTone({ immediate: true });
+        stopMetronome();
+        if (running || starting) stop().catch(() => {});
+        else releaseWakeLock();
+        toolAudioContext?.close().catch(() => {});
+        toolAudioContext = null;
+      });
+    })();
+  </script>
+
+<script>(() => {
+const $ = id => document.getElementById(id);
+const theme = $('themeSelect'); const device = matchMedia('(prefers-color-scheme: dark)');
+let saved='light'; try { saved=localStorage.getItem('interval-theme') || 'light'; } catch(_){}
+theme.value=['light','dark','system'].includes(saved)?saved:'light';
+function applyTheme(){const dark=theme.value==='dark'||(theme.value==='system'&&device.matches);document.documentElement.dataset.theme=dark?'dark':'light';document.querySelector('meta[name="theme-color"]').content=dark?'#101d50':'#f4f5ee';}
+theme.addEventListener('change',()=>{applyTheme();try{localStorage.setItem('interval-theme',theme.value);}catch(_){}});device.addEventListener('change',applyTheme);applyTheme();
+$('quickCalibrationBtn').addEventListener('click',()=>$('navSettingsBtn').click());
+const syncA4=()=>{$('modernA4Value').textContent=$('calibration').value+' Hz';};$('calibration').addEventListener('input',syncA4);syncA4();
+const syncButton=()=>{const b=$('startBtn');b.dataset.live=String(document.querySelector('.status-pill').classList.contains('live'));};
+new MutationObserver(syncButton).observe($('statusPill'),{attributes:true,attributeFilter:['class']});syncButton();
+})();</script><script id="interval-refinement-ui">(() => {
+  const $=id=>document.getElementById(id);
+  const app=document.querySelector('.app'),tuner=document.querySelector('.tuner'),strings=$('strings');
+  const renderSelection=()=>{
+    const b=strings.querySelector('.string-btn.active');
+    const manual=b&&b.dataset.mode!=='auto';
+    $('selectionCaption').textContent=manual?'String '+b.querySelector('.string-meta').textContent:'Auto detect';
+    tuner.dataset.targetMode=manual?'manual':'auto';
+  };
+  new MutationObserver(renderSelection).observe(strings,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});renderSelection();
+  const renderSignal=()=>{$('detailSummary').textContent='Signal · '+$('signalCaption').textContent.toLowerCase();};
+  new MutationObserver(renderSignal).observe($('signalCaption'),{childList:true,subtree:true,characterData:true});renderSignal();
+  const search=$('tuningSearch'),grid=$('tuningPresetGrid'),clear=$('clearTuningSearch');
+  const filter=()=>{const q=search.value.trim().toLocaleLowerCase();let shown=0;for(const b of grid.children){b.hidden=!b.textContent.toLocaleLowerCase().includes(q);if(!b.hidden)shown++;}clear.hidden=!search.value;$('tuningSearchEmpty').hidden=shown>0;};
+  search.addEventListener('input',filter);clear.addEventListener('click',()=>{search.value='';filter();search.focus();});
+  new MutationObserver(filter).observe(grid,{childList:true});
+  $('tuningDialog').addEventListener('close',()=>{search.value='';filter();});
+  // Keep the mobile dock clear of wrapped hints and large system fonts.
+  const dock=document.querySelector('.mic-panel');
+  const resizeDock=()=>app.style.setProperty('--mic-dock-height',Math.ceil(dock.getBoundingClientRect().height)+'px');
+  if('ResizeObserver' in window)new ResizeObserver(resizeDock).observe(dock);resizeDock();
+  const syncState=()=>{tuner.dataset.live=String($('statusPill').classList.contains('live'));};
+  new MutationObserver(syncState).observe($('statusPill'),{attributes:true,attributeFilter:['class']});syncState();
+})();
+</script></body>
+</html>

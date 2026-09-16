@@ -1,0 +1,278 @@
+{
+  "version": "1.3.0-rc.1",
+  "status": "release-candidate-device-signoff-pending",
+  "fixes": [
+    "Bass presets and low-frequency capture configuration",
+    "Bass-specific recognition anchors",
+    "Readable uncondensed control and navigation typography",
+    "Capture cancellation token and serialized cleanup",
+    "Scoped offline cache ownership and current-cache fallback",
+    "Consistent versioned assets",
+    "Failed PWA install reporting and own-registration readiness",
+    "Standalone HTML skips PWA registration",
+    "Guided cancellation clears stale note",
+    "Consistent TUNER installed name"
+  ],
+  "automated": {
+    "lifecycle": "passed",
+    "offline_mock": "passed",
+    "registration_mock": "passed",
+    "engine": {
+      "engineBlocks": "byte-identical",
+      "silence": "rejected",
+      "domHooks": "complete",
+      "results": [
+        {
+          "sampleRate": 44100,
+          "bufferSize": 4096,
+          "frequency": 65.406,
+          "detected": 65.40635053659386,
+          "centsError": 0.00927834236207865
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 4096,
+          "frequency": 73.416,
+          "detected": 73.41627049898976,
+          "centsError": 0.006378666756498055
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 4096,
+          "frequency": 82.407,
+          "detected": 82.40724528688794,
+          "centsError": 0.005153061999842133
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 4096,
+          "frequency": 110,
+          "detected": 110.00062280166367,
+          "centsError": 0.00980193085101223
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 4096,
+          "frequency": 146.832,
+          "detected": 146.83502120420553,
+          "centsError": 0.03562137531532329
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 4096,
+          "frequency": 195.998,
+          "detected": 195.99991855951438,
+          "centsError": 0.01694639384148428
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 4096,
+          "frequency": 246.942,
+          "detected": 246.95394982908797,
+          "centsError": 0.08377453189804117
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 4096,
+          "frequency": 329.628,
+          "detected": 329.6628714327791,
+          "centsError": 0.1831380182531127
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 4096,
+          "frequency": 440,
+          "detected": 440.08549071187866,
+          "centsError": 0.33634103348105454
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 4096,
+          "frequency": 65.406,
+          "detected": 65.40627056047629,
+          "centsError": 0.0071614613347165375
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 4096,
+          "frequency": 73.416,
+          "detected": 73.41633680101572,
+          "centsError": 0.00794213861709783
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 4096,
+          "frequency": 82.407,
+          "detected": 82.40740463836012,
+          "centsError": 0.008500758269612623
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 4096,
+          "frequency": 110,
+          "detected": 110.00106675307991,
+          "centsError": 0.016789002718595847
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 4096,
+          "frequency": 146.832,
+          "detected": 146.83308760161628,
+          "centsError": 0.012823403458261714
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 4096,
+          "frequency": 195.998,
+          "detected": 196.00051916997708,
+          "centsError": 0.022251476097520335
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 4096,
+          "frequency": 246.942,
+          "detected": 246.95402104542217,
+          "centsError": 0.08427378337767412
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 4096,
+          "frequency": 329.628,
+          "detected": 329.653899511243,
+          "centsError": 0.13602107315392292
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 4096,
+          "frequency": 440,
+          "detected": 440.0267763878568,
+          "centsError": 0.10535178162021955
+        }
+      ]
+    },
+    "bass": {
+      "silence": "rejected",
+      "domHooks": "complete",
+      "results": [
+        {
+          "sampleRate": 44100,
+          "bufferSize": 8192,
+          "frequency": 30.868,
+          "detected": 30.868021010965027,
+          "centsError": 0.0011784011169227843
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 8192,
+          "frequency": 36.708,
+          "detected": 36.70804078212171,
+          "centsError": 0.0019233779686909926
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 8192,
+          "frequency": 38.891,
+          "detected": 38.891057363182206,
+          "centsError": 0.0025535219190864376
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 8192,
+          "frequency": 41.203,
+          "detected": 41.203067028909416,
+          "centsError": 0.002816363756656198
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 8192,
+          "frequency": 55,
+          "detected": 55.00016654940347,
+          "centsError": 0.005242464755927019
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 8192,
+          "frequency": 73.416,
+          "detected": 73.4162610405059,
+          "centsError": 0.006155625593601826
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 8192,
+          "frequency": 97.999,
+          "detected": 97.99996430226057,
+          "centsError": 0.01703511968101133
+        },
+        {
+          "sampleRate": 44100,
+          "bufferSize": 8192,
+          "frequency": 130.813,
+          "detected": 130.8139185328245,
+          "centsError": 0.012156205560666938
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 8192,
+          "frequency": 30.868,
+          "detected": 30.868007384011158,
+          "centsError": 0.00041413275895274684
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 8192,
+          "frequency": 36.708,
+          "detected": 36.70803979646155,
+          "centsError": 0.001876892010600519
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 8192,
+          "frequency": 38.891,
+          "detected": 38.89104935874097,
+          "centsError": 0.0021972044628778063
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 8192,
+          "frequency": 41.203,
+          "detected": 41.20301981904074,
+          "centsError": 0.0008327400893050306
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 8192,
+          "frequency": 55,
+          "detected": 55.00009150575974,
+          "centsError": 0.002880322821262864
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 8192,
+          "frequency": 73.416,
+          "detected": 73.41633328492465,
+          "centsError": 0.007859225508268551
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 8192,
+          "frequency": 97.999,
+          "detected": 97.99974797668304,
+          "centsError": 0.013213581361665153
+        },
+        {
+          "sampleRate": 48000,
+          "bufferSize": 8192,
+          "frequency": 130.813,
+          "detected": 130.81368453437412,
+          "centsError": 0.009059391004762054
+        }
+      ]
+    }
+  },
+  "not_verified": [
+    "real guitar input",
+    "real-device interruptions",
+    "installed PWA offline/update",
+    "mobile haptics"
+  ]
+}

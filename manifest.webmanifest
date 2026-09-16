@@ -1,0 +1,38 @@
+{
+  "id": "./",
+  "name": "TUNER \u2014 Guitar Tuner",
+  "short_name": "TUNER",
+  "description": "A precision guitar tuner with alternate tunings, guided tuning, fine pitch visualization, reference tones and metronome.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f5ee",
+  "theme_color": "#f4f5ee",
+  "orientation": "any",
+  "categories": [
+    "music",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

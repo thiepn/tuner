@@ -1,0 +1,133 @@
+{
+  "engineBlocks": "byte-identical",
+  "silence": "rejected",
+  "domHooks": "complete",
+  "results": [
+    {
+      "sampleRate": 44100,
+      "bufferSize": 4096,
+      "frequency": 65.406,
+      "detected": 65.40635053659386,
+      "centsError": 0.00927834236207865
+    },
+    {
+      "sampleRate": 44100,
+      "bufferSize": 4096,
+      "frequency": 73.416,
+      "detected": 73.41627049898976,
+      "centsError": 0.006378666756498055
+    },
+    {
+      "sampleRate": 44100,
+      "bufferSize": 4096,
+      "frequency": 82.407,
+      "detected": 82.40724528688794,
+      "centsError": 0.005153061999842133
+    },
+    {
+      "sampleRate": 44100,
+      "bufferSize": 4096,
+      "frequency": 110,
+      "detected": 110.00062280166367,
+      "centsError": 0.00980193085101223
+    },
+    {
+      "sampleRate": 44100,
+      "bufferSize": 4096,
+      "frequency": 146.832,
+      "detected": 146.83502120420553,
+      "centsError": 0.03562137531532329
+    },
+    {
+      "sampleRate": 44100,
+      "bufferSize": 4096,
+      "frequency": 195.998,
+      "detected": 195.99991855951438,
+      "centsError": 0.01694639384148428
+    },
+    {
+      "sampleRate": 44100,
+      "bufferSize": 4096,
+      "frequency": 246.942,
+      "detected": 246.95394982908797,
+      "centsError": 0.08377453189804117
+    },
+    {
+      "sampleRate": 44100,
+      "bufferSize": 4096,
+      "frequency": 329.628,
+      "detected": 329.6628714327791,
+      "centsError": 0.1831380182531127
+    },
+    {
+      "sampleRate": 44100,
+      "bufferSize": 4096,
+      "frequency": 440,
+      "detected": 440.08549071187866,
+      "centsError": 0.33634103348105454
+    },
+    {
+      "sampleRate": 48000,
+      "bufferSize": 4096,
+      "frequency": 65.406,
+      "detected": 65.40627056047629,
+      "centsError": 0.0071614613347165375
+    },
+    {
+      "sampleRate": 48000,
+      "bufferSize": 4096,
+      "frequency": 73.416,
+      "detected": 73.41633680101572,
+      "centsError": 0.00794213861709783
+    },
+    {
+      "sampleRate": 48000,
+      "bufferSize": 4096,
+      "frequency": 82.407,
+      "detected": 82.40740463836012,
+      "centsError": 0.008500758269612623
+    },
+    {
+      "sampleRate": 48000,
+      "bufferSize": 4096,
+      "frequency": 110,
+      "detected": 110.00106675307991,
+      "centsError": 0.016789002718595847
+    },
+    {
+      "sampleRate": 48000,
+      "bufferSize": 4096,
+      "frequency": 146.832,
+      "detected": 146.83308760161628,
+      "centsError": 0.012823403458261714
+    },
+    {
+      "sampleRate": 48000,
+      "bufferSize": 4096,
+      "frequency": 195.998,
+      "detected": 196.00051916997708,
+      "centsError": 0.022251476097520335
+    },
+    {
+      "sampleRate": 48000,
+      "bufferSize": 4096,
+      "frequency": 246.942,
+      "detected": 246.95402104542217,
+      "centsError": 0.08427378337767412
+    },
+    {
+      "sampleRate": 48000,
+      "bufferSize": 4096,
+      "frequency": 329.628,
+      "detected": 329.653899511243,
+      "centsError": 0.13602107315392292
+    },
+    {
+      "sampleRate": 48000,
+      "bufferSize": 4096,
+      "frequency": 440,
+      "detected": 440.0267763878568,
+      "centsError": 0.10535178162021955
+    }
+  ]
+}
