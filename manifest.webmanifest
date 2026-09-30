@@ -2,7 +2,7 @@
   "id": "./",
   "name": "TUNER — Guitar & Bass Tuner",
   "short_name": "TUNER",
-  "description": "A precision guitar and bass tuner with alternate tunings, guided tuning, reference tones and metronome.",
+  "description": "A precision guitar and bass tuner with strobe display, capo transposition, intonation setup, alternate tunings, guided tuning, reference tones and metronome.",
   "lang": "en",
   "dir": "ltr",
   "start_url": "./?source=pwa",
