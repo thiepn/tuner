@@ -1,4 +1,4 @@
-# Release gate — 1.3.0-rc.2
+# Release gate — 1.3.0-rc.4
 
 ## Passed here
 - Detector algorithm retained; frequency floor extended to 25 Hz, bass analysis window increased to 8192 samples, bass input high-pass set to 18 Hz and bass-specific recognition anchors added.
@@ -6,6 +6,7 @@
 - Bass: 16 synthetic pitch cases from low B0 through C3 at 44.1/48 kHz, 8192-sample buffer; passed within 2 cents.
 - Capture lifecycle regression: cancellation while permission is pending; stale rejection; normal start/stop; disconnected track; denial; restart during cleanup.
 - Mock service-worker regression: installation, scope-specific cleanup, online refresh, offline navigation including query strings, cached assets, unrelated URLs ignored, all precache files present.
+- Android PWA contract: standalone display, stable app ID/scope, explicit web-app preference, 192/512 + maskable icons, launcher shortcuts, install-prompt handling and shortcut launch routing.
 - Registration regression: failed install handled, own worker activation, existing registration, standalone skips registration.
 - Browser controls: tone start/stop, metronome start/stop, guided failure restores idle. Prior iteration checks cover tuning search, settings, custom tunings and responsive views; visual system retained.
 - Embedded scripts parse; DOM hooks and unique IDs checked; release archive excludes browser simulation fixtures and development server files.

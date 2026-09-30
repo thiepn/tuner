@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0-rc.3",
+  "version": "1.3.0-rc.4",
   "status": "release-candidate-device-signoff-pending",
   "fixes": [
     "Automatic microphone gain option, enabled by default",
@@ -15,7 +15,12 @@
     "Failed PWA install reporting and own-registration readiness",
     "Standalone HTML skips PWA registration",
     "Guided cancellation clears stale note",
-    "Consistent TUNER installed name"
+    "Consistent TUNER installed name",
+    "Android-first PWA manifest hardening",
+    "Standalone installed-app touch/overscroll behavior",
+    "Android launcher shortcuts for Tuner, Tunings and Tools",
+    "Shortcut/deep-launch routing with canonical URL cleanup",
+    "Android-specific installation guidance"
   ],
   "automated": {
     "lifecycle": "passed",
@@ -271,13 +276,15 @@
           "centsError": 0.009059391004762054
         }
       ]
-    }
+    },
+    "android_pwa_contract": "passed-static-validation"
   },
   "not_verified": [
     "real guitar input",
     "real-device interruptions",
     "installed PWA offline/update",
-    "mobile haptics"
+    "mobile haptics",
+    "Android WebAPK installation and launcher shortcuts"
   ],
   "device_issue_status": "Awaiting user device verification"
 }

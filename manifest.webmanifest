@@ -1,16 +1,20 @@
 {
   "id": "./",
-  "name": "TUNER \u2014 Guitar Tuner",
+  "name": "TUNER — Guitar & Bass Tuner",
   "short_name": "TUNER",
-  "description": "A precision guitar tuner with alternate tunings, guided tuning, fine pitch visualization, reference tones and metronome.",
+  "description": "A precision guitar and bass tuner with alternate tunings, guided tuning, reference tones and metronome.",
   "lang": "en",
   "dir": "ltr",
-  "start_url": "./",
+  "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone"
+  ],
   "background_color": "#f4f5ee",
   "theme_color": "#f4f5ee",
   "orientation": "any",
+  "prefer_related_applications": false,
   "categories": [
     "music",
     "utilities"
@@ -33,6 +37,26 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tuner",
+      "short_name": "Tuner",
+      "description": "Open the pitch tuner",
+      "url": "./?view=tuner&source=shortcut"
+    },
+    {
+      "name": "Tunings",
+      "short_name": "Tunings",
+      "description": "Choose a guitar or bass tuning",
+      "url": "./?view=tunings&source=shortcut"
+    },
+    {
+      "name": "Tools",
+      "short_name": "Tools",
+      "description": "Open guided tuning, reference tones and metronome",
+      "url": "./?view=tools&source=shortcut"
     }
   ]
 }
