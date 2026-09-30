@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
   <title>TUNER — Guitar Tuner</title>
-  <meta name="app-version" content="1.3.0-rc.4">
+  <meta name="app-version" content="1.4.0-rc.1">
   <style>@font-face{font-family:Interval Display;src:url('./assets/BarlowCondensed-Bold.woff') format('woff');font-weight:700;font-display:swap}@font-face{font-family:Interval Sans;src:url('./assets/NimbusSans-Regular.woff') format('woff');font-weight:400;font-display:swap}@font-face{font-family:Interval Mono;src:url('./assets/IBMPlexMono-Regular.woff') format('woff');font-weight:400;font-display:swap}
 :root{color-scheme:light;--bg:#f4f5ee;--text:#101311;--muted:#565b60;--accent:#204ff3;--accent-soft:#e5ebff;--indicator:#e4f955;--line:#cbd0c9;--panel:#fffef8;--danger:#b52d36;--ui:'Interval Sans',sans-serif;--readout:'Interval Mono',monospace;--display:'Interval Display',Impact,sans-serif}
 :root[data-theme=dark]{color-scheme:dark;--bg:#101d50;--text:#f4f5ee;--muted:#b9c5e4;--accent:#4670ff;--accent-soft:#21376f;--line:#455585;--panel:#18285b;--danger:#ffb2b8}
@@ -50,6 +50,10 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 .tuning-state,.readout:has(.note.idle) .tuning-state,.tuner[data-target-mode=manual][data-pitch-state=waiting] .tuning-state{font-family:var(--controls);font-weight:600;font-size:20px;line-height:1.35;letter-spacing:normal}
 .meter-labels span,.meter-labels span:nth-child(3){font-family:var(--controls);font-weight:600;font-size:19px;line-height:1.2;letter-spacing:normal}
 @media(max-width:760px){.nav-btn{font-size:16px;padding:8px}.start-btn{font-size:16px;max-width:195px;min-width:110px}.context-name{font-size:23px}.tuning-state,.readout:has(.note.idle) .tuning-state,.tuner[data-target-mode=manual][data-pitch-state=waiting] .tuning-state{font-size:18px}.meter-labels span,.meter-labels span:nth-child(3){font-size:18px}}
+</style>
+
+<style id="professional-tuning">
+.mode-buttons{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.mode-btn{font:12px var(--readout);padding:10px 12px;background:var(--accent-soft)}.mode-btn.active{background:var(--accent);color:white}.capo-control select{display:block;width:100%;margin-top:10px}.strobe-panel{display:none;position:absolute;inset:0;grid-template-rows:repeat(3,1fr) auto;gap:8px;padding:8% 6% 10%;overflow:hidden}.tuner[data-display-mode=strobe] .meter{padding-right:0}.tuner[data-display-mode=strobe] .ribbon,.tuner[data-display-mode=strobe] .meter-labels{display:none}.tuner[data-display-mode=strobe] .strobe-panel{display:grid}.strobe-lane{position:relative;overflow:hidden;background:var(--accent-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.strobe-lane:before{content:'';position:absolute;inset:0 -72px;background:repeating-linear-gradient(90deg,var(--accent) 0 18px,transparent 18px 36px);animation:professional-strobe-flow var(--strobe-duration,1.2s) linear infinite;animation-play-state:paused;will-change:transform}.strobe-panel.tracking .strobe-lane:before{animation-play-state:running}.strobe-panel.flat .strobe-lane:before{animation-direction:reverse}.strobe-panel.centered .strobe-lane:before{animation-play-state:paused;opacity:.72}.strobe-lane:nth-child(2):before{background-size:28px 100%;background-image:repeating-linear-gradient(90deg,var(--text) 0 10px,transparent 10px 28px);opacity:.5}.strobe-lane:nth-child(3):before{background-size:44px 100%;opacity:.72}.strobe-center-line{position:absolute;top:7%;bottom:17%;left:50%;width:2px;background:var(--indicator);z-index:3;box-shadow:0 0 0 1px #0002}.strobe-readout{display:flex;justify-content:space-between;gap:10px;font:12px var(--readout);color:var(--muted)}.strobe-readout strong{color:var(--text);font-weight:400}.intonation-panel{grid-column:1/-1;grid-row:6;margin-top:24px;padding:20px;border-top:1px solid var(--line);background:var(--accent-soft);border-radius:4px}.intonation-head{display:flex;justify-content:space-between;gap:18px;align-items:start}.intonation-kicker{font:12px var(--readout);color:var(--accent)}.intonation-head strong{display:block;font:600 22px/1.25 var(--controls);margin-top:6px}.intonation-step{font:12px var(--readout);color:var(--muted);text-align:right}.intonation-progress{height:6px;background:var(--line);margin:16px 0 12px;overflow:hidden}.intonation-progress span{display:block;height:100%;width:0;background:var(--accent);transition:width 100ms linear}.intonation-status{font:13px/1.5 var(--readout);min-height:20px}.intonation-readings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.intonation-reading{padding:10px;background:var(--bg);border:1px solid var(--line)}.intonation-reading span{display:block;font:10px var(--readout);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.intonation-reading strong{display:block;margin-top:5px;font:600 18px var(--controls)}.intonation-verdict{margin-top:14px;font:13px/1.55 var(--readout)}.intonation-actions{display:flex;gap:8px;margin-top:14px}.intonation-actions button{flex:1}.intonation-select{display:block;width:100%;margin:10px 0 0}.intonation-live-note{font:12px/1.55 var(--readout);color:var(--muted)}@keyframes professional-strobe-flow{from{transform:translateX(0)}to{transform:translateX(36px)}}@media(max-width:760px){.strobe-panel{padding:4% 2% 7%;gap:6px}.strobe-readout{font-size:11px}.intonation-panel{order:3;width:100%;margin-top:16px;padding:16px}.intonation-readings{gap:5px}.intonation-reading{padding:8px}.intonation-reading strong{font-size:16px}.intonation-head{gap:10px}.intonation-head strong{font-size:19px}}@media(prefers-reduced-motion:reduce){.strobe-lane:before{animation:none!important}}
 </style>
 </head>
 <body>
@@ -90,7 +94,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       <div class="frequency" id="frequency">Play a clear single note</div>
             </div>
 
-        <div id="meter" class="meter" role="meter" aria-label="Pitch deviation" aria-valuemin="-50" aria-valuemax="50" aria-valuenow="0" aria-valuetext="Waiting for note"><div class="ribbon" aria-hidden="true"><div class="ribbon-scale"><div class="zero-line"></div><div id="toleranceLeft" class="tolerance-marker"></div><div id="toleranceRight" class="tolerance-marker"></div><div id="needleWrap" class="needle-wrap"></div></div></div><div class="meter-labels" aria-hidden="true"><span style="top:0%"><i></i>+50</span><span style="top:25%"><i></i>+25</span><span class="zero-label" style="top:50%"><i></i>0</span><span style="top:75%"><i></i>−25</span><span style="top:100%"><i></i>−50</span></div><div id="ticks" hidden></div></div></section>
+        <div id="meter" class="meter" role="meter" aria-label="Pitch deviation" aria-valuemin="-50" aria-valuemax="50" aria-valuenow="0" aria-valuetext="Waiting for note"><div class="ribbon" aria-hidden="true"><div class="ribbon-scale"><div class="zero-line"></div><div id="toleranceLeft" class="tolerance-marker"></div><div id="toleranceRight" class="tolerance-marker"></div><div id="needleWrap" class="needle-wrap"></div></div></div><div class="meter-labels" aria-hidden="true"><span style="top:0%"><i></i>+50</span><span style="top:25%"><i></i>+25</span><span class="zero-label" style="top:50%"><i></i>0</span><span style="top:75%"><i></i>−25</span><span style="top:100%"><i></i>−50</span></div><div id="ticks" hidden></div><div class="strobe-panel" id="strobePanel" aria-hidden="true"><div class="strobe-center-line" aria-hidden="true"></div><div class="strobe-lane"></div><div class="strobe-lane"></div><div class="strobe-lane"></div><div class="strobe-readout"><span>Precision strobe</span><strong id="strobeReadout">Waiting for pitch</strong></div></div></div></section>
 
       <section class="guided-panel" id="guidedPanel" aria-label="Guided tuning progress" hidden>
         <div class="guided-copy">
@@ -110,6 +114,25 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         </div>
       </section>
 
+      <section class="intonation-panel" id="intonationPanel" aria-label="Intonation measurement" hidden>
+        <div class="intonation-head">
+          <div><span class="intonation-kicker">INTONATION</span><strong id="intonationTarget">String 6 · E2</strong></div>
+          <div class="intonation-step" id="intonationStep">Step 1 of 3 · Open string</div>
+        </div>
+        <div class="intonation-progress" aria-hidden="true"><span id="intonationHoldFill"></span></div>
+        <div class="intonation-status" id="intonationStatus" role="status" aria-live="polite">Play the open string and hold it steady.</div>
+        <div class="intonation-readings">
+          <div class="intonation-reading"><span>Open</span><strong id="intonationOpenReading">—</strong></div>
+          <div class="intonation-reading"><span>12th harmonic</span><strong id="intonationHarmonicReading">—</strong></div>
+          <div class="intonation-reading"><span>12th fret</span><strong id="intonationFrettedReading">—</strong></div>
+        </div>
+        <div class="intonation-verdict" id="intonationVerdict">The result will compare the fretted 12th fret with the 12th-fret harmonic.</div>
+        <div class="intonation-actions">
+          <button class="guided-action" id="intonationRecaptureBtn" type="button">Recapture step</button>
+          <button class="guided-action stop" id="intonationStopBtn" type="button">Stop</button>
+        </div>
+      </section>
+
       <section class="strings-wrap" aria-label="Instrument tuning targets">
         <div class="string-heading"><span>STRINGS</span><span id="selectionCaption" class="selection-caption" aria-live="polite">Auto detect</span><div id="autoSlot"></div></div><div class="section-label"><span>Strings</span><span id="tuningLabel"></span></div>
         <div class="strings" id="strings"></div>
@@ -124,7 +147,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         </div>
         <button class="quick-settings" id="quickSettingsBtn" type="button" aria-label="Open tuner settings" hidden="">Settings</button>
       </section>
-    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><p id="captureDiagnostics" style="font:12px/1.6 var(--readout);overflow-wrap:anywhere">Build 1.3.0-rc.4 · Microphone stopped</p><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
+    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><p id="captureDiagnostics" style="font:12px/1.6 var(--readout);overflow-wrap:anywhere">Build 1.4.0-rc.1 · Microphone stopped</p><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
           <div class="precision-heading">
             <span>Fine pitch</span>
             <strong id="fineCents">±0.0¢</strong>
@@ -224,6 +247,21 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
                   <button type="button" class="tolerance-btn active" data-tolerance="5">Normal ±5¢</button>
                   <button type="button" class="tolerance-btn" data-tolerance="10">Relaxed ±10¢</button>
                 </div>
+              </div>
+              <div class="setting-cell">
+                <span class="option-label">Tuner display</span>
+                <div class="mode-buttons" id="displayModeButtons" role="group" aria-label="Tuner display mode">
+                  <button type="button" class="mode-btn active" data-display-mode="meter">Meter</button>
+                  <button type="button" class="mode-btn" data-display-mode="strobe">Strobe</button>
+                </div>
+                <div class="setting-meta">Strobe mode uses the detected cents error for a high-resolution moving-band display. Motion stops within 0.5¢.</div>
+              </div>
+              <div class="capo-control setting-cell">
+                <div class="setting-row"><label for="capoSelect">Capo / transpose</label><span class="app-status" id="capoStatus">No capo</span></div>
+                <select id="capoSelect" aria-describedby="capoHelp">
+                  <option value="0">No capo</option><option value="1">Capo 1</option><option value="2">Capo 2</option><option value="3">Capo 3</option><option value="4">Capo 4</option><option value="5">Capo 5</option><option value="6">Capo 6</option><option value="7">Capo 7</option><option value="8">Capo 8</option><option value="9">Capo 9</option><option value="10">Capo 10</option><option value="11">Capo 11</option><option value="12">Capo 12</option>
+                </select>
+                <div class="setting-meta" id="capoHelp">Targets the instrument's sounding pitches while keeping the selected tuning as the base tuning. Chromatic mode ignores capo transposition.</div>
               </div>
             </div>
           </section>
@@ -331,6 +369,18 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
               <div class="tool-note">The first beat is accented. Starting playback pauses microphone tuning to prevent the click from being detected as pitch.</div>
             </div>
           </section>
+
+          <section class="tool-surface tool-surface-intonation">
+            <div class="tool-surface-head"><span class="tool-index">04</span><div><span class="ui-kicker">Setup</span><strong>Intonation</strong></div><em>12th fret</em></div>
+            <div class="tool-grid">
+              <div class="tool-note">Measure open string, 12th-fret harmonic and fretted 12th fret. The comparison reports whether an adjustable saddle should move toward or away from the neck.</div>
+              <label class="field-label" for="intonationStringSelect">String
+                <select class="intonation-select" id="intonationStringSelect" aria-label="String for intonation test"></select>
+              </label>
+              <div class="intonation-live-note" id="intonationToolSummary">Choose a string, then start the guided measurement.</div>
+              <button class="tool-primary" id="intonationStartBtn" type="button">Start intonation check</button>
+            </div>
+          </section>
         </div>
       </div>
     </dialog>
@@ -394,7 +444,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
       const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
       const DETECTOR_MIN_HZ = 25;
-      const DETECTOR_MAX_HZ = 500;
+      const DETECTOR_MAX_HZ = 900;
       const ANALYSIS_INTERVAL_MS = 32;
       const STORAGE_CUSTOM_TUNINGS = 'guitarTuner.customTunings.v1';
       const STORAGE_SELECTED_TUNING = 'guitarTuner.selectedTuning.v1';
@@ -405,6 +455,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       const STORAGE_MIC_DEVICE = 'guitarTuner.microphoneDevice.v1';
       const STORAGE_TONE_MODE = 'guitarTuner.toneMode.v1';
       const STORAGE_HAS_DETECTED_PITCH = 'guitarTuner.hasDetectedPitch.v1';
+      const STORAGE_DISPLAY_MODE = 'guitarTuner.displayMode.v1';
+      const STORAGE_CAPO = 'guitarTuner.capo.v1';
 
       const BUILTIN_TUNINGS = [
         { id: 'standard', name: 'Standard', instrument: 'guitar', mode: 'strings', strings: ['E2','A2','D3','G3','B3','E4'] },
@@ -436,8 +488,13 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         8: [30, 35, 40, 45, 50, 55, 59, 64]
       };
       const BASS_SOURCE_ANCHORS = {4:[28,33,38,43],5:[23,28,33,38,43],6:[23,28,33,38,43,48]};
+      function effectiveCapo(tuning = currentTuning) {
+        return tuning?.mode === 'chromatic' ? 0 : capoFret;
+      }
       function sourceAnchorsFor(count) {
-        return (currentTuning.instrument === 'bass' ? BASS_SOURCE_ANCHORS : GUITAR_SOURCE_ANCHORS)[count];
+        const anchors = (currentTuning.instrument === 'bass' ? BASS_SOURCE_ANCHORS : GUITAR_SOURCE_ANCHORS)[count];
+        const shift = effectiveCapo();
+        return anchors?.map(midi => midi + shift);
       }
       function configureAnalysis() {
         if (!analyser || !audioContext) return;
@@ -476,6 +533,25 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       const toleranceButtons = $('toleranceButtons');
       const toleranceLeft = $('toleranceLeft');
       const toleranceRight = $('toleranceRight');
+      const displayModeButtons = $('displayModeButtons');
+      const capoSelect = $('capoSelect');
+      const capoStatus = $('capoStatus');
+      const strobePanel = $('strobePanel');
+      const strobeReadout = $('strobeReadout');
+      const intonationPanel = $('intonationPanel');
+      const intonationTarget = $('intonationTarget');
+      const intonationStep = $('intonationStep');
+      const intonationHoldFill = $('intonationHoldFill');
+      const intonationStatus = $('intonationStatus');
+      const intonationOpenReading = $('intonationOpenReading');
+      const intonationHarmonicReading = $('intonationHarmonicReading');
+      const intonationFrettedReading = $('intonationFrettedReading');
+      const intonationVerdict = $('intonationVerdict');
+      const intonationRecaptureBtn = $('intonationRecaptureBtn');
+      const intonationStopBtn = $('intonationStopBtn');
+      const intonationStringSelect = $('intonationStringSelect');
+      const intonationToolSummary = $('intonationToolSummary');
+      const intonationStartBtn = $('intonationStartBtn');
       const hapticToggle = $('hapticToggle');
       const appEl = document.querySelector('.app');
       const tunerPanel = document.querySelector('.tuner');
@@ -606,6 +682,15 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       let currentTuning = BUILTIN_TUNINGS[0];
       let editingCustomId = null;
       let customDraftNotes = [...currentTuning.strings];
+      let displayMode = ['meter','strobe'].includes(safeStorageGet(STORAGE_DISPLAY_MODE, 'meter')) ? safeStorageGet(STORAGE_DISPLAY_MODE, 'meter') : 'meter';
+      let capoFret = clamp(Number(safeStorageGet(STORAGE_CAPO, '0')) || 0, 0, 12);
+      let intonationActive = false;
+      let intonationStringIndex = 0;
+      let intonationStepIndex = 0;
+      let intonationSamples = [];
+      let intonationReadings = { open: null, harmonic: null, fretted: null };
+      let intonationCapturedStep = false;
+      let intonationAdvanceTimer = null;
 
       // Auto-mode note lock. The detector answers "what pitch is present?"; this
       // layer answers "which note is the player currently trying to tune?".
@@ -710,9 +795,15 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       }
 
       function tuningTargets(tuning = currentTuning) {
+        const transpose = effectiveCapo(tuning);
         return tuning.strings
-          .map((label, index) => ({ label, midi: noteToMidi(label), index }))
-          .filter(item => item.midi != null);
+          .map((baseLabel, index) => {
+            const baseMidi = noteToMidi(baseLabel);
+            if (baseMidi == null) return null;
+            const midi = baseMidi + transpose;
+            return { label: transpose ? midiToNote(midi) : baseLabel, baseLabel, baseMidi, midi, index };
+          })
+          .filter(Boolean);
       }
 
       function getAllTunings() {
@@ -877,30 +968,36 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       function updateTuningLabels() {
         const targets = tuningTargets();
         const notes = targets.map(item => prettyNote(item.label)).join(' · ');
+        const capo = effectiveCapo();
         tuningLabel.textContent = currentTuning.mode === 'chromatic'
           ? 'Chromatic · any note'
-          : `${currentTuning.name} · ${targets.length} strings`;
+          : `${currentTuning.name} · ${targets.length} strings${capo ? ` · Capo ${capo}` : ''}`;
 
         const summaryDetail = document.createTextNode(
           currentTuning.mode === 'chromatic'
-            ? 'Any detected note · standard guitar targets remain available manually.'
-            : notes
+            ? 'Any detected note · capo transposition is ignored in chromatic mode.'
+            : `${capo ? `Capo ${capo} sounding pitches · ` : ''}${notes}`
         );
         tuningSummary.replaceChildren(summaryDetail);
 
         currentTuningName.textContent = currentTuning.name;
-        currentTuningNotes.textContent = currentTuning.mode === 'chromatic' ? 'All notes' : targets.map(item => noteParts(item.label).note).join(' · ');
+        currentTuningNotes.textContent = currentTuning.mode === 'chromatic'
+          ? 'All notes'
+          : `${capo ? `Capo ${capo} · ` : ''}${targets.map(item => noteParts(item.label).note).join(' · ')}`;
         dialogCurrentTuningName.textContent = currentTuning.name;
+        capoStatus.textContent = currentTuning.mode === 'chromatic' ? 'Ignored in chromatic' : capo ? `Capo ${capo}` : 'No capo';
       }
 
       function setAutoTargetLabel() {
+        const capo = effectiveCapo();
         targetLabel.textContent = currentTuning.mode === 'chromatic'
           ? 'Auto chromatic'
-          : `Auto · ${currentTuning.name}`;
+          : `Auto · ${currentTuning.name}${capo ? ` · Capo ${capo}` : ''}`;
       }
 
       function applyTuning(id, { persist = true } = {}) {
         if (guidedActive) stopGuidedTune();
+        if (intonationActive) stopIntonation({ keepTarget: false });
         stopReferenceTone();
         currentTuning = getTuningById(id);
         configureAnalysis();
@@ -1032,6 +1129,29 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           button.setAttribute('aria-label', `Play ${prettyNote(target.label)} reference tone`);
           toneButtons.appendChild(button);
         });
+
+        const previousIntonationIndex = Number(intonationStringSelect.value);
+        intonationStringSelect.replaceChildren();
+        const eligibleIntonationTargets = [];
+        targets.forEach((target, index) => {
+          if (freqForMidi(target.midi + 12) > DETECTOR_MAX_HZ) return;
+          eligibleIntonationTargets.push(index);
+          const option = document.createElement('option');
+          option.value = String(index);
+          option.textContent = `String ${targets.length - index} · ${prettyNote(target.label)}`;
+          intonationStringSelect.appendChild(option);
+        });
+        const nextIndex = eligibleIntonationTargets.includes(previousIntonationIndex)
+          ? previousIntonationIndex
+          : (eligibleIntonationTargets[0] ?? 0);
+        intonationStringSelect.value = String(nextIndex);
+        intonationToolSummary.textContent = targets.length
+          ? `${currentTuning.name}${effectiveCapo() ? ` · Capo ${effectiveCapo()}` : ''} · compare harmonic and fretted 12th fret`
+          : 'No string targets are available.';
+        intonationStartBtn.disabled = !eligibleIntonationTargets.length || currentTuning.mode === 'chromatic';
+        if (currentTuning.mode === 'chromatic') intonationToolSummary.textContent = 'Choose a string-based tuning before running an intonation check.';
+        else if (!eligibleIntonationTargets.length) intonationToolSummary.textContent = 'No current string has a 12th-fret pitch inside the supported measurement range.';
+        else if (eligibleIntonationTargets.length < targets.length) intonationToolSummary.textContent += ` · ${targets.length - eligibleIntonationTargets.length} high string(s) unavailable at this transposition`;
       }
 
       function renderGuidedProgress() {
@@ -1104,6 +1224,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       }
 
       async function startGuidedTune() {
+        if (intonationActive) stopIntonation({ keepTarget: false });
         stopReferenceTone({ immediate: true });
         stopMetronome();
         const targets = toolTargets();
@@ -1189,6 +1310,231 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
             guidedAdvanceTimer = null;
             if (guidedActive) setGuidedTarget(next);
           }, 850);
+        }
+      }
+
+      function applyDisplayMode(mode, { persist = true } = {}) {
+        displayMode = mode === 'strobe' ? 'strobe' : 'meter';
+        tunerPanel.dataset.displayMode = displayMode;
+        displayModeButtons.querySelectorAll('[data-display-mode]').forEach(button => {
+          const active = button.dataset.displayMode === displayMode;
+          button.classList.toggle('active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+        strobePanel.setAttribute('aria-hidden', String(displayMode !== 'strobe'));
+        if (persist) safeStorageSet(STORAGE_DISPLAY_MODE, displayMode);
+      }
+
+      function applyCapo(fret, { persist = true } = {}) {
+        if (guidedActive) stopGuidedTune();
+        if (intonationActive) stopIntonation({ keepTarget: false });
+        stopReferenceTone({ immediate: true });
+        capoFret = clamp(Math.round(Number(fret) || 0), 0, 12);
+        capoSelect.value = String(capoFret);
+        if (persist) safeStorageSet(STORAGE_CAPO, String(capoFret));
+        selectedMidi = null;
+        selectedName = null;
+        resetTracker();
+        resetAutoLock();
+        configureAnalysis();
+        renderStringTargets();
+        updateTuningLabels();
+        renderToolTargets();
+        setAutoTargetLabel();
+        resetDisplay();
+      }
+
+      function clearStrobeDisplay() {
+        strobePanel.classList.remove('tracking', 'flat', 'sharp', 'centered');
+        strobePanel.querySelectorAll('.strobe-lane').forEach(lane => {
+          lane.style.removeProperty('--strobe-duration');
+          const visual = lane;
+          visual.style.animationDuration = '';
+        });
+        strobeReadout.textContent = 'Waiting for pitch';
+      }
+
+      function updateStrobeDisplay(cents) {
+        if (displayMode !== 'strobe' || !Number.isFinite(cents)) {
+          if (!Number.isFinite(cents)) clearStrobeDisplay();
+          return;
+        }
+        const abs = Math.abs(cents);
+        const centered = abs <= 0.5;
+        strobePanel.classList.add('tracking');
+        strobePanel.classList.toggle('flat', !centered && cents < 0);
+        strobePanel.classList.toggle('sharp', !centered && cents > 0);
+        strobePanel.classList.toggle('centered', centered);
+        if (centered) strobePanel.classList.remove('flat', 'sharp');
+        const duration = clamp(3.0 - Math.min(abs, 30) * 0.092, 0.24, 3.0);
+        strobePanel.querySelectorAll('.strobe-lane').forEach((lane, index) => {
+          const visual = lane;
+          const multiplier = [1, 0.82, 1.24][index] || 1;
+          const pseudoDuration = Math.max(0.2, duration * multiplier);
+          visual.style.setProperty('--strobe-duration', `${pseudoDuration.toFixed(2)}s`);
+          visual.style.animationDuration = `${pseudoDuration.toFixed(2)}s`;
+          visual.style.animationDirection = cents < 0 ? 'reverse' : 'normal';
+          visual.style.animationPlayState = centered || prefersReducedMotion() ? 'paused' : 'running';
+        });
+        strobeReadout.textContent = centered
+          ? `Centered · ${cents >= 0 ? '+' : '−'}${abs.toFixed(1)}¢`
+          : `${cents > 0 ? '+' : '−'}${abs.toFixed(1)}¢ · ${cents > 0 ? 'sharp' : 'flat'}`;
+      }
+
+      function intonationSteps() {
+        return [
+          { key: 'open', label: 'Open string', octave: 0, instruction: 'Play the open string and hold it steady.' },
+          { key: 'harmonic', label: '12th-fret harmonic', octave: 12, instruction: 'Lightly touch the 12th fret and play the harmonic.' },
+          { key: 'fretted', label: 'Fretted 12th fret', octave: 12, instruction: 'Fret normally at the 12th fret and let the note settle.' }
+        ];
+      }
+
+      function resetIntonationSamples() {
+        intonationSamples = [];
+        intonationCapturedStep = false;
+        intonationHoldFill.style.width = '0%';
+      }
+
+      function formatIntonationCents(value) {
+        if (!Number.isFinite(value)) return '—';
+        return `${value > 0 ? '+' : value < 0 ? '−' : '±'}${Math.abs(value).toFixed(1)}¢`;
+      }
+
+      function renderIntonationReadings() {
+        intonationOpenReading.textContent = formatIntonationCents(intonationReadings.open);
+        intonationHarmonicReading.textContent = formatIntonationCents(intonationReadings.harmonic);
+        intonationFrettedReading.textContent = formatIntonationCents(intonationReadings.fretted);
+      }
+
+      function renderIntonationVerdict() {
+        const harmonic = intonationReadings.harmonic;
+        const fretted = intonationReadings.fretted;
+        if (!Number.isFinite(harmonic) || !Number.isFinite(fretted)) {
+          intonationVerdict.textContent = 'The result will compare the fretted 12th fret with the 12th-fret harmonic.';
+          return;
+        }
+        const delta = fretted - harmonic;
+        const abs = Math.abs(delta);
+        if (abs <= 2) {
+          intonationVerdict.textContent = `Intonation is within ±2¢. Fretted vs harmonic difference: ${formatIntonationCents(delta)}.`;
+        } else if (delta > 0) {
+          intonationVerdict.textContent = `Fretted 12th fret is ${abs.toFixed(1)}¢ sharp versus the harmonic. If the saddle is adjustable, lengthen the string by moving the saddle away from the neck.`;
+        } else {
+          intonationVerdict.textContent = `Fretted 12th fret is ${abs.toFixed(1)}¢ flat versus the harmonic. If the saddle is adjustable, shorten the string by moving the saddle toward the neck.`;
+        }
+      }
+
+      function setIntonationStep(index) {
+        if (!intonationActive) return;
+        const targets = tuningTargets();
+        const target = targets[intonationStringIndex];
+        if (!target) return;
+        const steps = intonationSteps();
+        intonationStepIndex = clamp(index, 0, steps.length - 1);
+        const step = steps[intonationStepIndex];
+        const targetMidi = target.midi + step.octave;
+        selectedMidi = targetMidi;
+        selectedName = midiToNote(targetMidi);
+        resetTracker();
+        resetAutoLock();
+        resetIntonationSamples();
+        renderStringTargets();
+        const stringNumber = targets.length - intonationStringIndex;
+        intonationTarget.textContent = `String ${stringNumber} · ${prettyNote(target.label)}`;
+        intonationStep.textContent = `Step ${intonationStepIndex + 1} of 3 · ${step.label}`;
+        intonationStatus.textContent = step.instruction;
+        targetLabel.textContent = `Intonation · ${step.label} · ${prettyNote(selectedName)}`;
+        const parts = noteParts(selectedName);
+        noteEl.classList.remove('idle');
+        noteEl.textContent = parts.note;
+        octaveEl.textContent = parts.octave;
+        centsEl.textContent = '—';
+        setNeedle(0, { immediate: true });
+        setTuneState(0, false);
+      }
+
+      async function startIntonation() {
+        if (currentTuning.mode === 'chromatic') return;
+        if (guidedActive) stopGuidedTune();
+        stopReferenceTone({ immediate: true });
+        stopMetronome();
+        const targets = tuningTargets();
+        if (!targets.length) return;
+        intonationStringIndex = clamp(Number(intonationStringSelect.value) || 0, 0, targets.length - 1);
+        intonationActive = true;
+        intonationReadings = { open: null, harmonic: null, fretted: null };
+        renderIntonationReadings();
+        renderIntonationVerdict();
+        intonationPanel.hidden = false;
+        intonationStartBtn.textContent = 'Restart intonation check';
+        clearTimeout(intonationAdvanceTimer);
+        setIntonationStep(0);
+        closeSectionDialog(toolsDialog);
+        setNavigationState('tuner');
+        if (!running) {
+          const started = await start();
+          if (!started) stopIntonation({ keepTarget: false });
+        }
+      }
+
+      function stopIntonation({ keepTarget = false } = {}) {
+        clearTimeout(intonationAdvanceTimer);
+        intonationAdvanceTimer = null;
+        intonationActive = false;
+        intonationPanel.hidden = true;
+        intonationStartBtn.textContent = 'Start intonation check';
+        resetIntonationSamples();
+        if (!keepTarget) {
+          selectedMidi = null;
+          selectedName = null;
+          resetTracker();
+          resetAutoLock();
+          renderStringTargets();
+          setAutoTargetLabel();
+          resetDisplay();
+        }
+      }
+
+      function registerIntonationReading(cents, result) {
+        if (!intonationActive || intonationCapturedStep || !Number.isFinite(cents)) return;
+        if ((result?.confidence || 0) < 0.82 || Math.abs(cents) > 50) {
+          intonationStatus.textContent = 'Hold a clear, steady note near the target pitch.';
+          intonationHoldFill.style.width = '0%';
+          intonationSamples = [];
+          return;
+        }
+        intonationSamples.push(cents);
+        if (intonationSamples.length > 10) intonationSamples.shift();
+        intonationHoldFill.style.width = `${Math.min(100, intonationSamples.length * 10)}%`;
+        if (intonationSamples.length < 8) {
+          intonationStatus.textContent = `Hold steady… ${Math.min(100, intonationSamples.length * 10)}%`;
+          return;
+        }
+        const windowed = intonationSamples.slice(-8);
+        const spread = Math.max(...windowed) - Math.min(...windowed);
+        if (spread > 3) {
+          intonationStatus.textContent = 'Pitch is still moving. Let the note settle.';
+          return;
+        }
+        const reading = median(windowed);
+        const step = intonationSteps()[intonationStepIndex];
+        if (step.key === 'open' && Math.abs(reading) > 5) {
+          intonationStatus.textContent = `Tune the open string closer first (${formatIntonationCents(reading)}). Aim for ±5¢.`;
+          return;
+        }
+        intonationCapturedStep = true;
+        intonationReadings[step.key] = reading;
+        intonationHoldFill.style.width = '100%';
+        intonationStatus.textContent = `Captured ${step.label}: ${formatIntonationCents(reading)}.`;
+        renderIntonationReadings();
+        renderIntonationVerdict();
+        if (intonationStepIndex < 2) {
+          intonationAdvanceTimer = setTimeout(() => {
+            if (intonationActive) setIntonationStep(intonationStepIndex + 1);
+          }, 650);
+        } else {
+          intonationStep.textContent = 'Complete · Intonation result';
+          intonationStatus.textContent = 'Measurement complete. Adjust the saddle only in small increments, then repeat the check.';
         }
       }
 
@@ -1502,6 +1848,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           driftMover.style.animationPlayState = 'paused';
           driftMover.style.transform = 'translateX(0)';
         }
+        clearStrobeDisplay();
         updateSignalVisual(null);
       }
 
@@ -2403,7 +2750,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
       function updatePitch(result) {
         const inputDb = result?.rms > 0 ? (20 * Math.log10(result.rms)).toFixed(0) + ' dBFS' : 'no audio samples';
-        $('captureDiagnostics').textContent = `Build 1.3.0-rc.4 · Audio ${audioContext?.state || 'stopped'} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}%`;
+        $('captureDiagnostics').textContent = `Build 1.4.0-rc.1 · Audio ${audioContext?.state || 'stopped'} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}%`;
         updateSignalVisual(result);
         if (!result?.pitch) {
           noPitchFrames++;
@@ -2467,23 +2814,29 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           noteEl.classList.remove('idle');
           noteEl.textContent = parts.note;
           octaveEl.textContent = parts.octave;
-          targetLabel.textContent = `Target ${prettyNote(selectedName)} · ${targetFreq.toFixed(1)} Hz`;
+          targetLabel.textContent = intonationActive
+            ? `Intonation · ${intonationSteps()[intonationStepIndex].label} · ${prettyNote(selectedName)}`
+            : `Target ${prettyNote(selectedName)} · ${targetFreq.toFixed(1)} Hz`;
         }
 
-        if (selectedMidi != null && isClearlyDifferentSelectedString(pitch, targetMidi)) {
+        if (selectedMidi != null && !intonationActive && isClearlyDifferentSelectedString(pitch, targetMidi)) {
           showDifferentStringPrompt(pitch, targetMidi, targetDisplay, result);
           return;
         }
 
         frequencyEl.textContent = `${pitch.toFixed(2)} Hz`;
         hint.classList.remove('error');
-        hint.textContent = 'Pluck one string and let it ring.';
+        hint.textContent = intonationActive
+          ? intonationSteps()[intonationStepIndex].instruction
+          : 'Pluck one string and let it ring.';
 
         const displayCents = Math.round(cents);
         centsEl.textContent = displayCents > 0 ? `+${displayCents}` : `${displayCents}`;
         setNeedle(cents);
         setTuneState(cents, true);
         updateFineVisuals(cents, result);
+        updateStrobeDisplay(cents);
+        registerIntonationReading(cents, result);
         registerGuidedLock(performance.now());
       }
 
@@ -2606,7 +2959,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
             if (!active) {
               resetDisplay();
               hint.textContent = 'Audio was interrupted. Tap Resume audio to continue.';
-              $('captureDiagnostics').textContent = `Build 1.3.0-rc.4 · Audio ${audioContext.state}`;
+              $('captureDiagnostics').textContent = `Build 1.4.0-rc.1 · Audio ${audioContext.state}`;
             }
           });
           await audioContext.resume();
@@ -2743,6 +3096,19 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         if (running || starting) { await stop(); await start(); }
       });
 
+      displayModeButtons.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-display-mode]');
+        if (!button) return;
+        applyDisplayMode(button.dataset.displayMode);
+      });
+      capoSelect.addEventListener('change', () => applyCapo(capoSelect.value));
+      intonationStartBtn.addEventListener('click', () => { startIntonation().catch(console.error); });
+      intonationRecaptureBtn.addEventListener('click', () => {
+        if (!intonationActive) return;
+        setIntonationStep(intonationStepIndex);
+      });
+      intonationStopBtn.addEventListener('click', () => stopIntonation({ keepTarget: false }));
+
       updateToleranceMarkers();
       if (!('vibrate' in navigator)) {hapticControl.classList.add('unsupported'); hapticToggle.disabled=true; hapticControl.querySelector('small').textContent='Haptic feedback is not available in this browser.';}
 
@@ -2819,6 +3185,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         const btn = event.target.closest('.string-btn');
         if (!btn) return;
         if (guidedActive) stopGuidedTune({ keepTarget: true });
+        if (intonationActive) stopIntonation({ keepTarget: true });
 
         strings.querySelectorAll('.string-btn').forEach(el => {el.classList.remove('active');el.setAttribute('aria-pressed','false');});
         btn.classList.add('active');
@@ -3032,6 +3399,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         el.setAttribute('aria-pressed', String(active));
       });
       updateToleranceMarkers();
+      capoSelect.value = String(capoFret);
+      applyDisplayMode(displayMode, { persist: false });
 
       if (!navigator.mediaDevices?.getUserMedia) {
         setStatus(false, window.isSecureContext ? 'Unsupported' : 'HTTPS required', true);
