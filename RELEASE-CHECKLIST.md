@@ -1,4 +1,4 @@
-# Release gate — 1.3.0-rc.4
+# Release gate — 1.4.0-rc.1
 
 ## Passed here
 - Detector algorithm retained; frequency floor extended to 25 Hz, bass analysis window increased to 8192 samples, bass input high-pass set to 18 Hz and bass-specific recognition anchors added.
@@ -7,6 +7,8 @@
 - Capture lifecycle regression: cancellation while permission is pending; stale rejection; normal start/stop; disconnected track; denial; restart during cleanup.
 - Mock service-worker regression: installation, scope-specific cleanup, online refresh, offline navigation including query strings, cached assets, unrelated URLs ignored, all precache files present.
 - Android PWA contract: standalone display, stable app ID/scope, explicit web-app preference, 192/512 + maskable icons, launcher shortcuts, install-prompt handling and shortcut launch routing.
+- P1 Professional Tuning contract: persisted Meter/Strobe modes, capo 0–12 sounding-target transposition, intonation workflow and saddle-direction guidance.
+- High-register detector regression: 493.883, 659.255, 783.991 and 880 Hz at 44.1/48 kHz pass within 3 cents; observed maximum synthetic error below 1.39 cents.
 - Registration regression: failed install handled, own worker activation, existing registration, standalone skips registration.
 - Browser controls: tone start/stop, metronome start/stop, guided failure restores idle. Prior iteration checks cover tuning search, settings, custom tunings and responsive views; visual system retained.
 - Embedded scripts parse; DOM hooks and unique IDs checked; release archive excludes browser simulation fixtures and development server files.
@@ -21,6 +23,9 @@ Use the deployed HTTPS build on the primary phone and a desktop browser.
 - [ ] Install, open once online, close, disable networking and reopen. Verify fonts/icons and tuner operation offline.
 - [ ] Update an existing installation; close/reopen and confirm the new build with saved preferences intact.
 - [ ] Check portrait/landscape, short screens, dark theme, keyboard navigation and available haptic feedback.
+- [ ] Compare Meter and Strobe on real sustained guitar/bass notes; confirm correct movement direction and that Strobe visibly settles at center.
+- [ ] Test capo positions 1, 2, 5, 7 and 12 against an external reference; verify displayed and sounding targets agree.
+- [ ] Run intonation on at least two strings against a trusted tuner and verify the saddle-direction recommendation.
 
 The cloud browser preview is HTTP; actual microphone and service-worker installation were not testable here. The checkboxes above are deliberately unmarked.
 
