@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0-rc.4",
+  "version": "1.4.0-rc.1",
   "status": "release-candidate-device-signoff-pending",
   "fixes": [
     "Automatic microphone gain option, enabled by default",
@@ -20,7 +20,13 @@
     "Standalone installed-app touch/overscroll behavior",
     "Android launcher shortcuts for Tuner, Tunings and Tools",
     "Shortcut/deep-launch routing with canonical URL cleanup",
-    "Android-specific installation guidance"
+    "Android-specific installation guidance",
+    "P1 Professional Tuning: precision strobe display",
+    "P1 Professional Tuning: capo/transposition targets from fret 0 through 12",
+    "P1 Professional Tuning: guided 12th-fret intonation measurement",
+    "Intonation saddle-direction guidance using harmonic-versus-fretted difference",
+    "High-register pitch detection extended to 900 Hz",
+    "Unsupported high intonation targets are omitted instead of misreported"
   ],
   "automated": {
     "lifecycle": "passed",
@@ -277,14 +283,32 @@
         }
       ]
     },
-    "android_pwa_contract": "passed-static-validation"
+    "android_pwa_contract": "passed-static-validation",
+    "professional_tuning_contract": "passed",
+    "high_register": {
+      "status": "passed",
+      "frequencies_hz": [
+        493.883,
+        659.255,
+        783.991,
+        880
+      ],
+      "sample_rates_hz": [
+        44100,
+        48000
+      ],
+      "max_abs_cents_error": 1.3814333904292315
+    }
   },
   "not_verified": [
     "real guitar input",
     "real-device interruptions",
     "installed PWA offline/update",
     "mobile haptics",
-    "Android WebAPK installation and launcher shortcuts"
+    "Android WebAPK installation and launcher shortcuts",
+    "real-device strobe behavior",
+    "real-device capo target verification",
+    "real-device intonation guidance"
   ],
   "device_issue_status": "Awaiting user device verification"
 }
