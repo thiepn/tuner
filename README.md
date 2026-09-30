@@ -23,7 +23,7 @@ See RELEASE-CHECKLIST.md, release-report.json and tests/. Run the Node test file
 Source baseline: recovered guitar-tuner-modern-final application. Fonts and icons have licenses in assets/. No deployment has been performed.
 
 ## Microphone compatibility update
-Quiet input (automatic gain) is now the default; Settings → Input sensitivity can restore unprocessed capture. A muted destination keeps the audio graph connected without playing the microphone. Interrupted audio shows Resume audio. Pitch detail reports build, audio state, input dBFS, detector rejection reason and confidence for device troubleshooting. Browser generated-input capture and all eight test scripts pass; the reported real-device failure has not yet been confirmed resolved.
+Quiet input (automatic gain) is now the default; Settings → Input sensitivity can restore unprocessed capture. A muted destination keeps the audio graph connected without playing the microphone. Interrupted audio shows Resume audio. Pitch detail reports build, audio state, input dBFS, detector rejection reason and confidence for device troubleshooting. Browser generated-input capture and all ten test scripts pass; the reported real-device failure has not yet been confirmed resolved.
 
 ## Android PWA integration
 The installed Android experience uses standalone display mode, maskable launcher artwork, a stable manifest identity, offline service-worker caching, safe-area aware layout, pull-to-refresh suppression in the app shell, and launcher shortcuts for Tuner, Tunings and Tools. Shortcut launch parameters are consumed and removed so the installed app returns to a clean canonical URL.
