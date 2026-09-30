@@ -9,7 +9,7 @@ for(const fn of ['applyDisplayMode','applyCapo','updateStrobeDisplay','startInto
 assert(source.includes("const STORAGE_DISPLAY_MODE = 'guitarTuner.displayMode.v1'"));
 assert(source.includes("const STORAGE_CAPO = 'guitarTuner.capo.v1'"));
 assert(source.includes("motion stops within 0.5¢"));
-assert(source.includes("move the saddle away from the neck"));
-assert(source.includes("move the saddle toward the neck"));
+assert(source.includes("moving the saddle away from the neck"));
+assert(source.includes("moving the saddle toward the neck"));
 assert(source.includes("return { label: transpose ? midiToNote(midi) : baseLabel"));
 console.log('PASS: professional tuner UI, persistence, capo targets, strobe and intonation workflow present');
