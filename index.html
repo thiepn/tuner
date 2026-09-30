@@ -2826,7 +2826,9 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
         frequencyEl.textContent = `${pitch.toFixed(2)} Hz`;
         hint.classList.remove('error');
-        hint.textContent = 'Pluck one string and let it ring.';
+        hint.textContent = intonationActive
+          ? intonationSteps()[intonationStepIndex].instruction
+          : 'Pluck one string and let it ring.';
 
         const displayCents = Math.round(cents);
         centsEl.textContent = displayCents > 0 ? `+${displayCents}` : `${displayCents}`;
