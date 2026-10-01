@@ -13,5 +13,7 @@ assert(source.includes("track.addEventListener('unmute'"));
 assert(source.includes('analysisCostMs = analysisCostMs > 0 ? analysisCostMs * 0.82 + cost * 0.18 : cost'));
 assert(source.includes('resetTracker({ preserveNoPitch: true })'));
 assert(source.includes('confidence < 0.82'));
+assert(source.includes('const requiredLockFrames = confidence < 0.82 ? 6 : confidence < 0.90 ? 5 : 4'));
+assert(source.includes('Input is clipping. Move the instrument or microphone slightly farther apart.'));
 assert(source.includes("role=\"status\" aria-live=\"polite\" aria-atomic=\"true\""));
 console.log('PASS: P4 adaptive cadence, interruption recovery, diagnostics and accessibility contract');
