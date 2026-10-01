@@ -564,6 +564,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         return tuning?.mode === 'chromatic' || !profile.capo ? 0 : Math.min(capoFret, maxSafeCapo(tuning));
       }
       function sourceAnchorsFor(count) {
+        if (currentTuning.id?.startsWith('custom-')) return undefined;
         const table = currentTuning.instrument === 'bass'
           ? BASS_SOURCE_ANCHORS
           : currentTuning.instrument === 'guitar'
@@ -970,6 +971,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
       function renderInstrumentFilters() {
         if (!validInstrumentFilter(activeInstrumentFilter)) activeInstrumentFilter = 'all';
+        if (activeInstrumentFilter === 'saved' && !customTunings.length) activeInstrumentFilter = 'all';
+        if (activeInstrumentFilter === 'custom' && !customTunings.some(tuning => tuning.instrument === 'custom')) activeInstrumentFilter = 'all';
         instrumentFilters.replaceChildren();
         const validFavoriteCount = getAllTunings().filter(tuning => favoriteTuningIds.has(tuning.id)).length;
         const options = [
