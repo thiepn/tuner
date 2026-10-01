@@ -1,4 +1,4 @@
-# Release gate — 1.4.0-rc.1
+# Release gate — 1.5.0-rc.1
 
 ## Passed here
 - Detector algorithm retained; frequency floor extended to 25 Hz, bass analysis window increased to 8192 samples, bass input high-pass set to 18 Hz and bass-specific recognition anchors added.
@@ -7,7 +7,9 @@
 - Capture lifecycle regression: cancellation while permission is pending; stale rejection; normal start/stop; disconnected track; denial; restart during cleanup.
 - Mock service-worker regression: installation, scope-specific cleanup, online refresh, offline navigation including query strings, cached assets, unrelated URLs ignored, all precache files present.
 - Android PWA contract: standalone display, stable app ID/scope, explicit web-app preference, 192/512 + maskable icons, launcher shortcuts, install-prompt handling and shortcut launch routing.
-- P1 Professional Tuning contract: persisted Meter/Strobe modes, capo 0–12 sounding-target transposition, intonation workflow and saddle-direction guidance.
+- P1 Professional Tuning contract: persisted Meter/Strobe modes, capo 0–12 sounding-target transposition, intonation workflow and saddle/bridge-direction guidance.
+- P2 Instrument Expansion contract: profile filters, favorites, custom instrument assignment, re-entrant target order, custom-anchor bypass and profile-aware capo/intonation behavior.
+- Expanded preset target validation: 26 built-in tunings, 39 unique target pitches, 78 detector cases at 44.1/48 kHz, zero failures, maximum synthetic error below 0.37 cent.
 - High-register detector regression: 493.883, 659.255, 783.991 and 880 Hz at 44.1/48 kHz pass within 3 cents; observed maximum synthetic error below 1.39 cents.
 - Registration regression: failed install handled, own worker activation, existing registration, standalone skips registration.
 - Browser controls: tone start/stop, metronome start/stop, guided failure restores idle. Prior iteration checks cover tuning search, settings, custom tunings and responsive views; visual system retained.
@@ -25,7 +27,12 @@ Use the deployed HTTPS build on the primary phone and a desktop browser.
 - [ ] Check portrait/landscape, short screens, dark theme, keyboard navigation and available haptic feedback.
 - [ ] Compare Meter and Strobe on real sustained guitar/bass notes; confirm correct movement direction and that Strobe visibly settles at center.
 - [ ] Test capo positions 1, 2, 5, 7 and 12 against an external reference; verify displayed and sounding targets agree.
-- [ ] Run intonation on at least two strings against a trusted tuner and verify the saddle-direction recommendation.
+- [ ] Run intonation on at least two strings against a trusted tuner and verify the saddle/bridge-direction recommendation.
+- [ ] Tune a high-G ukulele and 5-string banjo; confirm the re-entrant physical order, manual buttons and Auto targeting behave correctly.
+- [ ] Verify violin/viola/cello profiles do not expose capo or fretted-intonation behavior.
+- [ ] Verify a mandolin uses course terminology and high capo positions are range-limited when necessary.
+- [ ] Favorite built-in and custom tunings, reload/reopen the installed PWA, and confirm Favorites persists.
+- [ ] Create, edit, use and delete a re-entrant custom instrument set; confirm deleting it also clears its favorite entry.
 
 The cloud browser preview is HTTP; actual microphone and service-worker installation were not testable here. The checkboxes above are deliberately unmarked.
 
