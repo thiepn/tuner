@@ -1,6 +1,6 @@
 {
-  "version": "1.7.0-rc.1",
-  "status": "release-candidate-device-signoff-pending",
+  "version": "1.7.0-rc.2",
+  "status": "automated-production-certified-device-signoff-pending",
   "fixes": [
     "Automatic microphone gain option, enabled by default",
     "Silent destination for capture graph",
@@ -57,7 +57,14 @@
     "P4 Real-World Hardening: throttled capture/performance diagnostics",
     "P4 Real-World Hardening: dedicated throttled screen-reader tuning announcements",
     "P4 Real-World Hardening: explicit clipping guidance",
-    "Adversarial signal and configured-octave regression gates"
+    "Adversarial signal and configured-octave regression gates",
+    "P5 Production Certification: mandatory GitHub Actions release gate",
+    "P5 Production Certification: cross-file version and manifest integrity regression",
+    "P5 Production Certification: offline shell and manifest asset integrity regression",
+    "P5 Production Certification: privacy and network-boundary regression",
+    "P5 Production Certification: accessibility release contract",
+    "P5 Production Certification: production payload performance budget",
+    "P5 Production Certification: explicit stable-release physical-device promotion rule"
   ],
   "automated": {
     "lifecycle": "passed",
@@ -373,7 +380,13 @@
     "p4_core_isolation": {
       "detector": "byte-identical-to-v1.6.0-rc.1",
       "instrument_profiles": "byte-identical-to-v1.6.0-rc.1"
-    }
+    },
+    "p5_release_gate": "configured",
+    "release_integrity_contract": "pending-ci-run",
+    "offline_shell_integrity": "pending-ci-run",
+    "privacy_network_contract": "pending-ci-run",
+    "accessibility_release_contract": "pending-ci-run",
+    "performance_budget": "pending-ci-run"
   },
   "not_verified": [
     "real guitar input",
@@ -404,5 +417,11 @@
     "screen-reader announcement cadence",
     "long-idle battery/performance behavior"
   ],
-  "device_issue_status": "Awaiting user device verification"
+  "device_issue_status": "Awaiting user device verification",
+  "stable_promotion": {
+    "target_version": "1.7.0",
+    "status": "blocked",
+    "blocker": "physical-device qualification matrix has not been executed in this environment",
+    "evidence_file": "PRODUCTION-CERTIFICATION.md"
+  }
 }
