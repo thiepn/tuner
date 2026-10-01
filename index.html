@@ -3355,8 +3355,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       }
 
       function updatePitch(result) {
-        const inputDb = result?.rms > 0 ? (20 * Math.log10(result.rms)).toFixed(0) + ' dBFS' : 'no audio samples';
-        $('captureDiagnostics').textContent = `Build 1.7.0-rc.1 · Audio ${audioContext?.state || 'stopped'} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}%`;
+        updateCaptureDiagnostics(result);
         updateSignalVisual(result);
         if (!result?.pitch) {
           noPitchFrames++;
@@ -3371,14 +3370,15 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
             // target stable for about 0.6 s, then release for the next pluck.
             resetAutoLock();
           }
-          if (noPitchFrames > 24) {
-            resetTracker();
+          if (noPitchFrames === 25) {
+            resetTracker({ preserveNoPitch: true });
             resetDisplay();
           }
           return;
         }
 
         lockSilenceFrames = 0;
+        if (shouldHoldAttackTransient(result)) return;
 
         noPitchFrames = 0;
         const pitch = stabilizePitch(result.pitch, result.confidence);
@@ -3442,21 +3442,26 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         setTuneState(cents, true);
         updateFineVisuals(cents, result);
         updateStrobeDisplay(cents);
+        announceTuningStatus(targetDisplay);
         registerIntonationReading(cents, result);
         registerGuidedLock(performance.now());
       }
 
       function loop(timestamp) {
         if (!running || !analyser || !detector) return;
-        if (audioContext?.state !== 'running') {
+        if (audioContext?.state !== 'running' || trackMuted) {
           rafId = requestAnimationFrame(loop);
           return;
         }
 
-        if (timestamp - lastAnalysisAt >= ANALYSIS_INTERVAL_MS) {
+        if (timestamp - lastAnalysisAt >= currentAnalysisInterval()) {
           lastAnalysisAt = timestamp;
           analyser.getFloatTimeDomainData(analysisBuffer);
-          updatePitch(detector.analyze(analysisBuffer));
+          const startedAt = performance.now();
+          const result = detector.analyze(analysisBuffer);
+          const cost = performance.now() - startedAt;
+          analysisCostMs = analysisCostMs > 0 ? analysisCostMs * 0.82 + cost * 0.18 : cost;
+          updatePitch(result);
         }
         rafId = requestAnimationFrame(loop);
       }
