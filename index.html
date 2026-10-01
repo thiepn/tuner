@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
   <title>TUNER — Instrument Tuner</title>
-  <meta name="app-version" content="1.7.0-rc.1">
+  <meta name="app-version" content="1.7.0-rc.2">
   <style>@font-face{font-family:Interval Display;src:url('./assets/BarlowCondensed-Bold.woff') format('woff');font-weight:700;font-display:swap}@font-face{font-family:Interval Sans;src:url('./assets/NimbusSans-Regular.woff') format('woff');font-weight:400;font-display:swap}@font-face{font-family:Interval Mono;src:url('./assets/IBMPlexMono-Regular.woff') format('woff');font-weight:400;font-display:swap}
 :root{color-scheme:light;--bg:#f4f5ee;--text:#101311;--muted:#565b60;--accent:#204ff3;--accent-soft:#e5ebff;--indicator:#e4f955;--line:#cbd0c9;--panel:#fffef8;--danger:#b52d36;--ui:'Interval Sans',sans-serif;--readout:'Interval Mono',monospace;--display:'Interval Display',Impact,sans-serif}
 :root[data-theme=dark]{color-scheme:dark;--bg:#101d50;--text:#f4f5ee;--muted:#b9c5e4;--accent:#4670ff;--accent-soft:#21376f;--line:#455585;--panel:#18285b;--danger:#ffb2b8}
@@ -274,7 +274,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         </div>
         <button class="quick-settings" id="quickSettingsBtn" type="button" aria-label="Open tuner settings" hidden="">Settings</button>
       </section>
-    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><p id="captureDiagnostics" style="font:12px/1.6 var(--readout);overflow-wrap:anywhere">Build 1.7.0-rc.1 · Microphone stopped</p><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
+    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><p id="captureDiagnostics" style="font:12px/1.6 var(--readout);overflow-wrap:anywhere">Build 1.7.0-rc.2 · Microphone stopped</p><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
           <div class="precision-heading">
             <span>Fine pitch</span>
             <strong id="fineCents">±0.0¢</strong>
@@ -3095,7 +3095,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         const inputDb = result?.rms > 0 ? (20 * Math.log10(result.rms)).toFixed(0) + ' dBFS' : 'no audio samples';
         const cost = analysisCostMs > 0 ? `${analysisCostMs.toFixed(1)} ms analysis` : 'analysis idle';
         const muted = trackMuted ? ' · track muted' : '';
-        $('captureDiagnostics').textContent = `Build 1.7.0-rc.1 · Audio ${audioContext?.state || 'stopped'} · ${captureProfile}${muted} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}% · ${cost}`;
+        $('captureDiagnostics').textContent = `Build 1.7.0-rc.2 · Audio ${audioContext?.state || 'stopped'} · ${captureProfile}${muted} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}% · ${cost}`;
       }
 
       function currentAnalysisInterval() {
