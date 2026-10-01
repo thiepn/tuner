@@ -1,0 +1,15 @@
+const fs=require('fs'),assert=require('assert/strict');
+const source=fs.readFileSync('./index.html','utf8');
+assert(source.includes("history.replaceState(state, '', window.location.href)"),'Base UI history state missing');
+assert(source.includes("if (current) history.replaceState(nextState, '', window.location.href)"),'Overlay-to-overlay replacement missing');
+assert(source.includes("else history.pushState(nextState, '', window.location.href)"),'First overlay history push missing');
+assert(source.includes("if (current) {\n            history.back();"),'Overlay close must use browser history');
+assert(source.includes("setDialogOpen(tuningDialog, overlay === 'tunings')"));
+assert(source.includes("setDialogOpen(settingsDialog, overlay === 'settings')"));
+assert(source.includes("setDialogOpen(toolsDialog, overlay === 'tools')"));
+assert(source.includes("setDialogOpen(customDialog, overlay === 'custom')"));
+assert(!source.includes("showSectionDialog("),'Legacy non-history dialog opening remains');
+assert(!source.includes("closeSectionDialog(tuningDialog);"),'Legacy tuning close bypass remains');
+assert(!source.includes("closeSectionDialog(settingsDialog);"),'Legacy settings close bypass remains');
+assert(!source.includes("closeSectionDialog(toolsDialog);"),'Legacy tools close bypass remains');
+console.log('PASS: one-level overlay history keeps Android Back inside TUNER before app exit');

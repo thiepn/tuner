@@ -2,7 +2,7 @@
   "id": "./",
   "name": "TUNER — Instrument Tuner",
   "short_name": "TUNER",
-  "description": "A precision multi-instrument tuner for guitar, bass, ukulele, violin, viola, cello, mandolin and banjo, with favorites, custom string sets, strobe mode and intonation tools.",
+  "description": "A precision multi-instrument tuner with Stage Mode, landscape/mobile layouts, strobe tuning, intonation tools, favorites and offline PWA support.",
   "lang": "en",
   "dir": "ltr",
   "start_url": "./?source=pwa",
@@ -57,6 +57,12 @@
       "short_name": "Tools",
       "description": "Open guided tuning, reference tones and metronome",
       "url": "./?view=tools&source=shortcut"
+    },
+    {
+      "name": "Stage",
+      "short_name": "Stage",
+      "description": "Open the full-screen stage tuner",
+      "url": "./?view=stage&source=shortcut"
     }
   ]
 }
