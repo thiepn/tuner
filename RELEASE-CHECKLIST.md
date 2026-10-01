@@ -1,4 +1,4 @@
-# Release gate — 1.6.0-rc.1
+# Release gate — 1.7.0-rc.1
 
 ## Passed here
 - Detector algorithm retained; frequency floor extended to 25 Hz, bass analysis window increased to 8192 samples, bass input high-pass set to 18 Hz and bass-specific recognition anchors added.
@@ -10,6 +10,10 @@
 - P3 Stage & Mobile contract: immersive Stage UI, Fullscreen fallback, dynamic viewport sizing, coarse-pointer landscape layout, <=360 px portrait hardening, wake-lock recovery and update-ready UI.
 - Android Back history contract: Tunings, Tools, Settings, Custom and Stage use a one-level History API state; cancel/backdrop controls return to the tuner rather than bypassing browser history.
 - P3 detector isolation: GuitarPitchDetector source block is byte-identical to v1.5.0-rc.1.
+- P4 runtime-hardening contract: adaptive analysis cadence, transient hold, confidence-weighted tune confirmation, throttled diagnostics, track mute/unmute recovery, bounded audio resume and dedicated ARIA announcements.
+- P4 adversarial signal regression: harmonic-heavy 110 Hz, clipped 110 Hz, noisy violin E5, noisy bass B0 and broadband-noise rejection all pass.
+- P4 configured-octave regression: ambiguous low-confidence octave errors can fold only toward a configured string target; high-confidence intentional octaves remain untouched.
+- P4 regression isolation: all 39 built-in target pitches still pass at 44.1/48 kHz (78/78 cases; maximum synthetic error below 0.37 cent); detector and instrument-profile blocks are unchanged from P3.
 - P1 Professional Tuning contract: persisted Meter/Strobe modes, capo 0–12 sounding-target transposition, intonation workflow and saddle/bridge-direction guidance.
 - P2 Instrument Expansion contract: profile filters, favorites, custom instrument assignment, re-entrant target order, custom-anchor bypass and profile-aware capo/intonation behavior.
 - Expanded preset target validation: 26 built-in tunings, 39 unique target pitches, 78 detector cases at 44.1/48 kHz, zero failures, maximum synthetic error below 0.37 cent.
@@ -34,6 +38,12 @@ Use the deployed HTTPS build on the primary phone and a desktop browser.
 - [ ] Rotate while Stage is active and while the normal tuner is active; verify no clipped meter, unreachable controls or stale viewport height.
 - [ ] Test a short landscape phone viewport; confirm the tuner and string targets fit without the desktop layout or a multi-row microphone toolbar.
 - [ ] While actively tuning, background/foreground and briefly lock/unlock the phone; confirm wake lock and audio recover without a stuck state.
+- [ ] Trigger a temporary microphone interruption (Bluetooth route change, call/audio focus change, or browser mic pause) and confirm Mic interrupted recovers to Listening without requiring a full reload.
+- [ ] Test in a quiet room, ordinary room noise, and near steady fan/HVAC hum. Confirm Auto does not jump an octave or switch strings spuriously.
+- [ ] Pluck aggressively and softly. Confirm the first attack does not cause a false octave lock and clean notes remain responsive.
+- [ ] Deliberately overload the phone microphone at close range; confirm the UI reports clipping/Hot and recovers when the instrument is moved farther away.
+- [ ] With a screen reader, confirm tuning announcements occur on meaningful note/direction/lock changes rather than on every cents update.
+- [ ] Leave the tuner listening in silence for several minutes and compare responsiveness after the next pluck; confirm idle backoff does not create a perceptible wake-up delay.
 - [ ] Install an older build, then publish this build; verify Settings reports the activated update and Reload update switches the page to the new code.
 - [ ] Compare Meter and Strobe on real sustained guitar/bass notes; confirm correct movement direction and that Strobe visibly settles at center.
 - [ ] Test capo positions 1, 2, 5, 7 and 12 against an external reference; verify displayed and sounding targets agree.
