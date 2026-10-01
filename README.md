@@ -1,6 +1,6 @@
-# TUNER — Interval 1.7.0-rc.1
+# TUNER — Interval 1.7.0-rc.2
 
-Release candidate: P4 Real-World Accuracy, Reliability & Release Hardening implemented; automated and adversarial checks passed; real-device sign-off remains open. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
+Release candidate: P5 automated production certification passed in GitHub Actions. Repository, privacy, offline-package, accessibility-contract and payload-budget gates are enforced; physical-device sign-off is the only remaining blocker to v1.7.0 stable. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
 
 ## Deploy
 1. Extract this ZIP. Upload index.html, sw.js, manifest.webmanifest, assets/ and icons/ together to the same HTTPS directory. No build step or backend is required.
@@ -23,7 +23,7 @@ See RELEASE-CHECKLIST.md, release-report.json and tests/. Run the Node test file
 Source baseline: recovered guitar-tuner-modern-final application. Fonts and icons have licenses in assets/. Repository validation does not certify the live hosting environment.
 
 ## Microphone compatibility update
-Quiet input (automatic gain) is now the default; Settings → Input sensitivity can restore unprocessed capture. A muted destination keeps the audio graph connected without playing the microphone. Interrupted audio shows Resume audio. Pitch detail reports build, audio state, input dBFS, detector rejection reason and confidence for device troubleshooting. Browser generated-input capture and all seventeen test scripts pass; the reported real-device failure has not yet been confirmed resolved.
+Quiet input (automatic gain) is now the default; Settings → Input sensitivity can restore unprocessed capture. A muted destination keeps the audio graph connected without playing the microphone. Interrupted audio shows Resume audio. Pitch detail reports build, audio state, input dBFS, detector rejection reason and confidence for device troubleshooting. Browser generated-input capture and all twenty-two test scripts pass; the reported real-device failure has not yet been confirmed resolved.
 
 ## Android PWA integration
 The installed Android experience uses standalone display mode, maskable launcher artwork, a stable manifest identity, offline service-worker caching, safe-area aware layout, pull-to-refresh suppression in the app shell, and launcher shortcuts for Tuner, Tunings, Tools and Stage. Shortcut launch parameters are consumed and removed so the installed app returns to a clean canonical URL.
@@ -74,3 +74,13 @@ The installed Android experience uses standalone display mode, maskable launcher
 - **Clipping guidance:** the input assistant explicitly identifies overloaded/clipping microphone input and suggests increasing instrument–microphone distance.
 - **Adversarial regression suite:** strong 2nd/3rd harmonics, clipping, noisy high-register notes, noisy low B, broadband noise, configured-octave correction and runtime interruption contracts are now release gates.
 - **Core isolation:** `GuitarPitchDetector` and the full P2 instrument/preset block remain byte-identical to v1.6.0-rc.1.
+
+
+## P5 — Production Certification
+- **Mandatory CI release gate:** every push/PR to main runs every Node regression and validates release checksums.
+- **Release-integrity gate:** app, service-worker, README, checklist and release-report versions must agree; manifest identity/icons/install mode are validated.
+- **Offline-package gate:** every service-worker shell entry and manifest icon must exist; shortcuts must remain in app scope; unrelated same-origin/cross-origin traffic stays outside the worker.
+- **Privacy/network gate:** the app page must remain free of third-party runtime scripts, analytics, telemetry, WebSockets and runtime network requests.
+- **Accessibility release contract:** dialog labels/ARIA references, live tuning status, meter semantics, reduced-motion support, focus visibility and image alternatives are checked.
+- **Performance budget:** index <300 KiB, fonts <350 KiB, icons <450 KiB and core install payload <1.1 MiB.
+- **Stable-release rule:** automated success alone is not enough. The release stays `1.7.0-rc.2` until the physical-device matrix in `PRODUCTION-CERTIFICATION.md` has explicit pass evidence.

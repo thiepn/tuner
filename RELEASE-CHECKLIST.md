@@ -1,4 +1,4 @@
-# Release gate — 1.7.0-rc.1
+# Release gate — 1.7.0-rc.2
 
 ## Passed here
 - Detector algorithm retained; frequency floor extended to 25 Hz, bass analysis window increased to 8192 samples, bass input high-pass set to 18 Hz and bass-specific recognition anchors added.
@@ -21,6 +21,9 @@
 - Registration regression: failed install handled, own worker activation, existing registration, standalone skips registration.
 - Browser controls: tone start/stop, metronome start/stop, guided failure restores idle. Prior iteration checks cover tuning search, settings, custom tunings and responsive views; visual system retained.
 - Embedded scripts parse; DOM hooks and unique IDs checked; release archive excludes browser simulation fixtures and development server files.
+
+- P5 CI certification: **PASSED on PR #6**. All 22 regression scripts plus checksum validation passed; version consistency, offline shell completeness, privacy/network constraints, accessibility contract and payload budgets are mandatory pull-request gates.
+- P5 stable-promotion policy: repository automation cannot substitute for real microphone/OS/browser evidence; v1.7.0 stable is blocked until the physical-device matrix is explicitly passed.
 
 ## Required device sign-off before calling this a final release
 Use the deployed HTTPS build on the primary phone and a desktop browser.
