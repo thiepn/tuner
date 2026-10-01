@@ -381,12 +381,21 @@
       "detector": "byte-identical-to-v1.6.0-rc.1",
       "instrument_profiles": "byte-identical-to-v1.6.0-rc.1"
     },
-    "p5_release_gate": "configured",
-    "release_integrity_contract": "pending-ci-run",
-    "offline_shell_integrity": "pending-ci-run",
-    "privacy_network_contract": "pending-ci-run",
-    "accessibility_release_contract": "pending-ci-run",
-    "performance_budget": "pending-ci-run"
+    "p5_release_gate": "passed-ci",
+    "release_integrity_contract": "passed",
+    "offline_shell_integrity": "passed",
+    "privacy_network_contract": "passed",
+    "accessibility_release_contract": "passed",
+    "performance_budget": "passed",
+    "p5_ci_evidence": {
+      "pull_request": 6,
+      "workflow": "Release gate",
+      "workflow_run_id": 36876634798,
+      "job": "certify",
+      "result": "success",
+      "regression_files": 22,
+      "checksum_verification": "passed"
+    }
   },
   "not_verified": [
     "real guitar input",
