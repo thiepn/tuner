@@ -22,7 +22,7 @@
 - Browser controls: tone start/stop, metronome start/stop, guided failure restores idle. Prior iteration checks cover tuning search, settings, custom tunings and responsive views; visual system retained.
 - Embedded scripts parse; DOM hooks and unique IDs checked; release archive excludes browser simulation fixtures and development server files.
 
-- P5 CI certification: all regression scripts, checksum validation, version consistency, offline shell completeness, privacy/network constraints, accessibility contract and payload budgets are mandatory pull-request gates.
+- P5 CI certification: **PASSED on PR #6**. All 22 regression scripts plus checksum validation passed; version consistency, offline shell completeness, privacy/network constraints, accessibility contract and payload budgets are mandatory pull-request gates.
 - P5 stable-promotion policy: repository automation cannot substitute for real microphone/OS/browser evidence; v1.7.0 stable is blocked until the physical-device matrix is explicitly passed.
 
 ## Required device sign-off before calling this a final release
