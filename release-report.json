@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0-rc.1",
+  "version": "1.5.0-rc.1",
   "status": "release-candidate-device-signoff-pending",
   "fixes": [
     "Automatic microphone gain option, enabled by default",
@@ -26,7 +26,17 @@
     "P1 Professional Tuning: guided 12th-fret intonation measurement",
     "Intonation saddle-direction guidance using harmonic-versus-fretted difference",
     "High-register pitch detection extended to 900 Hz",
-    "Unsupported high intonation targets are omitted instead of misreported"
+    "Unsupported high intonation targets are omitted instead of misreported",
+    "P2 Instrument Expansion: instrument-first tuning library",
+    "P2 Instrument Expansion: 7-string and 8-string guitar profiles",
+    "P2 Instrument Expansion: ukulele, violin, viola, cello, mandolin and banjo profiles",
+    "P2 Instrument Expansion: persistent tuning favorites",
+    "P2 Instrument Expansion: custom instrument assignment and labels",
+    "P2 Instrument Expansion: re-entrant tuning support for built-in and custom sets",
+    "Profile-aware capo and fretted-intonation availability",
+    "Custom tunings bypass guitar/bass recognition-anchor assumptions",
+    "Mandolin course terminology",
+    "Per-tuning safe capo range limiting"
   ],
   "automated": {
     "lifecycle": "passed",
@@ -298,6 +308,19 @@
         48000
       ],
       "max_abs_cents_error": 1.3814333904292315
+    },
+    "instrument_expansion_contract": "passed",
+    "instrument_targets": {
+      "status": "passed",
+      "builtin_tunings": 26,
+      "unique_pitches": 39,
+      "sample_rates_hz": [
+        44100,
+        48000
+      ],
+      "cases": 78,
+      "failures": 0,
+      "max_abs_cents_error": 0.3692033910107074
     }
   },
   "not_verified": [
@@ -308,7 +331,12 @@
     "Android WebAPK installation and launcher shortcuts",
     "real-device strobe behavior",
     "real-device capo target verification",
-    "real-device intonation guidance"
+    "real-device intonation guidance",
+    "real-device ukulele and banjo re-entrant tuning",
+    "real-device bowed-string tuning",
+    "real-device mandolin course tuning",
+    "favorites persistence across installed-PWA restart",
+    "custom instrument workflow on device"
   ],
   "device_issue_status": "Awaiting user device verification"
 }
