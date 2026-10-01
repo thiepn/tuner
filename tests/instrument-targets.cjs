@@ -22,9 +22,9 @@ for(const t of ctx.BUILTIN_TUNINGS){
   }
 }
 const find=id=>ctx.BUILTIN_TUNINGS.find(t=>t.id===id);
-assert.deepEqual(find('ukulele-standard').strings,['G4','C4','E4','A4']);
-assert.deepEqual(find('banjo-open-g').strings,['G4','D3','G3','B3','D4']);
-assert.deepEqual(find('violin-standard').strings,['G3','D4','A4','E5']);
-assert.deepEqual(find('cello-standard').strings,['C2','G2','D3','A3']);
-assert.deepEqual(find('mandolin-standard').strings,['G3','D4','A4','E5']);
+assert.deepEqual(Array.from(find('ukulele-standard').strings),['G4','C4','E4','A4']);
+assert.deepEqual(Array.from(find('banjo-open-g').strings),['G4','D3','G3','B3','D4']);
+assert.deepEqual(Array.from(find('violin-standard').strings),['G3','D4','A4','E5']);
+assert.deepEqual(Array.from(find('cello-standard').strings),['C2','G2','D3','A3']);
+assert.deepEqual(Array.from(find('mandolin-standard').strings),['G3','D4','A4','E5']);
 console.log(`PASS: ${ctx.BUILTIN_TUNINGS.length} built-in tunings across ${profiles.size} profiles are valid and in detector range`);
