@@ -138,7 +138,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       </section>
 
       <section class="strings-wrap" aria-label="Instrument tuning targets">
-        <div class="string-heading"><span>STRINGS</span><span id="selectionCaption" class="selection-caption" aria-live="polite">Auto detect</span><div id="autoSlot"></div></div><div class="section-label"><span>Strings</span><span id="tuningLabel"></span></div>
+        <div class="string-heading"><span id="targetUnitHeading">STRINGS</span><span id="selectionCaption" class="selection-caption" aria-live="polite">Auto detect</span><div id="autoSlot"></div></div><div class="section-label"><span>Strings</span><span id="tuningLabel"></span></div>
         <div class="strings" id="strings"></div>
       </section>
 
@@ -332,7 +332,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           <section class="tool-surface tool-surface-guide">
             <div class="tool-surface-head"><span class="tool-index">01</span><div><span class="ui-kicker">Workflow</span><strong>Guided tune</strong></div><em id="guideToolTuningName">Standard</em></div>
             <div class="tool-grid">
-              <div class="tool-note" id="guideToolSummary">Tune each string from lowest to highest. A stable in-tune reading is checked off automatically.</div>
+              <div class="tool-note" id="guideToolSummary">Tune each target in instrument order. A stable in-tune reading is checked off automatically.</div>
               <button class="tool-primary" id="guidedStartBtn" type="button">Start guided tune</button>
             </div>
           </section>
@@ -548,6 +548,10 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           ? tuning.instrumentLabel
           : getInstrumentProfile(tuning).label;
       }
+      function targetUnitName(tuning = currentTuning, plural = false) {
+        const unit = getInstrumentProfile(tuning).unit === 'course' ? 'course' : 'string';
+        return plural ? unit + 's' : unit;
+      }
       function maxSafeCapo(tuning = currentTuning) {
         const profile = getInstrumentProfile(tuning);
         if (tuning?.mode === 'chromatic' || !profile.capo) return 0;
@@ -598,6 +602,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       const calibration = $('calibration');
       const calValue = $('calValue');
       const strings = $('strings');
+      const targetUnitHeading = $('targetUnitHeading');
       const ticks = $('ticks');
       const tuningState = $('tuningState');
       const confidenceReadout = $('confidenceReadout');
@@ -1103,6 +1108,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
       function renderStringTargets() {
         const targets = tuningTargets();
+        const unitName = targetUnitName(currentTuning);
+        strings.dataset.unitLabel = unitName[0].toUpperCase() + unitName.slice(1);
         strings.style.setProperty('--string-count', String(targets.length));
         strings.dataset.count = String(targets.length);
         strings.innerHTML = '';
@@ -1136,7 +1143,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           button.dataset.displayNote = label;
           button.dataset.midi = String(midi);
           button.type = 'button';
-          button.setAttribute('aria-label', `String ${total - index}, ${prettyNote(label)}, ${freqForMidi(midi).toFixed(1)} hertz`);
+          button.setAttribute('aria-label', `${unitName[0].toUpperCase() + unitName.slice(1)} ${total - index}, ${prettyNote(label)}, ${freqForMidi(midi).toFixed(1)} hertz`);
           const wireSpan = document.createElement('span');
           wireSpan.className = 'string-wire';
           wireSpan.setAttribute('aria-hidden', 'true');
@@ -1178,6 +1185,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           : `${getInstrumentLabel(currentTuning)} · ${capo ? `Capo ${capo} · ` : ''}${targets.map(item => noteParts(item.label).note).join(' · ')}`;
         dialogCurrentTuningName.textContent = `${getInstrumentLabel(currentTuning)} · ${currentTuning.name}`;
         const profile = getInstrumentProfile(currentTuning);
+        targetUnitHeading.textContent = profile.unit === 'course' ? 'COURSES' : 'STRINGS';
         const maxCapo = maxSafeCapo(currentTuning);
         capoSelect.disabled = !profile.capo || currentTuning.mode === 'chromatic';
         [...capoSelect.options].forEach(option => {
@@ -1327,8 +1335,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         guideToolTuningName.textContent = `${getInstrumentLabel(currentTuning)} · ${currentTuning.name}`;
         toneTuningName.textContent = `${getInstrumentLabel(currentTuning)} · ${currentTuning.name}`;
         guideToolSummary.textContent = targets.length
-          ? `${targets.length} strings · ${targets.map(item => prettyNote(item.label)).join(' · ')}`
-          : 'No string targets are available.';
+          ? `${targets.length} ${targetUnitName(currentTuning, true)} · ${targets.map(item => prettyNote(item.label)).join(' · ')}`
+          : 'No tuning targets are available.';
 
         toneButtons.innerHTML = '';
         toneButtons.style.setProperty('--tone-count', String(Math.max(1, targets.length)));
@@ -1355,7 +1363,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           eligibleIntonationTargets.push(index);
           const option = document.createElement('option');
           option.value = String(index);
-          option.textContent = `String ${targets.length - index} · ${prettyNote(target.label)}`;
+          const unit = targetUnitName(currentTuning);
+          option.textContent = `${unit[0].toUpperCase() + unit.slice(1)} ${targets.length - index} · ${prettyNote(target.label)}`;
           intonationStringSelect.appendChild(option);
         });
         const nextIndex = eligibleIntonationTargets.includes(previousIntonationIndex)
@@ -1382,7 +1391,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           if (index === guidedIndex && guidedActive) step.classList.add('current');
           if (guidedTuned.has(index)) step.classList.add('done');
           step.textContent = prettyNote(target.label);
-          step.setAttribute('aria-label', `String ${targets.length - index} ${prettyNote(target.label)}${guidedTuned.has(index) ? ', tuned' : ''}`);
+          step.setAttribute('aria-label', `${targetUnitName(currentTuning)[0].toUpperCase() + targetUnitName(currentTuning).slice(1)} ${targets.length - index} ${prettyNote(target.label)}${guidedTuned.has(index) ? ', tuned' : ''}`);
           guidedProgress.appendChild(step);
         });
       }
@@ -1399,13 +1408,15 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         resetAutoLock();
         renderStringTargets();
         const stringNumber = targets.length - guidedIndex;
+        const unitLabel = targetUnitName(currentTuning);
+        const unitTitle = unitLabel[0].toUpperCase() + unitLabel.slice(1);
         const parts = noteParts(target.label);
         noteEl.classList.remove('idle');
         noteEl.textContent = parts.note;
         octaveEl.textContent = parts.octave;
-        targetLabel.textContent = `Guided · String ${stringNumber} · ${prettyNote(target.label)}`;
+        targetLabel.textContent = `Guided · ${unitTitle} ${stringNumber} · ${prettyNote(target.label)}`;
         guidedKicker.textContent = guidedTuned.size === targets.length ? 'Guided tune · complete' : `Guided tune · ${guidedTuned.size}/${targets.length} tuned`;
-        guidedTarget.textContent = `String ${stringNumber} · ${prettyNote(target.label)}`;
+        guidedTarget.textContent = `${unitTitle} ${stringNumber} · ${prettyNote(target.label)}`;
         guidedTargetHz.textContent = `${freqForMidi(target.midi).toFixed(1)} Hz`;
         centsEl.textContent = '—';
         setNeedle(0, { immediate: true });
@@ -1659,7 +1670,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         resetIntonationSamples();
         renderStringTargets();
         const stringNumber = targets.length - intonationStringIndex;
-        intonationTarget.textContent = `String ${stringNumber} · ${prettyNote(target.label)}`;
+        const unitLabel = targetUnitName(currentTuning);
+        intonationTarget.textContent = `${unitLabel[0].toUpperCase() + unitLabel.slice(1)} ${stringNumber} · ${prettyNote(target.label)}`;
         intonationStep.textContent = `Step ${intonationStepIndex + 1} of 3 · ${step.label}`;
         intonationStatus.textContent = step.instruction;
         targetLabel.textContent = `Intonation · ${step.label} · ${prettyNote(selectedName)}`;
@@ -3699,7 +3711,7 @@ new MutationObserver(syncButton).observe($('statusPill'),{attributes:true,attrib
   const renderSelection=()=>{
     const b=strings.querySelector('.string-btn.active');
     const manual=b&&b.dataset.mode!=='auto';
-    $('selectionCaption').textContent=manual?'String '+b.querySelector('.string-meta').textContent:'Auto detect';
+    $('selectionCaption').textContent=manual?(strings.dataset.unitLabel||'String')+' '+b.querySelector('.string-meta').textContent:'Auto detect';
     tuner.dataset.targetMode=manual?'manual':'auto';
   };
   new MutationObserver(renderSelection).observe(strings,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});renderSelection();
