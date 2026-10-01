@@ -1,6 +1,6 @@
-# TUNER — Interval 1.5.0-rc.1
+# TUNER — Interval 1.6.0-rc.1
 
-Release candidate: P2 Instrument Expansion implemented; code/runtime checks passed; real-device sign-off remains open. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
+Release candidate: P3 Stage & Mobile Excellence implemented; code/runtime checks passed; real-device sign-off remains open. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
 
 ## Deploy
 1. Extract this ZIP. Upload index.html, sw.js, manifest.webmanifest, assets/ and icons/ together to the same HTTPS directory. No build step or backend is required.
@@ -20,13 +20,13 @@ The old amplitude gate discarded quiet strings before pitch analysis. The silenc
 ## Release verification
 See RELEASE-CHECKLIST.md, release-report.json and tests/. Run the Node test files from this package directory. These use mocked browser APIs and synthetic signals; they do not certify real microphone hardware or actual offline installation.
 
-Source baseline: recovered guitar-tuner-modern-final application. Fonts and icons have licenses in assets/. No deployment has been performed.
+Source baseline: recovered guitar-tuner-modern-final application. Fonts and icons have licenses in assets/. Repository validation does not certify the live hosting environment.
 
 ## Microphone compatibility update
-Quiet input (automatic gain) is now the default; Settings → Input sensitivity can restore unprocessed capture. A muted destination keeps the audio graph connected without playing the microphone. Interrupted audio shows Resume audio. Pitch detail reports build, audio state, input dBFS, detector rejection reason and confidence for device troubleshooting. Browser generated-input capture and all twelve test scripts pass; the reported real-device failure has not yet been confirmed resolved.
+Quiet input (automatic gain) is now the default; Settings → Input sensitivity can restore unprocessed capture. A muted destination keeps the audio graph connected without playing the microphone. Interrupted audio shows Resume audio. Pitch detail reports build, audio state, input dBFS, detector rejection reason and confidence for device troubleshooting. Browser generated-input capture and all fourteen test scripts pass; the reported real-device failure has not yet been confirmed resolved.
 
 ## Android PWA integration
-The installed Android experience uses standalone display mode, maskable launcher artwork, a stable manifest identity, offline service-worker caching, safe-area aware layout, pull-to-refresh suppression in the app shell, and launcher shortcuts for Tuner, Tunings and Tools. Shortcut launch parameters are consumed and removed so the installed app returns to a clean canonical URL.
+The installed Android experience uses standalone display mode, maskable launcher artwork, a stable manifest identity, offline service-worker caching, safe-area aware layout, pull-to-refresh suppression in the app shell, and launcher shortcuts for Tuner, Tunings, Tools and Stage. Shortcut launch parameters are consumed and removed so the installed app returns to a clean canonical URL.
 
 
 ## P1 — Professional Tuning
@@ -46,3 +46,16 @@ The installed Android experience uses standalone display mode, maskable launcher
 - **Mandolin courses:** the UI uses course terminology where appropriate rather than pretending doubled mandolin strings are independent targets.
 - **Safe capo range:** capo positions that would place an active tuning above the detector ceiling are automatically range-limited without changing the stored capo preference for other instruments.
 - **Expanded detector verification:** all 39 unique pitches used by the built-in preset library passed at 44.1 kHz and 48 kHz (78 synthetic cases total); maximum observed error was approximately 0.37 cent.
+
+
+## P3 — Stage & Mobile Excellence
+- **Stage Mode:** one-tap performance view that reuses the production tuner readout and meter/strobe instead of maintaining a second pitch UI. It exposes only the essential Auto, Meter/Strobe, microphone and Exit controls.
+- **Fullscreen where available:** browser Fullscreen is requested from the Stage button when supported; installed PWAs still get the complete CSS-based immersive view when native fullscreen is unavailable or denied.
+- **Android Back behavior:** Tunings, Tools, Settings, Custom and Stage use a one-level History API state. Back closes the current TUNER surface before a later Back leaves the app. Escape/cancel and backdrop close paths use the same state.
+- **Phone landscape layout:** short coarse-pointer landscape screens get a dedicated two-column tuner/string layout with a compact one-line microphone dock instead of inheriting the desktop layout.
+- **Tiny portrait hardening:** <=360 px layouts reduce header/navigation pressure while preserving touch targets and the core meter.
+- **Dynamic viewport handling:** Visual Viewport height is tracked into `--app-height` so Stage and phone landscape layouts respond to browser/system UI changes and rotation.
+- **Wake-lock recovery:** an unexpected screen-wake-lock release while actively tuning triggers a bounded retry; intentional release on stop/background does not.
+- **Update-ready UX:** when a newly activated service worker takes control of an existing installation, Settings surfaces a Reload update action instead of silently leaving the old page code running.
+- **Stage launcher shortcut:** Android/PWA shortcut launches directly into Stage Mode.
+- **Detector isolation:** P3 changes only the app shell and interaction layer; the production pitch detector block is byte-identical to P2.
