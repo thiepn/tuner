@@ -1,5 +1,5 @@
 {
-  "version": "1.6.0-rc.1",
+  "version": "1.7.0-rc.1",
   "status": "release-candidate-device-signoff-pending",
   "fixes": [
     "Automatic microphone gain option, enabled by default",
@@ -46,7 +46,18 @@
     "P3 Stage & Mobile Excellence: unexpected wake-lock release recovery",
     "P3 Stage & Mobile Excellence: service-worker update-ready reload action",
     "P3 Stage & Mobile Excellence: Stage Android/PWA launcher shortcut",
-    "Pitch detector retained byte-for-byte from P2"
+    "Pitch detector retained byte-for-byte from P2",
+    "P4 Real-World Hardening: confidence-limited configured-octave correction",
+    "P4 Real-World Hardening: one-frame attack-transient suppression",
+    "P4 Real-World Hardening: confidence-weighted in-tune confirmation",
+    "P4 Real-World Hardening: adaptive 32 ms active / 52 ms idle analysis cadence",
+    "P4 Real-World Hardening: one-time long-silence tracker reset",
+    "P4 Real-World Hardening: MediaStream mute/unmute recovery",
+    "P4 Real-World Hardening: bounded AudioContext automatic resume",
+    "P4 Real-World Hardening: throttled capture/performance diagnostics",
+    "P4 Real-World Hardening: dedicated throttled screen-reader tuning announcements",
+    "P4 Real-World Hardening: explicit clipping guidance",
+    "Adversarial signal and configured-octave regression gates"
   ],
   "automated": {
     "lifecycle": "passed",
@@ -334,7 +345,35 @@
     },
     "stage_mobile_contract": "passed-static-validation",
     "android_back_history_contract": "passed-static-validation",
-    "p3_detector_isolation": "byte-identical-to-v1.5.0-rc.1"
+    "p3_detector_isolation": "byte-identical-to-v1.5.0-rc.1",
+    "runtime_hardening_contract": "passed-static-validation",
+    "adversarial_signal": {
+      "status": "passed",
+      "cases": [
+        "strong second harmonic",
+        "strong third harmonic",
+        "clipped 110 Hz",
+        "noisy violin E5",
+        "noisy bass B0",
+        "broadband noise rejection"
+      ]
+    },
+    "configured_octave_guard": "passed",
+    "p4_target_regression": {
+      "status": "passed",
+      "builtin_unique_pitches": 39,
+      "sample_rates_hz": [
+        44100,
+        48000
+      ],
+      "cases": 78,
+      "failures": 0,
+      "max_abs_cents_error": 0.3692033910107074
+    },
+    "p4_core_isolation": {
+      "detector": "byte-identical-to-v1.6.0-rc.1",
+      "instrument_profiles": "byte-identical-to-v1.6.0-rc.1"
+    }
   },
   "not_verified": [
     "real guitar input",
@@ -356,7 +395,14 @@
     "short-landscape phone layout",
     "Visual Viewport behavior with Android system UI",
     "wake-lock recovery after real screen/background interruptions",
-    "service-worker update-ready flow on an existing installation"
+    "service-worker update-ready flow on an existing installation",
+    "real-device room-noise and HVAC-hum behavior",
+    "real-device hard/soft pluck transient behavior",
+    "real-device microphone mute/unmute recovery",
+    "real-device AudioContext interruption auto-resume",
+    "real-device clipping guidance",
+    "screen-reader announcement cadence",
+    "long-idle battery/performance behavior"
   ],
   "device_issue_status": "Awaiting user device verification"
 }

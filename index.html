@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
   <title>TUNER — Instrument Tuner</title>
-  <meta name="app-version" content="1.6.0-rc.1">
+  <meta name="app-version" content="1.7.0-rc.1">
   <style>@font-face{font-family:Interval Display;src:url('./assets/BarlowCondensed-Bold.woff') format('woff');font-weight:700;font-display:swap}@font-face{font-family:Interval Sans;src:url('./assets/NimbusSans-Regular.woff') format('woff');font-weight:400;font-display:swap}@font-face{font-family:Interval Mono;src:url('./assets/IBMPlexMono-Regular.woff') format('woff');font-weight:400;font-display:swap}
 :root{color-scheme:light;--bg:#f4f5ee;--text:#101311;--muted:#565b60;--accent:#204ff3;--accent-soft:#e5ebff;--indicator:#e4f955;--line:#cbd0c9;--panel:#fffef8;--danger:#b52d36;--ui:'Interval Sans',sans-serif;--readout:'Interval Mono',monospace;--display:'Interval Display',Impact,sans-serif}
 :root[data-theme=dark]{color-scheme:dark;--bg:#101d50;--text:#f4f5ee;--muted:#b9c5e4;--accent:#4670ff;--accent-soft:#21376f;--line:#455585;--panel:#18285b;--danger:#ffb2b8}
@@ -61,6 +61,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 </style>
 
 <style id="stage-mobile-excellence">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 :root{--app-height:100dvh}.stage-chrome{display:none}.update-button[hidden]{display:none!important}.stage-entry{color:var(--accent)}
 body.stage-mode{overflow:hidden;overscroll-behavior:none;touch-action:manipulation}
 body.stage-mode .app{max-width:none;width:100%;height:var(--app-height);min-height:0;margin:0;padding:max(10px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));overflow:hidden}
@@ -215,7 +216,8 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
           <div class="cents-line">
           <span class="cents" id="cents">0</span><span class="cents-unit">cents</span>
         </div>
-        <div class="tuning-state" id="tuningState" aria-live="polite">Waiting for note</div>
+        <div class="tuning-state" id="tuningState">Waiting for note</div>
+        <div class="sr-only" id="tunerAnnouncement" role="status" aria-live="polite" aria-atomic="true"></div>
       <div class="frequency" id="frequency">Play a clear single note</div>
             </div>
 
@@ -272,7 +274,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         </div>
         <button class="quick-settings" id="quickSettingsBtn" type="button" aria-label="Open tuner settings" hidden="">Settings</button>
       </section>
-    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><p id="captureDiagnostics" style="font:12px/1.6 var(--readout);overflow-wrap:anywhere">Build 1.6.0-rc.1 · Microphone stopped</p><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
+    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><p id="captureDiagnostics" style="font:12px/1.6 var(--readout);overflow-wrap:anywhere">Build 1.7.0-rc.1 · Microphone stopped</p><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
           <div class="precision-heading">
             <span>Fine pitch</span>
             <strong id="fineCents">±0.0¢</strong>
@@ -590,6 +592,8 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       const DETECTOR_MIN_HZ = 25;
       const DETECTOR_MAX_HZ = 900;
       const ANALYSIS_INTERVAL_MS = 32;
+      const ANALYSIS_IDLE_INTERVAL_MS = 52;
+      const DIAGNOSTICS_INTERVAL_MS = 250;
       const STORAGE_CUSTOM_TUNINGS = 'guitarTuner.customTunings.v1';
       const STORAGE_SELECTED_TUNING = 'guitarTuner.selectedTuning.v1';
       const STORAGE_METRONOME_BPM = 'guitarTuner.metronomeBpm.v1';
@@ -727,6 +731,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       const targetUnitHeading = $('targetUnitHeading');
       const ticks = $('ticks');
       const tuningState = $('tuningState');
+      const tunerAnnouncement = $('tunerAnnouncement');
       const confidenceReadout = $('confidenceReadout');
       const precisionModule = $('precisionModule');
       const fineCents = $('fineCents');
@@ -899,6 +904,18 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       let selectedMidi = null;
       let selectedName = null;
       let lastAnalysisAt = 0;
+      let analysisCostMs = 0;
+      let lastDiagnosticsAt = 0;
+      let lastVoicedRms = 0;
+      let lastVoicedAt = 0;
+      let transientHoldFrames = 0;
+      let trackMuted = false;
+      let activeAudioTrack = null;
+      let captureProfile = 'default';
+      let audioRecoveryTimer = null;
+      let audioRecoveryAttempts = 0;
+      let lastAnnouncedSignature = '';
+      let lastAnnouncementAt = 0;
       const rememberedTolerance = Number(safeStorageGet(STORAGE_TOLERANCE, '5'));
       let inTuneTolerance = [2, 5, 10].includes(rememberedTolerance) ? rememberedTolerance : 5;
       let customTunings = [];
@@ -2398,7 +2415,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         }
       }
 
-      function setTuneState(cents, hasPitch = true) {
+      function setTuneState(cents, hasPitch = true, confidence = 1) {
         meter.classList.toggle('has-pitch', hasPitch);
         tunerPanel.dataset.pitchState = hasPitch ? 'tracking' : 'waiting';
         meter.classList.remove('flat', 'sharp', 'in-tune');
@@ -2426,9 +2443,10 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
           inTuneFrames++;
           meter.classList.add('in-tune');
           tuningState.classList.add('in-tune');
-          setText(tuningState, inTuneFrames >= 4 ? 'In tune' : 'Centering…');
+          const requiredLockFrames = confidence < 0.82 ? 6 : confidence < 0.90 ? 5 : 4;
+          setText(tuningState, inTuneFrames >= requiredLockFrames ? 'In tune' : 'Centering…');
 
-          if (inTuneFrames >= 4) {
+          if (inTuneFrames >= requiredLockFrames) {
             const newlyConfirmed = !confirmedLock;
             setConfirmedLock(true, { flash: newlyConfirmed });
             if (!hapticFiredForLock && hapticToggle.checked && navigator.vibrate) {
@@ -2463,14 +2481,18 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         }
       }
 
-      function resetTracker() {
+      function resetTracker({ preserveNoPitch = false } = {}) {
+        const silenceFrames = noPitchFrames;
         stableLogPitch = null;
         pitchHistory = [];
         noteChangeCandidate = null;
         octaveJumpCandidate = null;
-        noPitchFrames = 0;
+        noPitchFrames = preserveNoPitch ? silenceFrames : 0;
         inTuneFrames = 0;
         hapticFiredForLock = false;
+        transientHoldFrames = 0;
+        lastVoicedRms = 0;
+        lastVoicedAt = 0;
         setConfirmedLock(false);
       }
 
@@ -2547,6 +2569,9 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       }
 
       function signalHint(result) {
+        if ((result?.peak || 0) > 0.985 || (result?.rms || 0) > 0.42) {
+          return 'Input is clipping. Move the instrument or microphone slightly farther apart.';
+        }
         switch (result?.reason) {
           case 'quiet': return 'Play one string a little louder and let it ring.';
           case 'aperiodic': return 'Mute the other strings and play one clear note.';
@@ -2999,6 +3024,106 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         return Math.abs((aLog - bLog) * 1200) <= cents;
       }
 
+      function nearestConfiguredPitchDistance(rawPitch) {
+        const targets = tuningTargets();
+        if (!targets.length || !Number.isFinite(rawPitch)) return Infinity;
+        return Math.min(...targets.map(target => Math.abs(centsBetween(rawPitch, freqForMidi(target.midi)))));
+      }
+
+      function correctConfiguredOctave(rawPitch, confidence = 1) {
+        if (selectedMidi != null || currentTuning.mode === 'chromatic' || !Number.isFinite(rawPitch)) return rawPitch;
+        if (confidence >= 0.94) return rawPitch;
+
+        const rawDistance = nearestConfiguredPitchDistance(rawPitch);
+        if (rawDistance <= 180) return rawPitch;
+
+        let bestPitch = rawPitch;
+        let bestDistance = rawDistance;
+        for (const candidate of [rawPitch * 0.5, rawPitch * 2]) {
+          if (candidate < DETECTOR_MIN_HZ || candidate > DETECTOR_MAX_HZ) continue;
+          const distance = nearestConfiguredPitchDistance(candidate);
+          if (distance <= 90 && rawDistance - distance >= 500 && distance < bestDistance) {
+            bestPitch = candidate;
+            bestDistance = distance;
+          }
+        }
+        return bestPitch;
+      }
+
+      function shouldHoldAttackTransient(result) {
+        if (!result?.pitch || !Number.isFinite(result.rms)) return false;
+        const now = performance.now();
+        const recentVoiced = lastVoicedAt > 0 && now - lastVoicedAt < 520;
+        const rmsJump = recentVoiced && lastVoicedRms > 0 &&
+          result.rms > Math.max(lastVoicedRms * 2.8, lastVoicedRms + 0.025);
+        const clippedUncertain = result.peak > 0.985 && result.confidence < 0.90;
+        const attackLike = (rmsJump && result.confidence < 0.90) || clippedUncertain;
+
+        if (attackLike && transientHoldFrames < 1) {
+          transientHoldFrames++;
+          return true;
+        }
+        transientHoldFrames = 0;
+        lastVoicedRms = result.rms;
+        lastVoicedAt = now;
+        return false;
+      }
+
+      function announceTuningStatus(targetDisplay) {
+        if (!tunerAnnouncement || !targetDisplay) return;
+        const stateText = confirmedLock
+          ? 'In tune'
+          : tuneState === 'in-tune'
+            ? 'Centering'
+            : tuneState === 'flat'
+              ? 'Tune up'
+              : tuneState === 'sharp'
+                ? 'Tune down'
+                : 'Waiting';
+        const signature = `${targetDisplay}|${stateText}`;
+        const now = performance.now();
+        if (signature === lastAnnouncedSignature || now - lastAnnouncementAt < 550) return;
+        lastAnnouncedSignature = signature;
+        lastAnnouncementAt = now;
+        tunerAnnouncement.textContent = `${prettyNote(targetDisplay)}. ${stateText}.`;
+      }
+
+      function updateCaptureDiagnostics(result, { force = false } = {}) {
+        const now = performance.now();
+        if (!force && now - lastDiagnosticsAt < DIAGNOSTICS_INTERVAL_MS) return;
+        lastDiagnosticsAt = now;
+        const inputDb = result?.rms > 0 ? (20 * Math.log10(result.rms)).toFixed(0) + ' dBFS' : 'no audio samples';
+        const cost = analysisCostMs > 0 ? `${analysisCostMs.toFixed(1)} ms analysis` : 'analysis idle';
+        const muted = trackMuted ? ' · track muted' : '';
+        $('captureDiagnostics').textContent = `Build 1.7.0-rc.1 · Audio ${audioContext?.state || 'stopped'} · ${captureProfile}${muted} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}% · ${cost}`;
+      }
+
+      function currentAnalysisInterval() {
+        return noPitchFrames >= 18 ? ANALYSIS_IDLE_INTERVAL_MS : ANALYSIS_INTERVAL_MS;
+      }
+
+      function clearAudioRecoveryTimer() {
+        if (!audioRecoveryTimer) return;
+        clearTimeout(audioRecoveryTimer);
+        audioRecoveryTimer = null;
+      }
+
+      function scheduleAudioRecovery() {
+        clearAudioRecoveryTimer();
+        if (!running || document.hidden || !audioContext || audioContext.state === 'running') return;
+        if (audioRecoveryAttempts >= 1) return;
+        audioRecoveryAttempts++;
+        audioRecoveryTimer = setTimeout(async () => {
+          audioRecoveryTimer = null;
+          if (!running || document.hidden || !audioContext || audioContext.state === 'running') return;
+          try { await audioContext.resume(); } catch (_) {}
+          if (audioContext?.state !== 'running') {
+            hint.classList.remove('error');
+            hint.textContent = 'Audio was interrupted. Tap Resume audio to continue.';
+          }
+        }, 280);
+      }
+
       function correctTargetOctave(rawPitch) {
         if (selectedMidi == null) return rawPitch;
 
@@ -3052,6 +3177,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       }
 
       function stabilizePitch(rawPitch, confidence) {
+        rawPitch = correctConfiguredOctave(rawPitch, confidence);
         rawPitch = correctTargetOctave(rawPitch);
         rawPitch = guardOctaveJump(rawPitch);
         const rawLog = Math.log2(rawPitch);
@@ -3091,7 +3217,8 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         // bend/tuning-peg movement catches up quickly.
         let alpha = residualCents > 25 ? 0.48 : residualCents > 8 ? 0.30 : 0.17;
         if (confidence > 0.94) alpha += 0.06;
-        stableLogPitch += clamp(alpha, 0.17, 0.56) * (filteredLog - stableLogPitch);
+        else if (confidence < 0.82) alpha -= 0.05;
+        stableLogPitch += clamp(alpha, 0.12, 0.56) * (filteredLog - stableLogPitch);
 
         return Math.pow(2, stableLogPitch);
       }
@@ -3232,8 +3359,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       }
 
       function updatePitch(result) {
-        const inputDb = result?.rms > 0 ? (20 * Math.log10(result.rms)).toFixed(0) + ' dBFS' : 'no audio samples';
-        $('captureDiagnostics').textContent = `Build 1.6.0-rc.1 · Audio ${audioContext?.state || 'stopped'} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}%`;
+        updateCaptureDiagnostics(result);
         updateSignalVisual(result);
         if (!result?.pitch) {
           noPitchFrames++;
@@ -3248,14 +3374,15 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
             // target stable for about 0.6 s, then release for the next pluck.
             resetAutoLock();
           }
-          if (noPitchFrames > 24) {
-            resetTracker();
+          if (noPitchFrames === 25) {
+            resetTracker({ preserveNoPitch: true });
             resetDisplay();
           }
           return;
         }
 
         lockSilenceFrames = 0;
+        if (shouldHoldAttackTransient(result)) return;
 
         noPitchFrames = 0;
         const pitch = stabilizePitch(result.pitch, result.confidence);
@@ -3316,24 +3443,29 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         const displayCents = Math.round(cents);
         centsEl.textContent = displayCents > 0 ? `+${displayCents}` : `${displayCents}`;
         setNeedle(cents);
-        setTuneState(cents, true);
+        setTuneState(cents, true, result.confidence);
         updateFineVisuals(cents, result);
         updateStrobeDisplay(cents);
+        announceTuningStatus(targetDisplay);
         registerIntonationReading(cents, result);
         registerGuidedLock(performance.now());
       }
 
       function loop(timestamp) {
         if (!running || !analyser || !detector) return;
-        if (audioContext?.state !== 'running') {
+        if (audioContext?.state !== 'running' || trackMuted) {
           rafId = requestAnimationFrame(loop);
           return;
         }
 
-        if (timestamp - lastAnalysisAt >= ANALYSIS_INTERVAL_MS) {
+        if (timestamp - lastAnalysisAt >= currentAnalysisInterval()) {
           lastAnalysisAt = timestamp;
           analyser.getFloatTimeDomainData(analysisBuffer);
-          updatePitch(detector.analyze(analysisBuffer));
+          const startedAt = performance.now();
+          const result = detector.analyze(analysisBuffer);
+          const cost = performance.now() - startedAt;
+          analysisCostMs = analysisCostMs > 0 ? analysisCostMs * 0.82 + cost * 0.18 : cost;
+          updatePitch(result);
         }
         rafId = requestAnimationFrame(loop);
       }
@@ -3416,11 +3548,40 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
           mediaStream = acquiredStream;
           const track = mediaStream.getAudioTracks()[0];
           if (!track) throw new DOMException('No audio track', 'NotFoundError');
+          activeAudioTrack = track;
+          trackMuted = Boolean(track.muted);
           micPermissionState = 'granted';
-          const activeDeviceId = track.getSettings?.().deviceId || null;
+          const trackSettings = track.getSettings?.() || {};
+          const profileParts = [];
+          if (Number.isFinite(trackSettings.sampleRate)) profileParts.push(`${Math.round(trackSettings.sampleRate / 100) / 10} kHz`);
+          if (trackSettings.autoGainControl === true) profileParts.push('AGC');
+          else if (trackSettings.autoGainControl === false) profileParts.push('raw gain');
+          if (trackSettings.noiseSuppression === true) profileParts.push('noise suppression');
+          captureProfile = profileParts.length ? profileParts.join(' · ') : 'browser capture';
+          const activeDeviceId = trackSettings.deviceId || null;
           await refreshMicrophoneDevices({ activeDeviceId });
           if (epoch !== captureEpoch) return false;
           ignoreTrackEnded = false;
+          track.addEventListener('mute', () => {
+            if (ignoreTrackEnded || !running) return;
+            trackMuted = true;
+            resetTracker();
+            resetDisplay();
+            setStatus(false, 'Mic interrupted');
+            hint.classList.remove('error');
+            hint.textContent = 'Microphone input paused temporarily. Waiting for it to return…';
+            updateCaptureDiagnostics(null, { force: true });
+          });
+          track.addEventListener('unmute', () => {
+            if (ignoreTrackEnded || !running) return;
+            trackMuted = false;
+            lastAnalysisAt = 0;
+            resetTracker();
+            setStatus(true, 'Listening');
+            hint.classList.remove('error');
+            hint.textContent = 'Microphone restored. Pluck one string and let it ring.';
+            updateCaptureDiagnostics(null, { force: true });
+          });
           track.addEventListener('ended', () => {
             if (!ignoreTrackEnded && (running || starting)) {
               stop({
@@ -3437,13 +3598,23 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
           audioContext.addEventListener('statechange', () => {
             if (!running || !audioContext || document.hidden) return;
             const active = audioContext.state === 'running';
-            setStatus(active, active ? 'Listening' : 'Audio paused', !active);
-            startBtn.textContent = active ? 'Stop' : 'Resume audio';
-            if (!active) {
-              resetDisplay();
-              hint.textContent = 'Audio was interrupted. Tap Resume audio to continue.';
-              $('captureDiagnostics').textContent = `Build 1.6.0-rc.1 · Audio ${audioContext.state}`;
+            if (active) {
+              clearAudioRecoveryTimer();
+              audioRecoveryAttempts = 0;
+              setStatus(true, 'Listening');
+              startBtn.textContent = 'Stop';
+              hint.classList.remove('error');
+              hint.textContent = 'Pluck one string and let it ring.';
+              updateCaptureDiagnostics(null, { force: true });
+              return;
             }
+            setStatus(false, 'Audio paused');
+            startBtn.textContent = 'Resume audio';
+            resetDisplay();
+            hint.classList.remove('error');
+            hint.textContent = 'Audio was interrupted. Trying to resume…';
+            updateCaptureDiagnostics(null, { force: true });
+            scheduleAudioRecovery();
           });
           await audioContext.resume();
           if (audioContext && audioContext.state !== 'running') throw new Error('Audio context did not start');
@@ -3479,6 +3650,10 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
           configureAnalysis();
           resetTracker();
           lastAnalysisAt = 0;
+          lastDiagnosticsAt = 0;
+          analysisCostMs = 0;
+          audioRecoveryAttempts = 0;
+          trackMuted = Boolean(activeAudioTrack?.muted);
           running = true;
           micPermissionState = 'granted';
           micPanel.dataset.permission = 'granted';
@@ -3520,6 +3695,10 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       async function stopSession({ message = null, status = 'Mic off', error = false } = {}) {
         running = false;
         starting = false;
+        clearAudioRecoveryTimer();
+        audioRecoveryAttempts = 0;
+        trackMuted = false;
+        activeAudioTrack = null;
         appEl?.classList.remove('is-listening');
         if (rafId) cancelAnimationFrame(rafId);
         rafId = null;
@@ -3569,7 +3748,11 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       startBtn.addEventListener('click', () => {
         if (running && audioContext?.state !== 'running') {
           audioContext.resume().then(() => {
-            if (audioContext?.state === 'running') { startBtn.textContent = 'Stop'; setStatus(true,'Listening'); }
+            if (audioContext?.state === 'running') {
+              audioRecoveryAttempts = 0;
+              startBtn.textContent = 'Stop';
+              setStatus(true,'Listening');
+            }
           }).catch(() => stop({message:'Audio could not resume. Try starting again.',status:'Audio paused',error:true}));
         } else { running ? stop() : start(); }
       });
@@ -3950,7 +4133,10 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         if (document.hidden && running && audioContext?.state === 'running') {
           audioContext.suspend().catch(() => {});
         } else if (!document.hidden && running) {
-          if (audioContext?.state === 'suspended') audioContext.resume().catch(() => {});
+          audioRecoveryAttempts = 0;
+          if (audioContext?.state === 'suspended' || audioContext?.state === 'interrupted') {
+            audioContext.resume().catch(() => scheduleAudioRecovery());
+          }
           requestWakeLock();
         }
         if (!document.hidden) {
@@ -3961,6 +4147,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       });
 
       window.addEventListener('pagehide', () => {
+        clearAudioRecoveryTimer();
         stopReferenceTone({ immediate: true });
         stopMetronome();
         if (running || starting) stop().catch(() => {});
