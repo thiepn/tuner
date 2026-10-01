@@ -4,18 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f4f5ee">
-  <meta name="description" content="A precise, offline-capable guitar tuner with alternate tunings, guided tuning, reference tones and metronome.">
+  <meta name="description" content="A precise, offline-capable instrument tuner for guitar, bass, ukulele, bowed strings, mandolin, banjo and custom string sets.">
   <meta name="application-name" content="TUNER">
   <meta name="format-detection" content="telephone=no">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Guitar Tuner">
+  <meta name="apple-mobile-web-app-title" content="TUNER">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
-  <title>TUNER — Guitar Tuner</title>
-  <meta name="app-version" content="1.4.0-rc.1">
+  <title>TUNER — Instrument Tuner</title>
+  <meta name="app-version" content="1.5.0-rc.1">
   <style>@font-face{font-family:Interval Display;src:url('./assets/BarlowCondensed-Bold.woff') format('woff');font-weight:700;font-display:swap}@font-face{font-family:Interval Sans;src:url('./assets/NimbusSans-Regular.woff') format('woff');font-weight:400;font-display:swap}@font-face{font-family:Interval Mono;src:url('./assets/IBMPlexMono-Regular.woff') format('woff');font-weight:400;font-display:swap}
 :root{color-scheme:light;--bg:#f4f5ee;--text:#101311;--muted:#565b60;--accent:#204ff3;--accent-soft:#e5ebff;--indicator:#e4f955;--line:#cbd0c9;--panel:#fffef8;--danger:#b52d36;--ui:'Interval Sans',sans-serif;--readout:'Interval Mono',monospace;--display:'Interval Display',Impact,sans-serif}
 :root[data-theme=dark]{color-scheme:dark;--bg:#101d50;--text:#f4f5ee;--muted:#b9c5e4;--accent:#4670ff;--accent-soft:#21376f;--line:#455585;--panel:#18285b;--danger:#ffb2b8}
@@ -54,6 +54,10 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
 <style id="professional-tuning">
 .mode-buttons{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.mode-btn{font:12px var(--readout);padding:10px 12px;background:var(--accent-soft)}.mode-btn.active{background:var(--accent);color:white}.capo-control select{display:block;width:100%;margin-top:10px}.strobe-panel{display:none;position:absolute;inset:0;grid-template-rows:repeat(3,1fr) auto;gap:8px;padding:8% 6% 10%;overflow:hidden}.tuner[data-display-mode=strobe] .meter{padding-right:0}.tuner[data-display-mode=strobe] .ribbon,.tuner[data-display-mode=strobe] .meter-labels{display:none}.tuner[data-display-mode=strobe] .strobe-panel{display:grid}.strobe-lane{position:relative;overflow:hidden;background:var(--accent-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.strobe-lane:before{content:'';position:absolute;inset:0 -72px;background:repeating-linear-gradient(90deg,var(--accent) 0 18px,transparent 18px 36px);animation:professional-strobe-flow var(--strobe-duration,1.2s) linear infinite;animation-play-state:paused;will-change:transform}.strobe-panel.tracking .strobe-lane:before{animation-play-state:running}.strobe-panel.flat .strobe-lane:before{animation-direction:reverse}.strobe-panel.centered .strobe-lane:before{animation-play-state:paused;opacity:.72}.strobe-lane:nth-child(2):before{background-size:28px 100%;background-image:repeating-linear-gradient(90deg,var(--text) 0 10px,transparent 10px 28px);opacity:.5}.strobe-lane:nth-child(3):before{background-size:44px 100%;opacity:.72}.strobe-center-line{position:absolute;top:7%;bottom:17%;left:50%;width:2px;background:var(--indicator);z-index:3;box-shadow:0 0 0 1px #0002}.strobe-readout{display:flex;justify-content:space-between;gap:10px;font:12px var(--readout);color:var(--muted)}.strobe-readout strong{color:var(--text);font-weight:400}.intonation-panel{grid-column:1/-1;grid-row:6;margin-top:24px;padding:20px;border-top:1px solid var(--line);background:var(--accent-soft);border-radius:4px}.intonation-head{display:flex;justify-content:space-between;gap:18px;align-items:start}.intonation-kicker{font:12px var(--readout);color:var(--accent)}.intonation-head strong{display:block;font:600 22px/1.25 var(--controls);margin-top:6px}.intonation-step{font:12px var(--readout);color:var(--muted);text-align:right}.intonation-progress{height:6px;background:var(--line);margin:16px 0 12px;overflow:hidden}.intonation-progress span{display:block;height:100%;width:0;background:var(--accent);transition:width 100ms linear}.intonation-status{font:13px/1.5 var(--readout);min-height:20px}.intonation-readings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.intonation-reading{padding:10px;background:var(--bg);border:1px solid var(--line)}.intonation-reading span{display:block;font:10px var(--readout);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.intonation-reading strong{display:block;margin-top:5px;font:600 18px var(--controls)}.intonation-verdict{margin-top:14px;font:13px/1.55 var(--readout)}.intonation-actions{display:flex;gap:8px;margin-top:14px}.intonation-actions button{flex:1}.intonation-select{display:block;width:100%;margin:10px 0 0}.intonation-live-note{font:12px/1.55 var(--readout);color:var(--muted)}@keyframes professional-strobe-flow{from{transform:translateX(0)}to{transform:translateX(36px)}}@media(max-width:760px){.strobe-panel{padding:4% 2% 7%;gap:6px}.strobe-readout{font-size:11px}.intonation-panel{order:3;width:100%;margin-top:16px;padding:16px}.intonation-readings{gap:5px}.intonation-reading{padding:8px}.intonation-reading strong{font-size:16px}.intonation-head{gap:10px}.intonation-head strong{font-size:19px}}@media(prefers-reduced-motion:reduce){.strobe-lane:before{animation:none!important}}
+</style>
+
+<style id="instrument-expansion">
+.instrument-filters{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;margin:12px 0 4px;scrollbar-width:none}.instrument-filters::-webkit-scrollbar{display:none}.instrument-filter{flex:0 0 auto;padding:9px 12px;background:var(--accent-soft);font:12px var(--readout);white-space:nowrap}.instrument-filter.active{background:var(--accent);color:white}.tuning-preset-card{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 48px;padding:0;border-bottom:1px solid var(--line)}.tuning-preset-card.active{padding-left:0;border-left:4px solid var(--accent)}.tuning-preset-main{min-width:0;text-align:left;padding:15px 12px;border-radius:0}.tuning-preset-card.active .tuning-preset-main{padding-left:8px}.tuning-favorite{display:grid;place-items:center;min-width:48px;font:25px/1 var(--ui);color:var(--muted);border-radius:0}.tuning-favorite.active{color:var(--accent)}.tuning-favorite:hover:not(:disabled){background:var(--accent-soft)}.tuning-preset-instrument{font:10px var(--readout);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}.custom-instrument-label[hidden]{display:none!important}.custom-instrument-label{margin-top:10px}.custom-instrument-label input{display:block;width:100%;margin-top:7px}.instrument-empty{padding:28px 0;font:13px/1.6 var(--readout);color:var(--muted)}@media(max-width:760px){.instrument-filters{margin-left:-2px;margin-right:-2px}.instrument-filter{padding:9px 11px}.tuning-preset-card{grid-template-columns:minmax(0,1fr) 44px}.tuning-favorite{min-width:44px}.tuning-preset-main{padding:14px 8px}.tuning-preset-card.active .tuning-preset-main{padding-left:7px}}
 </style>
 </head>
 <body>
@@ -134,7 +138,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       </section>
 
       <section class="strings-wrap" aria-label="Instrument tuning targets">
-        <div class="string-heading"><span>STRINGS</span><span id="selectionCaption" class="selection-caption" aria-live="polite">Auto detect</span><div id="autoSlot"></div></div><div class="section-label"><span>Strings</span><span id="tuningLabel"></span></div>
+        <div class="string-heading"><span id="targetUnitHeading">STRINGS</span><span id="selectionCaption" class="selection-caption" aria-live="polite">Auto detect</span><div id="autoSlot"></div></div><div class="section-label"><span>Strings</span><span id="tuningLabel"></span></div>
         <div class="strings" id="strings"></div>
       </section>
 
@@ -147,7 +151,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         </div>
         <button class="quick-settings" id="quickSettingsBtn" type="button" aria-label="Open tuner settings" hidden="">Settings</button>
       </section>
-    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><p id="captureDiagnostics" style="font:12px/1.6 var(--readout);overflow-wrap:anywhere">Build 1.4.0-rc.1 · Microphone stopped</p><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
+    <details class="precision-details" id="pitchDetails"><summary>Pitch detail<span id="detailSummary">Signal · waiting</span></summary><p id="captureDiagnostics" style="font:12px/1.6 var(--readout);overflow-wrap:anywhere">Build 1.5.0-rc.1 · Microphone stopped</p><div class="precision-module" id="precisionModule" aria-label="Fine pitch display">
           <div class="precision-heading">
             <span>Fine pitch</span>
             <strong id="fineCents">±0.0¢</strong>
@@ -204,10 +208,11 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
                 <span class="ui-kicker">Preset library</span>
                 <strong>Choose a tuning</strong>
               </div>
-              <span class="browser-count">Guitar & bass · Auto targets</span>
+              <span class="browser-count" id="presetCount">Instrument library</span>
             </div>
+            <div class="instrument-filters" id="instrumentFilters" role="group" aria-label="Filter tunings by instrument"></div>
             <div class="tuning-search"><label for="tuningSearch">Find a tuning</label><div><input id="tuningSearch" type="search" placeholder="Name or notes…" autocomplete="off"><button id="clearTuningSearch" type="button" aria-label="Clear tuning search" hidden>Clear</button></div><p id="tuningSearchEmpty" role="status" hidden>No matching tunings. Try a name such as “Drop D”.</p></div><div class="tuning-preset-grid" id="tuningPresetGrid" role="group" aria-label="Available tunings"></div>
-            <select class="tuning-select tuning-select-compat" id="tuningSelect" aria-label="Select guitar tuning" tabindex="-1" aria-hidden="true"></select>
+            <select class="tuning-select tuning-select-compat" id="tuningSelect" aria-label="Select instrument tuning" tabindex="-1" aria-hidden="true"></select>
           </section>
           <section class="tuning-browser-footnote">
             <span class="ui-info-mark" aria-hidden="true">i</span>
@@ -318,7 +323,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       <div class="section-dialog-shell">
         <div class="section-dialog-header">
           <div>
-            <div class="section-dialog-title" id="toolsDialogTitle">Guitar tools</div>
+            <div class="section-dialog-title" id="toolsDialogTitle">Tuning tools</div>
             <div class="section-dialog-subtitle">Useful helpers kept separate from the core tuner.</div>
           </div>
           <button class="dialog-close" id="toolsDialogClose" type="button" aria-label="Close tools"><img src="./assets/X.svg" alt=""></button>
@@ -327,7 +332,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           <section class="tool-surface tool-surface-guide">
             <div class="tool-surface-head"><span class="tool-index">01</span><div><span class="ui-kicker">Workflow</span><strong>Guided tune</strong></div><em id="guideToolTuningName">Standard</em></div>
             <div class="tool-grid">
-              <div class="tool-note" id="guideToolSummary">Tune each string from lowest to highest. A stable in-tune reading is checked off automatically.</div>
+              <div class="tool-note" id="guideToolSummary">Tune each target in instrument order. A stable in-tune reading is checked off automatically.</div>
               <button class="tool-primary" id="guidedStartBtn" type="button">Start guided tune</button>
             </div>
           </section>
@@ -397,7 +402,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         <div class="dialog-header">
           <div>
             <div class="dialog-title" id="customDialogTitle">Custom tuning</div>
-            <div class="dialog-subtitle">Create and save 4–8 string tunings on this device.</div>
+            <div class="dialog-subtitle">Create and save 4–8 string or course sets on this device, including re-entrant tunings.</div>
           </div>
           <button class="dialog-close" id="customDialogClose" type="button" aria-label="Close custom tuning editor"><img src="./assets/X.svg" alt=""></button>
         </div>
@@ -407,8 +412,25 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
               <input class="custom-name-input" id="customName" maxlength="32" autocomplete="off" placeholder="My tuning">
             </label>
 
+            <label class="field-label" for="customInstrumentSelect">Instrument
+              <select id="customInstrumentSelect">
+                <option value="guitar">Guitar</option>
+                <option value="bass">Bass</option>
+                <option value="ukulele">Ukulele</option>
+                <option value="violin">Violin</option>
+                <option value="viola">Viola</option>
+                <option value="cello">Cello</option>
+                <option value="mandolin">Mandolin</option>
+                <option value="banjo">Banjo</option>
+                <option value="custom">Other / custom instrument</option>
+              </select>
+            </label>
+            <label class="field-label custom-instrument-label" id="customInstrumentLabelWrap" for="customInstrumentLabel" hidden>Custom instrument name
+              <input id="customInstrumentLabel" maxlength="24" autocomplete="off" placeholder="Instrument">
+            </label>
+
             <div>
-              <div class="field-label" style="margin-bottom:7px">Strings · low to high</div>
+              <div class="field-label" style="margin-bottom:7px">Strings / courses · physical order (highest string number first)</div>
               <div class="custom-string-list" id="customStringList"></div>
             </div>
 
@@ -457,24 +479,54 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       const STORAGE_HAS_DETECTED_PITCH = 'guitarTuner.hasDetectedPitch.v1';
       const STORAGE_DISPLAY_MODE = 'guitarTuner.displayMode.v1';
       const STORAGE_CAPO = 'guitarTuner.capo.v1';
+      const STORAGE_FAVORITES = 'guitarTuner.favoriteTunings.v1';
+      const STORAGE_INSTRUMENT_FILTER = 'guitarTuner.instrumentFilter.v1';
+
+      const INSTRUMENT_PROFILES = {
+        guitar:   { id:'guitar', label:'Guitar', fretted:true, capo:true, unit:'string' },
+        bass:     { id:'bass', label:'Bass', fretted:true, capo:true, unit:'string' },
+        ukulele:  { id:'ukulele', label:'Ukulele', fretted:true, capo:true, unit:'string' },
+        violin:   { id:'violin', label:'Violin', fretted:false, capo:false, unit:'string' },
+        viola:    { id:'viola', label:'Viola', fretted:false, capo:false, unit:'string' },
+        cello:    { id:'cello', label:'Cello', fretted:false, capo:false, unit:'string' },
+        mandolin: { id:'mandolin', label:'Mandolin', fretted:true, capo:true, unit:'course' },
+        banjo:    { id:'banjo', label:'Banjo', fretted:true, capo:true, unit:'string' },
+        chromatic:{ id:'chromatic', label:'Chromatic', fretted:false, capo:false, unit:'note' },
+        custom:   { id:'custom', label:'Other', fretted:false, capo:false, unit:'string' }
+      };
+      const INSTRUMENT_ORDER = ['guitar','bass','ukulele','violin','viola','cello','mandolin','banjo','chromatic','custom'];
 
       const BUILTIN_TUNINGS = [
-        { id: 'standard', name: 'Standard', instrument: 'guitar', mode: 'strings', strings: ['E2','A2','D3','G3','B3','E4'] },
-        { id: 'drop-d', name: 'Drop D', instrument: 'guitar', mode: 'strings', strings: ['D2','A2','D3','G3','B3','E4'] },
-        { id: 'drop-c', name: 'Drop C', instrument: 'guitar', mode: 'strings', strings: ['C2','G2','C3','F3','A3','D4'] },
-        { id: 'd-standard', name: 'D Standard / Whole step down', instrument: 'guitar', mode: 'strings', strings: ['D2','G2','C3','F3','A3','D4'] },
-        { id: 'c-standard', name: 'C Standard', instrument: 'guitar', mode: 'strings', strings: ['C2','F2','Bb2','Eb3','G3','C4'] },
-        { id: 'half-step', name: 'Half-step down', instrument: 'guitar', mode: 'strings', strings: ['Eb2','Ab2','Db3','Gb3','Bb3','Eb4'] },
-        { id: 'open-g', name: 'Open G', instrument: 'guitar', mode: 'strings', strings: ['D2','G2','D3','G3','B3','D4'] },
-        { id: 'open-d', name: 'Open D', instrument: 'guitar', mode: 'strings', strings: ['D2','A2','D3','F#3','A3','D4'] },
-        { id: 'open-e', name: 'Open E', instrument: 'guitar', mode: 'strings', strings: ['E2','B2','E3','G#3','B3','E4'] },
-        { id: 'dadgad', name: 'DADGAD', instrument: 'guitar', mode: 'strings', strings: ['D2','A2','D3','G3','A3','D4'] },
-        {"id": "bass-standard", "name": "Bass \u00b7 Standard", "instrument": "bass", "mode": "strings", "strings": ["E1", "A1", "D2", "G2"]},
-        {"id": "bass-five", "name": "Bass \u00b7 5-string", "instrument": "bass", "mode": "strings", "strings": ["B0", "E1", "A1", "D2", "G2"]},
-        {"id": "bass-six", "name": "Bass \u00b7 6-string", "instrument": "bass", "mode": "strings", "strings": ["B0", "E1", "A1", "D2", "G2", "C3"]},
-        {"id": "bass-drop-d", "name": "Bass \u00b7 Drop D", "instrument": "bass", "mode": "strings", "strings": ["D1", "A1", "D2", "G2"]},
-        {"id": "bass-half-step", "name": "Bass \u00b7 Half-step down", "instrument": "bass", "mode": "strings", "strings": ["Eb1", "Ab1", "Db2", "Gb2"]},
-        { id: 'chromatic', name: 'Chromatic', instrument: 'guitar', mode: 'chromatic', strings: ['E2','A2','D3','G3','B3','E4'] }
+        { id:'standard', name:'Standard', instrument:'guitar', mode:'strings', strings:['E2','A2','D3','G3','B3','E4'] },
+        { id:'guitar-seven-standard', name:'7-string Standard', instrument:'guitar', mode:'strings', strings:['B1','E2','A2','D3','G3','B3','E4'] },
+        { id:'guitar-eight-standard', name:'8-string Standard', instrument:'guitar', mode:'strings', strings:['F#1','B1','E2','A2','D3','G3','B3','E4'] },
+        { id:'drop-d', name:'Drop D', instrument:'guitar', mode:'strings', strings:['D2','A2','D3','G3','B3','E4'] },
+        { id:'drop-c', name:'Drop C', instrument:'guitar', mode:'strings', strings:['C2','G2','C3','F3','A3','D4'] },
+        { id:'d-standard', name:'D Standard / Whole step down', instrument:'guitar', mode:'strings', strings:['D2','G2','C3','F3','A3','D4'] },
+        { id:'c-standard', name:'C Standard', instrument:'guitar', mode:'strings', strings:['C2','F2','Bb2','Eb3','G3','C4'] },
+        { id:'half-step', name:'Half-step down', instrument:'guitar', mode:'strings', strings:['Eb2','Ab2','Db3','Gb3','Bb3','Eb4'] },
+        { id:'open-g', name:'Open G', instrument:'guitar', mode:'strings', strings:['D2','G2','D3','G3','B3','D4'] },
+        { id:'open-d', name:'Open D', instrument:'guitar', mode:'strings', strings:['D2','A2','D3','F#3','A3','D4'] },
+        { id:'open-e', name:'Open E', instrument:'guitar', mode:'strings', strings:['E2','B2','E3','G#3','B3','E4'] },
+        { id:'dadgad', name:'DADGAD', instrument:'guitar', mode:'strings', strings:['D2','A2','D3','G3','A3','D4'] },
+
+        { id:'bass-standard', name:'Standard', instrument:'bass', mode:'strings', strings:['E1','A1','D2','G2'] },
+        { id:'bass-five', name:'5-string Standard', instrument:'bass', mode:'strings', strings:['B0','E1','A1','D2','G2'] },
+        { id:'bass-six', name:'6-string Standard', instrument:'bass', mode:'strings', strings:['B0','E1','A1','D2','G2','C3'] },
+        { id:'bass-drop-d', name:'Drop D', instrument:'bass', mode:'strings', strings:['D1','A1','D2','G2'] },
+        { id:'bass-half-step', name:'Half-step down', instrument:'bass', mode:'strings', strings:['Eb1','Ab1','Db2','Gb2'] },
+
+        { id:'ukulele-standard', name:'Standard · High G', instrument:'ukulele', mode:'strings', strings:['G4','C4','E4','A4'] },
+        { id:'ukulele-low-g', name:'Standard · Low G', instrument:'ukulele', mode:'strings', strings:['G3','C4','E4','A4'] },
+        { id:'ukulele-baritone', name:'Baritone', instrument:'ukulele', mode:'strings', strings:['D3','G3','B3','E4'] },
+
+        { id:'violin-standard', name:'Standard', instrument:'violin', mode:'strings', strings:['G3','D4','A4','E5'] },
+        { id:'viola-standard', name:'Standard', instrument:'viola', mode:'strings', strings:['C3','G3','D4','A4'] },
+        { id:'cello-standard', name:'Standard', instrument:'cello', mode:'strings', strings:['C2','G2','D3','A3'] },
+        { id:'mandolin-standard', name:'Standard', instrument:'mandolin', mode:'strings', strings:['G3','D4','A4','E5'] },
+        { id:'banjo-open-g', name:'Open G · 5-string', instrument:'banjo', mode:'strings', strings:['G4','D3','G3','B3','D4'] },
+
+        { id:'chromatic', name:'Chromatic', instrument:'chromatic', mode:'chromatic', strings:['E2','A2','D3','G3','B3','E4'] }
       ];
 
 
@@ -488,11 +540,41 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         8: [30, 35, 40, 45, 50, 55, 59, 64]
       };
       const BASS_SOURCE_ANCHORS = {4:[28,33,38,43],5:[23,28,33,38,43],6:[23,28,33,38,43,48]};
+      function getInstrumentProfile(tuning = currentTuning) {
+        return INSTRUMENT_PROFILES[tuning?.instrument] || INSTRUMENT_PROFILES.custom;
+      }
+      function getInstrumentLabel(tuning = currentTuning) {
+        return tuning?.instrument === 'custom' && tuning?.instrumentLabel
+          ? tuning.instrumentLabel
+          : getInstrumentProfile(tuning).label;
+      }
+      function targetUnitName(tuning = currentTuning, plural = false) {
+        const unit = getInstrumentProfile(tuning).unit === 'course' ? 'course' : 'string';
+        return plural ? unit + 's' : unit;
+      }
+      function maxSafeCapo(tuning = currentTuning) {
+        const profile = getInstrumentProfile(tuning);
+        if (tuning?.mode === 'chromatic' || !profile.capo) return 0;
+        const baseMidis = (tuning?.strings || []).map(noteToMidi).filter(midi => midi != null);
+        if (!baseMidis.length) return 0;
+        const highest = Math.max(...baseMidis);
+        for (let fret = 12; fret >= 0; fret--) {
+          if (freqForMidi(highest + fret) <= DETECTOR_MAX_HZ) return fret;
+        }
+        return 0;
+      }
       function effectiveCapo(tuning = currentTuning) {
-        return tuning?.mode === 'chromatic' ? 0 : capoFret;
+        const profile = getInstrumentProfile(tuning);
+        return tuning?.mode === 'chromatic' || !profile.capo ? 0 : Math.min(capoFret, maxSafeCapo(tuning));
       }
       function sourceAnchorsFor(count) {
-        const anchors = (currentTuning.instrument === 'bass' ? BASS_SOURCE_ANCHORS : GUITAR_SOURCE_ANCHORS)[count];
+        if (currentTuning.id?.startsWith('custom-')) return undefined;
+        const table = currentTuning.instrument === 'bass'
+          ? BASS_SOURCE_ANCHORS
+          : currentTuning.instrument === 'guitar'
+            ? GUITAR_SOURCE_ANCHORS
+            : null;
+        const anchors = table?.[count];
         const shift = effectiveCapo();
         return anchors?.map(midi => midi + shift);
       }
@@ -520,6 +602,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       const calibration = $('calibration');
       const calValue = $('calValue');
       const strings = $('strings');
+      const targetUnitHeading = $('targetUnitHeading');
       const ticks = $('ticks');
       const tuningState = $('tuningState');
       const confidenceReadout = $('confidenceReadout');
@@ -566,12 +649,17 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       const tuningSelect = $('tuningSelect');
       const tuningPresetGrid = $('tuningPresetGrid');
       const tuningSummary = $('tuningSummary');
+      const instrumentFilters = $('instrumentFilters');
+      const presetCount = $('presetCount');
       const tuningLabel = $('tuningLabel');
       const customTuningBtn = $('customTuningBtn');
       const customDialog = $('customDialog');
       const customDialogClose = $('customDialogClose');
       const customForm = $('customForm');
       const customName = $('customName');
+      const customInstrumentSelect = $('customInstrumentSelect');
+      const customInstrumentLabelWrap = $('customInstrumentLabelWrap');
+      const customInstrumentLabel = $('customInstrumentLabel');
       const customStringList = $('customStringList');
       const customStringCount = $('customStringCount');
       const addStringBtn = $('addStringBtn');
@@ -682,6 +770,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       let currentTuning = BUILTIN_TUNINGS[0];
       let editingCustomId = null;
       let customDraftNotes = [...currentTuning.strings];
+      let favoriteTuningIds = new Set();
+      let activeInstrumentFilter = safeStorageGet(STORAGE_INSTRUMENT_FILTER, 'all');
       let displayMode = ['meter','strobe'].includes(safeStorageGet(STORAGE_DISPLAY_MODE, 'meter')) ? safeStorageGet(STORAGE_DISPLAY_MODE, 'meter') : 'meter';
       let capoFret = clamp(Number(safeStorageGet(STORAGE_CAPO, '0')) || 0, 0, 12);
       let intonationActive = false;
@@ -814,6 +904,10 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         return getAllTunings().find(tuning => tuning.id === id) || BUILTIN_TUNINGS[0];
       }
 
+      function normalizeInstrumentId(value) {
+        return INSTRUMENT_PROFILES[value] && value !== 'chromatic' ? value : 'custom';
+      }
+
       function loadCustomTunings() {
         try {
           const parsed = JSON.parse(safeStorageGet(STORAGE_CUSTOM_TUNINGS, '[]'));
@@ -827,13 +921,17 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
               const hz = 440 * Math.pow(2, (midi - 69) / 12);
               return hz >= DETECTOR_MIN_HZ && hz <= DETECTOR_MAX_HZ;
             })
-          ).map(item => ({
-            id: item.id,
-            name: item.name.slice(0, 32),
-            instrument: item.instrument || 'guitar',
-            mode: 'strings',
-            strings: item.strings.map(note => canonicalNoteLabel(note)).filter(Boolean)
-          }));
+          ).map(item => {
+            const instrument = normalizeInstrumentId(item.instrument || 'custom');
+            return {
+              id: item.id,
+              name: item.name.slice(0, 32),
+              instrument,
+              instrumentLabel: instrument === 'custom' && typeof item.instrumentLabel === 'string' ? item.instrumentLabel.slice(0, 24) : '',
+              mode: 'strings',
+              strings: item.strings.map(note => canonicalNoteLabel(note)).filter(Boolean)
+            };
+          });
         } catch (_) {
           return [];
         }
@@ -843,45 +941,128 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         safeStorageSet(STORAGE_CUSTOM_TUNINGS, JSON.stringify(customTunings));
       }
 
+      function loadFavoriteTunings() {
+        try {
+          const parsed = JSON.parse(safeStorageGet(STORAGE_FAVORITES, '[]'));
+          return new Set(Array.isArray(parsed) ? parsed.filter(id => typeof id === 'string') : []);
+        } catch (_) {
+          return new Set();
+        }
+      }
+
+      function saveFavoriteTunings() {
+        safeStorageSet(STORAGE_FAVORITES, JSON.stringify([...favoriteTuningIds]));
+      }
+
+      function toggleFavorite(tuningId) {
+        if (favoriteTuningIds.has(tuningId)) favoriteTuningIds.delete(tuningId);
+        else favoriteTuningIds.add(tuningId);
+        saveFavoriteTunings();
+        renderInstrumentFilters();
+        renderTuningPresetGrid();
+      }
+
+      function validInstrumentFilter(value) {
+        return value === 'all' || value === 'favorites' || value === 'saved' || INSTRUMENT_ORDER.includes(value);
+      }
+
+      function visibleTuningsForFilter() {
+        const all = getAllTunings();
+        if (activeInstrumentFilter === 'favorites') return all.filter(tuning => favoriteTuningIds.has(tuning.id));
+        if (activeInstrumentFilter === 'saved') return all.filter(tuning => tuning.id.startsWith('custom-'));
+        if (activeInstrumentFilter === 'all') return all;
+        return all.filter(tuning => tuning.instrument === activeInstrumentFilter);
+      }
+
+      function renderInstrumentFilters() {
+        if (!validInstrumentFilter(activeInstrumentFilter)) activeInstrumentFilter = 'all';
+        if (activeInstrumentFilter === 'saved' && !customTunings.length) activeInstrumentFilter = 'all';
+        if (activeInstrumentFilter === 'custom' && !customTunings.some(tuning => tuning.instrument === 'custom')) activeInstrumentFilter = 'all';
+        instrumentFilters.replaceChildren();
+        const validFavoriteCount = getAllTunings().filter(tuning => favoriteTuningIds.has(tuning.id)).length;
+        const options = [
+          { id:'all', label:'All' },
+          { id:'favorites', label:`Favorites ${validFavoriteCount ? '· ' + validFavoriteCount : ''}` },
+          ...INSTRUMENT_ORDER.filter(id => id !== 'custom').map(id => ({ id, label:INSTRUMENT_PROFILES[id].label })),
+          { id:'saved', label:`Saved ${customTunings.length ? '· ' + customTunings.length : ''}` },
+          { id:'custom', label:'Other' }
+        ];
+        options.forEach(option => {
+          if ((option.id === 'saved' || option.id === 'custom') && !customTunings.length) return;
+          if (option.id === 'custom' && !customTunings.some(tuning => tuning.instrument === 'custom')) return;
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'instrument-filter' + (activeInstrumentFilter === option.id ? ' active' : '');
+          button.dataset.instrumentFilter = option.id;
+          button.textContent = option.label;
+          button.setAttribute('aria-pressed', String(activeInstrumentFilter === option.id));
+          button.addEventListener('click', () => {
+            activeInstrumentFilter = option.id;
+            safeStorageSet(STORAGE_INSTRUMENT_FILTER, activeInstrumentFilter);
+            renderInstrumentFilters();
+            renderTuningPresetGrid();
+          });
+          instrumentFilters.appendChild(button);
+        });
+      }
+
       function renderTuningSelect() {
         tuningSelect.innerHTML = '';
-
-        const builtins = document.createElement('optgroup');
-        builtins.label = 'Guitar & bass tunings';
-        BUILTIN_TUNINGS.forEach(tuning => {
-          const option = document.createElement('option');
-          option.value = tuning.id;
-          option.textContent = tuning.name;
-          builtins.appendChild(option);
-        });
-        tuningSelect.appendChild(builtins);
-
-        if (customTunings.length) {
-          const customs = document.createElement('optgroup');
-          customs.label = 'Custom';
-          customTunings.forEach(tuning => {
+        INSTRUMENT_ORDER.forEach(instrumentId => {
+          const tunings = getAllTunings().filter(tuning => tuning.instrument === instrumentId);
+          if (!tunings.length) return;
+          const group = document.createElement('optgroup');
+          group.label = INSTRUMENT_PROFILES[instrumentId].label;
+          tunings.forEach(tuning => {
             const option = document.createElement('option');
             option.value = tuning.id;
             option.textContent = tuning.name;
-            customs.appendChild(option);
+            group.appendChild(option);
           });
-          tuningSelect.appendChild(customs);
-        }
-
+          tuningSelect.appendChild(group);
+        });
         tuningSelect.value = currentTuning.id;
+        renderInstrumentFilters();
         renderTuningPresetGrid();
       }
 
       function renderTuningPresetGrid() {
         if (!tuningPresetGrid) return;
         tuningPresetGrid.replaceChildren();
-        getAllTunings().forEach(tuning => {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'tuning-preset-card' + (tuning.id === currentTuning.id ? ' active' : '');
-          button.dataset.tuningId = tuning.id;
-          // Native button semantics retained for keyboard and assistive technology.
-          button.setAttribute('aria-pressed', tuning.id === currentTuning.id ? 'true' : 'false');
+        const visible = visibleTuningsForFilter();
+        const filterLabel = activeInstrumentFilter === 'all'
+          ? 'All instruments'
+          : activeInstrumentFilter === 'favorites'
+            ? 'Favorites'
+            : activeInstrumentFilter === 'saved'
+              ? 'Saved'
+              : INSTRUMENT_PROFILES[activeInstrumentFilter]?.label || 'Instrument';
+        presetCount.textContent = `${visible.length} ${visible.length === 1 ? 'preset' : 'presets'} · ${filterLabel}`;
+
+        if (!visible.length) {
+          const empty = document.createElement('div');
+          empty.className = 'instrument-empty';
+          empty.textContent = activeInstrumentFilter === 'favorites'
+            ? 'No favorites yet. Star any tuning to keep it here.'
+            : 'No tunings are available in this instrument group.';
+          tuningPresetGrid.appendChild(empty);
+          return;
+        }
+
+        visible.forEach(tuning => {
+          const card = document.createElement('div');
+          card.className = 'tuning-preset-card' + (tuning.id === currentTuning.id ? ' active' : '');
+          card.dataset.tuningId = tuning.id;
+          card.dataset.instrument = tuning.instrument;
+
+          const main = document.createElement('button');
+          main.type = 'button';
+          main.className = 'tuning-preset-main';
+          main.setAttribute('aria-pressed', tuning.id === currentTuning.id ? 'true' : 'false');
+
+          const instrument = document.createElement('span');
+          instrument.className = 'tuning-preset-instrument';
+          instrument.textContent = getInstrumentLabel(tuning);
 
           const top = document.createElement('span');
           top.className = 'tuning-preset-top';
@@ -889,7 +1070,13 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           name.textContent = tuning.name;
           const badge = document.createElement('span');
           badge.className = 'tuning-preset-badge';
-          badge.textContent = tuning.id.startsWith('custom-') ? 'CUSTOM' : (tuning.mode === 'chromatic' ? 'CHROMATIC' : `${tuning.strings.length} STRING`);
+          const profile = getInstrumentProfile(tuning);
+          const unit = profile.unit === 'course' ? 'COURSE' : 'STRING';
+          badge.textContent = tuning.id.startsWith('custom-')
+            ? 'CUSTOM'
+            : tuning.mode === 'chromatic'
+              ? 'ALL NOTES'
+              : `${tuning.strings.length} ${unit}${tuning.strings.length === 1 ? '' : 'S'}`;
           top.append(name, badge);
 
           const notes = document.createElement('span');
@@ -899,18 +1086,30 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           const action = document.createElement('span');
           action.className = 'tuning-preset-action';
           action.textContent = tuning.id === currentTuning.id ? 'ACTIVE' : 'SELECT';
-          button.append(top, notes, action);
-          button.addEventListener('click', () => {
+          main.append(instrument, top, notes, action);
+          main.addEventListener('click', () => {
             applyTuning(tuning.id);
             closeSectionDialog(tuningDialog);
             setNavigationState('tuner');
           });
-          tuningPresetGrid.appendChild(button);
+
+          const favorite = document.createElement('button');
+          favorite.type = 'button';
+          favorite.className = 'tuning-favorite' + (favoriteTuningIds.has(tuning.id) ? ' active' : '');
+          favorite.textContent = favoriteTuningIds.has(tuning.id) ? '★' : '☆';
+          favorite.setAttribute('aria-label', `${favoriteTuningIds.has(tuning.id) ? 'Remove' : 'Add'} ${getInstrumentLabel(tuning)} ${tuning.name} ${favoriteTuningIds.has(tuning.id) ? 'from' : 'to'} favorites`);
+          favorite.setAttribute('aria-pressed', String(favoriteTuningIds.has(tuning.id)));
+          favorite.addEventListener('click', () => toggleFavorite(tuning.id));
+
+          card.append(main, favorite);
+          tuningPresetGrid.appendChild(card);
         });
       }
 
       function renderStringTargets() {
         const targets = tuningTargets();
+        const unitName = targetUnitName(currentTuning);
+        strings.dataset.unitLabel = unitName[0].toUpperCase() + unitName.slice(1);
         strings.style.setProperty('--string-count', String(targets.length));
         strings.dataset.count = String(targets.length);
         strings.innerHTML = '';
@@ -944,7 +1143,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           button.dataset.displayNote = label;
           button.dataset.midi = String(midi);
           button.type = 'button';
-          button.setAttribute('aria-label', `String ${total - index}, ${prettyNote(label)}, ${freqForMidi(midi).toFixed(1)} hertz`);
+          button.setAttribute('aria-label', `${unitName[0].toUpperCase() + unitName.slice(1)} ${total - index}, ${prettyNote(label)}, ${freqForMidi(midi).toFixed(1)} hertz`);
           const wireSpan = document.createElement('span');
           wireSpan.className = 'string-wire';
           wireSpan.setAttribute('aria-hidden', 'true');
@@ -982,10 +1181,24 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
         currentTuningName.textContent = currentTuning.name;
         currentTuningNotes.textContent = currentTuning.mode === 'chromatic'
-          ? 'All notes'
-          : `${capo ? `Capo ${capo} · ` : ''}${targets.map(item => noteParts(item.label).note).join(' · ')}`;
-        dialogCurrentTuningName.textContent = currentTuning.name;
-        capoStatus.textContent = currentTuning.mode === 'chromatic' ? 'Ignored in chromatic' : capo ? `Capo ${capo}` : 'No capo';
+          ? 'Chromatic · All notes'
+          : `${getInstrumentLabel(currentTuning)} · ${capo ? `Capo ${capo} · ` : ''}${targets.map(item => noteParts(item.label).note).join(' · ')}`;
+        dialogCurrentTuningName.textContent = `${getInstrumentLabel(currentTuning)} · ${currentTuning.name}`;
+        const profile = getInstrumentProfile(currentTuning);
+        targetUnitHeading.textContent = profile.unit === 'course' ? 'COURSES' : 'STRINGS';
+        const maxCapo = maxSafeCapo(currentTuning);
+        capoSelect.disabled = !profile.capo || currentTuning.mode === 'chromatic';
+        [...capoSelect.options].forEach(option => {
+          option.disabled = Number(option.value) > maxCapo;
+        });
+        capoSelect.value = String(capo);
+        capoStatus.textContent = currentTuning.mode === 'chromatic'
+          ? 'Ignored in chromatic'
+          : !profile.capo
+            ? `Not used for ${profile.label}`
+            : capoFret > maxCapo
+              ? `Capo ${capo} · range limit`
+              : capo ? `Capo ${capo}` : 'No capo';
       }
 
       function setAutoTargetLabel() {
@@ -1054,11 +1267,20 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         });
       }
 
+      function syncCustomInstrumentUi() {
+        const custom = customInstrumentSelect.value === 'custom';
+        customInstrumentLabelWrap.hidden = !custom;
+        if (!custom) customInstrumentLabel.value = '';
+      }
+
       function beginNewCustom(base = currentTuning) {
         editingCustomId = null;
         customName.value = 'My tuning';
         const source = base?.strings?.length >= 4 && base.strings.length <= 8 ? base.strings : BUILTIN_TUNINGS[0].strings;
-        customDraftNotes = source.map(note => midiToNote(noteToMidi(note)));
+        customDraftNotes = [...source];
+        customInstrumentSelect.value = normalizeInstrumentId(base?.instrument || 'guitar');
+        customInstrumentLabel.value = base?.instrument === 'custom' ? (base.instrumentLabel || '') : '';
+        syncCustomInstrumentUi();
         customError.textContent = '';
         renderCustomDraft();
       }
@@ -1067,6 +1289,9 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         editingCustomId = tuning.id;
         customName.value = tuning.name;
         customDraftNotes = [...tuning.strings];
+        customInstrumentSelect.value = normalizeInstrumentId(tuning.instrument);
+        customInstrumentLabel.value = tuning.instrument === 'custom' ? (tuning.instrumentLabel || '') : '';
+        syncCustomInstrumentUi();
         customError.textContent = '';
         renderCustomDraft();
       }
@@ -1095,7 +1320,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
               <button type="button" data-action="edit">Edit</button>
               <button type="button" data-action="delete">Delete</button>
             </div>`;
-          item.querySelector('.saved-custom-name').textContent = tuning.name;
+          item.querySelector('.saved-custom-name').textContent = `${getInstrumentLabel(tuning)} · ${tuning.name}`;
           item.querySelector('.saved-custom-notes').textContent = tuning.strings.map(prettyNote).join(' · ');
           savedCustomList.appendChild(item);
         });
@@ -1107,11 +1332,11 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
       function renderToolTargets() {
         const targets = toolTargets();
-        guideToolTuningName.textContent = currentTuning.name;
-        toneTuningName.textContent = currentTuning.name;
+        guideToolTuningName.textContent = `${getInstrumentLabel(currentTuning)} · ${currentTuning.name}`;
+        toneTuningName.textContent = `${getInstrumentLabel(currentTuning)} · ${currentTuning.name}`;
         guideToolSummary.textContent = targets.length
-          ? `${targets.length} strings · ${targets.map(item => prettyNote(item.label)).join(' · ')}`
-          : 'No string targets are available.';
+          ? `${targets.length} ${targetUnitName(currentTuning, true)} · ${targets.map(item => prettyNote(item.label)).join(' · ')}`
+          : 'No tuning targets are available.';
 
         toneButtons.innerHTML = '';
         toneButtons.style.setProperty('--tone-count', String(Math.max(1, targets.length)));
@@ -1138,7 +1363,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           eligibleIntonationTargets.push(index);
           const option = document.createElement('option');
           option.value = String(index);
-          option.textContent = `String ${targets.length - index} · ${prettyNote(target.label)}`;
+          const unit = targetUnitName(currentTuning);
+          option.textContent = `${unit[0].toUpperCase() + unit.slice(1)} ${targets.length - index} · ${prettyNote(target.label)}`;
           intonationStringSelect.appendChild(option);
         });
         const nextIndex = eligibleIntonationTargets.includes(previousIntonationIndex)
@@ -1148,8 +1374,10 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         intonationToolSummary.textContent = targets.length
           ? `${currentTuning.name}${effectiveCapo() ? ` · Capo ${effectiveCapo()}` : ''} · compare harmonic and fretted 12th fret`
           : 'No string targets are available.';
-        intonationStartBtn.disabled = !eligibleIntonationTargets.length || currentTuning.mode === 'chromatic';
+        const profileSupportsIntonation = getInstrumentProfile(currentTuning).fretted;
+        intonationStartBtn.disabled = !eligibleIntonationTargets.length || currentTuning.mode === 'chromatic' || !profileSupportsIntonation;
         if (currentTuning.mode === 'chromatic') intonationToolSummary.textContent = 'Choose a string-based tuning before running an intonation check.';
+        else if (!profileSupportsIntonation) intonationToolSummary.textContent = `${getInstrumentLabel(currentTuning)} has no fretted 12th-fret intonation workflow.`;
         else if (!eligibleIntonationTargets.length) intonationToolSummary.textContent = 'No current string has a 12th-fret pitch inside the supported measurement range.';
         else if (eligibleIntonationTargets.length < targets.length) intonationToolSummary.textContent += ` · ${targets.length - eligibleIntonationTargets.length} high string(s) unavailable at this transposition`;
       }
@@ -1163,7 +1391,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           if (index === guidedIndex && guidedActive) step.classList.add('current');
           if (guidedTuned.has(index)) step.classList.add('done');
           step.textContent = prettyNote(target.label);
-          step.setAttribute('aria-label', `String ${targets.length - index} ${prettyNote(target.label)}${guidedTuned.has(index) ? ', tuned' : ''}`);
+          step.setAttribute('aria-label', `${targetUnitName(currentTuning)[0].toUpperCase() + targetUnitName(currentTuning).slice(1)} ${targets.length - index} ${prettyNote(target.label)}${guidedTuned.has(index) ? ', tuned' : ''}`);
           guidedProgress.appendChild(step);
         });
       }
@@ -1180,13 +1408,15 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         resetAutoLock();
         renderStringTargets();
         const stringNumber = targets.length - guidedIndex;
+        const unitLabel = targetUnitName(currentTuning);
+        const unitTitle = unitLabel[0].toUpperCase() + unitLabel.slice(1);
         const parts = noteParts(target.label);
         noteEl.classList.remove('idle');
         noteEl.textContent = parts.note;
         octaveEl.textContent = parts.octave;
-        targetLabel.textContent = `Guided · String ${stringNumber} · ${prettyNote(target.label)}`;
+        targetLabel.textContent = `Guided · ${unitTitle} ${stringNumber} · ${prettyNote(target.label)}`;
         guidedKicker.textContent = guidedTuned.size === targets.length ? 'Guided tune · complete' : `Guided tune · ${guidedTuned.size}/${targets.length} tuned`;
-        guidedTarget.textContent = `String ${stringNumber} · ${prettyNote(target.label)}`;
+        guidedTarget.textContent = `${unitTitle} ${stringNumber} · ${prettyNote(target.label)}`;
         guidedTargetHz.textContent = `${freqForMidi(target.midi).toFixed(1)} Hz`;
         centsEl.textContent = '—';
         setNeedle(0, { immediate: true });
@@ -1418,9 +1648,9 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         if (abs <= 2) {
           intonationVerdict.textContent = `Intonation is within ±2¢. Fretted vs harmonic difference: ${formatIntonationCents(delta)}.`;
         } else if (delta > 0) {
-          intonationVerdict.textContent = `Fretted 12th fret is ${abs.toFixed(1)}¢ sharp versus the harmonic. If the saddle is adjustable, lengthen the string by moving the saddle away from the neck.`;
+          intonationVerdict.textContent = `Fretted 12th fret is ${abs.toFixed(1)}¢ sharp versus the harmonic. If the saddle or bridge is adjustable, lengthen the string by moving it away from the neck.`;
         } else {
-          intonationVerdict.textContent = `Fretted 12th fret is ${abs.toFixed(1)}¢ flat versus the harmonic. If the saddle is adjustable, shorten the string by moving the saddle toward the neck.`;
+          intonationVerdict.textContent = `Fretted 12th fret is ${abs.toFixed(1)}¢ flat versus the harmonic. If the saddle or bridge is adjustable, shorten the string by moving it toward the neck.`;
         }
       }
 
@@ -1440,7 +1670,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         resetIntonationSamples();
         renderStringTargets();
         const stringNumber = targets.length - intonationStringIndex;
-        intonationTarget.textContent = `String ${stringNumber} · ${prettyNote(target.label)}`;
+        const unitLabel = targetUnitName(currentTuning);
+        intonationTarget.textContent = `${unitLabel[0].toUpperCase() + unitLabel.slice(1)} ${stringNumber} · ${prettyNote(target.label)}`;
         intonationStep.textContent = `Step ${intonationStepIndex + 1} of 3 · ${step.label}`;
         intonationStatus.textContent = step.instruction;
         targetLabel.textContent = `Intonation · ${step.label} · ${prettyNote(selectedName)}`;
@@ -1454,7 +1685,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       }
 
       async function startIntonation() {
-        if (currentTuning.mode === 'chromatic') return;
+        if (currentTuning.mode === 'chromatic' || !getInstrumentProfile(currentTuning).fretted) return;
         if (guidedActive) stopGuidedTune();
         stopReferenceTone({ immediate: true });
         stopMetronome();
@@ -2750,7 +2981,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
 
       function updatePitch(result) {
         const inputDb = result?.rms > 0 ? (20 * Math.log10(result.rms)).toFixed(0) + ' dBFS' : 'no audio samples';
-        $('captureDiagnostics').textContent = `Build 1.4.0-rc.1 · Audio ${audioContext?.state || 'stopped'} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}%`;
+        $('captureDiagnostics').textContent = `Build 1.5.0-rc.1 · Audio ${audioContext?.state || 'stopped'} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}%`;
         updateSignalVisual(result);
         if (!result?.pitch) {
           noPitchFrames++;
@@ -2959,7 +3190,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
             if (!active) {
               resetDisplay();
               hint.textContent = 'Audio was interrupted. Tap Resume audio to continue.';
-              $('captureDiagnostics').textContent = `Build 1.4.0-rc.1 · Audio ${audioContext.state}`;
+              $('captureDiagnostics').textContent = `Build 1.5.0-rc.1 · Audio ${audioContext.state}`;
             }
           });
           await audioContext.resume();
@@ -3290,6 +3521,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       metroTapBtn.addEventListener('click', tapTempo);
 
       newCustomBtn.addEventListener('click', () => beginNewCustom(currentTuning));
+      customInstrumentSelect.addEventListener('change', syncCustomInstrumentUi);
 
       addStringBtn.addEventListener('click', () => {
         if (customDraftNotes.length >= 8) return;
@@ -3339,20 +3571,27 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           const hz = freqForMidi(midi);
           return hz < DETECTOR_MIN_HZ || hz > DETECTOR_MAX_HZ;
         })) {
-          customError.textContent = 'Keep string pitches within the tuner range (about 25–500 Hz).';
+          customError.textContent = 'Keep target pitches within the tuner range (about 25–900 Hz).';
           return;
         }
-        for (let i = 1; i < parsed.length; i++) {
-          if (parsed[i] <= parsed[i - 1]) {
-            customError.textContent = 'Enter strings from lowest pitch to highest pitch.';
-            return;
-          }
+        if (new Set(parsed).size !== parsed.length) {
+          customError.textContent = 'Each target must use a distinct pitch. Re-entrant order is allowed.';
+          return;
+        }
+
+        const instrument = normalizeInstrumentId(customInstrumentSelect.value);
+        const instrumentLabel = instrument === 'custom' ? customInstrumentLabel.value.trim() : '';
+        if (instrument === 'custom' && !instrumentLabel) {
+          customError.textContent = 'Name the custom instrument.';
+          customInstrumentLabel.focus();
+          return;
         }
 
         const tuning = {
           id: editingCustomId || `custom-${Date.now().toString(36)}`,
           name: name.slice(0, 32),
-          instrument: 'guitar',
+          instrument,
+          instrumentLabel: instrument === 'custom' ? instrumentLabel.slice(0, 24) : '',
           mode: 'strings',
           strings: customDraftNotes.map(note => canonicalNoteLabel(note))
         };
@@ -3382,6 +3621,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           editCustomTuning(tuning);
         } else if (button.dataset.action === 'delete') {
           customTunings = customTunings.filter(entry => entry.id !== tuning.id);
+          favoriteTuningIds.delete(tuning.id);
+          saveFavoriteTunings();
           saveCustomTunings();
           if (currentTuning.id === tuning.id) applyTuning('standard');
           else renderTuningSelect();
@@ -3416,6 +3657,8 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       }
 
       customTunings = loadCustomTunings();
+      favoriteTuningIds = loadFavoriteTunings();
+      if (!validInstrumentFilter(activeInstrumentFilter)) activeInstrumentFilter = 'all';
       const rememberedTuning = safeStorageGet(STORAGE_SELECTED_TUNING, 'standard');
       currentTuning = getTuningById(rememberedTuning);
       applyTuning(currentTuning.id, { persist: false });
@@ -3468,7 +3711,7 @@ new MutationObserver(syncButton).observe($('statusPill'),{attributes:true,attrib
   const renderSelection=()=>{
     const b=strings.querySelector('.string-btn.active');
     const manual=b&&b.dataset.mode!=='auto';
-    $('selectionCaption').textContent=manual?'String '+b.querySelector('.string-meta').textContent:'Auto detect';
+    $('selectionCaption').textContent=manual?(strings.dataset.unitLabel||'String')+' '+b.querySelector('.string-meta').textContent:'Auto detect';
     tuner.dataset.targetMode=manual?'manual':'auto';
   };
   new MutationObserver(renderSelection).observe(strings,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});renderSelection();
