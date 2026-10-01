@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0-rc.1",
+  "version": "1.6.0-rc.1",
   "status": "release-candidate-device-signoff-pending",
   "fixes": [
     "Automatic microphone gain option, enabled by default",
@@ -36,7 +36,17 @@
     "Profile-aware capo and fretted-intonation availability",
     "Custom tunings bypass guitar/bass recognition-anchor assumptions",
     "Mandolin course terminology",
-    "Per-tuning safe capo range limiting"
+    "Per-tuning safe capo range limiting",
+    "P3 Stage & Mobile Excellence: immersive Stage Mode using the production tuner UI",
+    "P3 Stage & Mobile Excellence: optional Fullscreen API integration with CSS-only fallback",
+    "P3 Stage & Mobile Excellence: Android Back/history handling for all app overlays",
+    "P3 Stage & Mobile Excellence: phone landscape layout for short coarse-pointer screens",
+    "P3 Stage & Mobile Excellence: <=360px portrait hardening",
+    "P3 Stage & Mobile Excellence: Visual Viewport height synchronization",
+    "P3 Stage & Mobile Excellence: unexpected wake-lock release recovery",
+    "P3 Stage & Mobile Excellence: service-worker update-ready reload action",
+    "P3 Stage & Mobile Excellence: Stage Android/PWA launcher shortcut",
+    "Pitch detector retained byte-for-byte from P2"
   ],
   "automated": {
     "lifecycle": "passed",
@@ -321,7 +331,10 @@
       "cases": 78,
       "failures": 0,
       "max_abs_cents_error": 0.3692033910107074
-    }
+    },
+    "stage_mobile_contract": "passed-static-validation",
+    "android_back_history_contract": "passed-static-validation",
+    "p3_detector_isolation": "byte-identical-to-v1.5.0-rc.1"
   },
   "not_verified": [
     "real guitar input",
@@ -336,7 +349,14 @@
     "real-device bowed-string tuning",
     "real-device mandolin course tuning",
     "favorites persistence across installed-PWA restart",
-    "custom instrument workflow on device"
+    "custom instrument workflow on device",
+    "real-device Stage Mode portrait and landscape",
+    "Android system Back behavior in installed PWA",
+    "Fullscreen enter/exit on Android browser",
+    "short-landscape phone layout",
+    "Visual Viewport behavior with Android system UI",
+    "wake-lock recovery after real screen/background interruptions",
+    "service-worker update-ready flow on an existing installation"
   ],
   "device_issue_status": "Awaiting user device verification"
 }
