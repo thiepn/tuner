@@ -1,4 +1,4 @@
-# Production Certification
+# Production Certification — 1.7.0-rc.2
 
 This file records what can be certified from the repository and automated environment, and what still requires physical-device evidence.
 
@@ -30,3 +30,11 @@ A repository-only run cannot honestly certify a real microphone, Android WebAPK 
 ## Promotion rule
 
 Do **not** label the build stable merely because automated checks pass. Promote the version from release candidate to stable only after every physical-device item above has an explicit recorded pass. Failed items must be fixed or documented as release blockers.
+
+
+## Current certification state
+
+- Automated repository certification: **pending first CI run on this P5 branch/PR**
+- Physical-device certification: **not executable from the repository environment**
+- Stable target: **1.7.0**
+- Current promotable artifact: **1.7.0-rc.2**
