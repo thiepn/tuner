@@ -492,7 +492,7 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         mandolin: { id:'mandolin', label:'Mandolin', fretted:true, capo:true, unit:'course' },
         banjo:    { id:'banjo', label:'Banjo', fretted:true, capo:true, unit:'string' },
         chromatic:{ id:'chromatic', label:'Chromatic', fretted:false, capo:false, unit:'note' },
-        custom:   { id:'custom', label:'Custom', fretted:false, capo:false, unit:'string' }
+        custom:   { id:'custom', label:'Other', fretted:false, capo:false, unit:'string' }
       };
       const INSTRUMENT_ORDER = ['guitar','bass','ukulele','violin','viola','cello','mandolin','banjo','chromatic','custom'];
 
@@ -548,9 +548,20 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           ? tuning.instrumentLabel
           : getInstrumentProfile(tuning).label;
       }
+      function maxSafeCapo(tuning = currentTuning) {
+        const profile = getInstrumentProfile(tuning);
+        if (tuning?.mode === 'chromatic' || !profile.capo) return 0;
+        const baseMidis = (tuning?.strings || []).map(noteToMidi).filter(midi => midi != null);
+        if (!baseMidis.length) return 0;
+        const highest = Math.max(...baseMidis);
+        for (let fret = 12; fret >= 0; fret--) {
+          if (freqForMidi(highest + fret) <= DETECTOR_MAX_HZ) return fret;
+        }
+        return 0;
+      }
       function effectiveCapo(tuning = currentTuning) {
         const profile = getInstrumentProfile(tuning);
-        return tuning?.mode === 'chromatic' || !profile.capo ? 0 : capoFret;
+        return tuning?.mode === 'chromatic' || !profile.capo ? 0 : Math.min(capoFret, maxSafeCapo(tuning));
       }
       function sourceAnchorsFor(count) {
         const table = currentTuning.instrument === 'bass'
@@ -946,12 +957,13 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       }
 
       function validInstrumentFilter(value) {
-        return value === 'all' || value === 'favorites' || INSTRUMENT_ORDER.includes(value);
+        return value === 'all' || value === 'favorites' || value === 'saved' || INSTRUMENT_ORDER.includes(value);
       }
 
       function visibleTuningsForFilter() {
         const all = getAllTunings();
         if (activeInstrumentFilter === 'favorites') return all.filter(tuning => favoriteTuningIds.has(tuning.id));
+        if (activeInstrumentFilter === 'saved') return all.filter(tuning => tuning.id.startsWith('custom-'));
         if (activeInstrumentFilter === 'all') return all;
         return all.filter(tuning => tuning.instrument === activeInstrumentFilter);
       }
@@ -959,13 +971,17 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
       function renderInstrumentFilters() {
         if (!validInstrumentFilter(activeInstrumentFilter)) activeInstrumentFilter = 'all';
         instrumentFilters.replaceChildren();
+        const validFavoriteCount = getAllTunings().filter(tuning => favoriteTuningIds.has(tuning.id)).length;
         const options = [
           { id:'all', label:'All' },
-          { id:'favorites', label:`Favorites ${favoriteTuningIds.size ? '· ' + favoriteTuningIds.size : ''}` },
-          ...INSTRUMENT_ORDER.map(id => ({ id, label:INSTRUMENT_PROFILES[id].label }))
+          { id:'favorites', label:`Favorites ${validFavoriteCount ? '· ' + validFavoriteCount : ''}` },
+          ...INSTRUMENT_ORDER.filter(id => id !== 'custom').map(id => ({ id, label:INSTRUMENT_PROFILES[id].label })),
+          { id:'saved', label:`Saved ${customTunings.length ? '· ' + customTunings.length : ''}` },
+          { id:'custom', label:'Other' }
         ];
         options.forEach(option => {
-          if (option.id === 'custom' && !customTunings.length) return;
+          if ((option.id === 'saved' || option.id === 'custom') && !customTunings.length) return;
+          if (option.id === 'custom' && !customTunings.some(tuning => tuning.instrument === 'custom')) return;
           const button = document.createElement('button');
           button.type = 'button';
           button.className = 'instrument-filter' + (activeInstrumentFilter === option.id ? ' active' : '');
@@ -1006,7 +1022,14 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
         if (!tuningPresetGrid) return;
         tuningPresetGrid.replaceChildren();
         const visible = visibleTuningsForFilter();
-        presetCount.textContent = `${visible.length} ${visible.length === 1 ? 'preset' : 'presets'} · ${activeInstrumentFilter === 'all' ? 'All instruments' : activeInstrumentFilter === 'favorites' ? 'Favorites' : INSTRUMENT_PROFILES[activeInstrumentFilter]?.label || 'Instrument'}`;
+        const filterLabel = activeInstrumentFilter === 'all'
+          ? 'All instruments'
+          : activeInstrumentFilter === 'favorites'
+            ? 'Favorites'
+            : activeInstrumentFilter === 'saved'
+              ? 'Saved'
+              : INSTRUMENT_PROFILES[activeInstrumentFilter]?.label || 'Instrument';
+        presetCount.textContent = `${visible.length} ${visible.length === 1 ? 'preset' : 'presets'} · ${filterLabel}`;
 
         if (!visible.length) {
           const empty = document.createElement('div');
@@ -1152,12 +1175,19 @@ dialog{background:var(--bg);color:var(--text);border:0;border-radius:0;margin:0 
           : `${getInstrumentLabel(currentTuning)} · ${capo ? `Capo ${capo} · ` : ''}${targets.map(item => noteParts(item.label).note).join(' · ')}`;
         dialogCurrentTuningName.textContent = `${getInstrumentLabel(currentTuning)} · ${currentTuning.name}`;
         const profile = getInstrumentProfile(currentTuning);
+        const maxCapo = maxSafeCapo(currentTuning);
         capoSelect.disabled = !profile.capo || currentTuning.mode === 'chromatic';
+        [...capoSelect.options].forEach(option => {
+          option.disabled = Number(option.value) > maxCapo;
+        });
+        capoSelect.value = String(capo);
         capoStatus.textContent = currentTuning.mode === 'chromatic'
           ? 'Ignored in chromatic'
           : !profile.capo
             ? `Not used for ${profile.label}`
-            : capo ? `Capo ${capo}` : 'No capo';
+            : capoFret > maxCapo
+              ? `Capo ${capo} · range limit`
+              : capo ? `Capo ${capo}` : 'No capo';
       }
 
       function setAutoTargetLabel() {
