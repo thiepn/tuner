@@ -1,0 +1,51 @@
+name: Release gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run all tuner regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=0
+          for test_file in tests/*.cjs; do
+            echo "::group::$test_file"
+            node "$test_file"
+            echo "::endgroup::"
+            count=$((count + 1))
+          done
+          echo "Executed $count regression files."
+
+      - name: Verify release checksums
+        shell: bash
+        run: sha256sum --check checksums.sha256
+
+      - name: Verify no untracked release artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -f index.html
+          test -f manifest.webmanifest
+          test -f sw.js
+          test -f release-report.json
