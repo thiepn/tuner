@@ -1,6 +1,6 @@
-# TUNER — Interval 1.6.0-rc.1
+# TUNER — Interval 1.7.0-rc.1
 
-Release candidate: P3 Stage & Mobile Excellence implemented; code/runtime checks passed; real-device sign-off remains open. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
+Release candidate: P4 Real-World Accuracy, Reliability & Release Hardening implemented; automated and adversarial checks passed; real-device sign-off remains open. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
 
 ## Deploy
 1. Extract this ZIP. Upload index.html, sw.js, manifest.webmanifest, assets/ and icons/ together to the same HTTPS directory. No build step or backend is required.
@@ -23,7 +23,7 @@ See RELEASE-CHECKLIST.md, release-report.json and tests/. Run the Node test file
 Source baseline: recovered guitar-tuner-modern-final application. Fonts and icons have licenses in assets/. Repository validation does not certify the live hosting environment.
 
 ## Microphone compatibility update
-Quiet input (automatic gain) is now the default; Settings → Input sensitivity can restore unprocessed capture. A muted destination keeps the audio graph connected without playing the microphone. Interrupted audio shows Resume audio. Pitch detail reports build, audio state, input dBFS, detector rejection reason and confidence for device troubleshooting. Browser generated-input capture and all fourteen test scripts pass; the reported real-device failure has not yet been confirmed resolved.
+Quiet input (automatic gain) is now the default; Settings → Input sensitivity can restore unprocessed capture. A muted destination keeps the audio graph connected without playing the microphone. Interrupted audio shows Resume audio. Pitch detail reports build, audio state, input dBFS, detector rejection reason and confidence for device troubleshooting. Browser generated-input capture and all seventeen test scripts pass; the reported real-device failure has not yet been confirmed resolved.
 
 ## Android PWA integration
 The installed Android experience uses standalone display mode, maskable launcher artwork, a stable manifest identity, offline service-worker caching, safe-area aware layout, pull-to-refresh suppression in the app shell, and launcher shortcuts for Tuner, Tunings, Tools and Stage. Shortcut launch parameters are consumed and removed so the installed app returns to a clean canonical URL.
@@ -59,3 +59,18 @@ The installed Android experience uses standalone display mode, maskable launcher
 - **Update-ready UX:** when a newly activated service worker takes control of an existing installation, Settings surfaces a Reload update action instead of silently leaving the old page code running.
 - **Stage launcher shortcut:** Android/PWA shortcut launches directly into Stage Mode.
 - **Detector isolation:** P3 changes only the app shell and interaction layer; the production pitch detector block is byte-identical to P2.
+
+
+## P4 — Real-World Accuracy, Reliability & Release Hardening
+- **Configured-octave guard:** ambiguous, moderate-confidence octave errors are corrected only when the folded pitch is dramatically closer to an actual configured target. High-confidence intentional pitches and chromatic mode are never second-guessed.
+- **Attack-transient hold:** one suspicious high-energy/low-confidence attack frame can be ignored before it perturbs a stable note. Normal clean plucks remain immediate.
+- **Confidence-weighted tune confirmation:** clean signals still confirm after four centered frames; weaker accepted signals need five or six frames before “In tune” and haptic confirmation.
+- **Adaptive idle cadence:** analysis runs at the normal 32 ms cadence while active, then backs off to 52 ms after sustained no-pitch input. The pitch detector itself is unchanged.
+- **Silence-state preservation:** long silence now clears tracking state once instead of repeatedly rebuilding the UI every analysis cycle.
+- **Microphone interruption handling:** MediaStream track mute/unmute is handled separately from permanent track end. Temporary OS/browser microphone interruptions pause analysis and recover without tearing down the whole session.
+- **Audio-context recovery:** a visible active session makes one bounded automatic resume attempt after an interruption, then falls back to the existing manual Resume audio control.
+- **Capture diagnostics:** diagnostics are throttled to 4 Hz and now report actual capture profile where available plus smoothed analysis cost instead of causing unnecessary DOM work on every pitch frame.
+- **Accessibility:** tuning direction/lock changes use a dedicated throttled ARIA live region so screen readers receive meaningful state changes rather than rapid continuous meter chatter.
+- **Clipping guidance:** the input assistant explicitly identifies overloaded/clipping microphone input and suggests increasing instrument–microphone distance.
+- **Adversarial regression suite:** strong 2nd/3rd harmonics, clipping, noisy high-register notes, noisy low B, broadband noise, configured-octave correction and runtime interruption contracts are now release gates.
+- **Core isolation:** `GuitarPitchDetector` and the full P2 instrument/preset block remain byte-identical to v1.6.0-rc.1.
