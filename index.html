@@ -2415,7 +2415,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         }
       }
 
-      function setTuneState(cents, hasPitch = true) {
+      function setTuneState(cents, hasPitch = true, confidence = 1) {
         meter.classList.toggle('has-pitch', hasPitch);
         tunerPanel.dataset.pitchState = hasPitch ? 'tracking' : 'waiting';
         meter.classList.remove('flat', 'sharp', 'in-tune');
@@ -2443,9 +2443,10 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
           inTuneFrames++;
           meter.classList.add('in-tune');
           tuningState.classList.add('in-tune');
-          setText(tuningState, inTuneFrames >= 4 ? 'In tune' : 'Centering…');
+          const requiredLockFrames = confidence < 0.82 ? 6 : confidence < 0.90 ? 5 : 4;
+          setText(tuningState, inTuneFrames >= requiredLockFrames ? 'In tune' : 'Centering…');
 
-          if (inTuneFrames >= 4) {
+          if (inTuneFrames >= requiredLockFrames) {
             const newlyConfirmed = !confirmedLock;
             setConfirmedLock(true, { flash: newlyConfirmed });
             if (!hapticFiredForLock && hapticToggle.checked && navigator.vibrate) {
@@ -2568,6 +2569,9 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       }
 
       function signalHint(result) {
+        if ((result?.peak || 0) > 0.985 || (result?.rms || 0) > 0.42) {
+          return 'Input is clipping. Move the instrument or microphone slightly farther apart.';
+        }
         switch (result?.reason) {
           case 'quiet': return 'Play one string a little louder and let it ring.';
           case 'aperiodic': return 'Mute the other strings and play one clear note.';
@@ -3439,7 +3443,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         const displayCents = Math.round(cents);
         centsEl.textContent = displayCents > 0 ? `+${displayCents}` : `${displayCents}`;
         setNeedle(cents);
-        setTuneState(cents, true);
+        setTuneState(cents, true, result.confidence);
         updateFineVisuals(cents, result);
         updateStrobeDisplay(cents);
         announceTuningStatus(targetDisplay);
