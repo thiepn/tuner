@@ -1,6 +1,6 @@
 # TUNER — Interval 1.7.0-rc.2
 
-Release candidate: P5 automated production certification is enforced in CI. Repository, privacy, offline-package, accessibility-contract and payload-budget gates are release blockers; physical-device sign-off remains the only blocker to v1.7.0 stable. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
+Release candidate: P5 automated production certification passed in GitHub Actions. Repository, privacy, offline-package, accessibility-contract and payload-budget gates are enforced; physical-device sign-off is the only remaining blocker to v1.7.0 stable. Bass presets include standard four-string, five-string, six-string, Drop D and half-step down. Choose a Bass preset in Tunings. Bass uses a longer analysis window and lower input filter to support low B. Recognition uses bass-specific string anchors. Guitar retains its original analysis window.
 
 ## Deploy
 1. Extract this ZIP. Upload index.html, sw.js, manifest.webmanifest, assets/ and icons/ together to the same HTTPS directory. No build step or backend is required.
