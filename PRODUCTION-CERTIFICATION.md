@@ -34,7 +34,8 @@ Do **not** label the build stable merely because automated checks pass. Promote 
 
 ## Current certification state
 
-- Automated repository certification: **pending first CI run on this P5 branch/PR**
+- Automated repository certification: **PASSED** — PR #6, Release gate run 36876634798
 - Physical-device certification: **not executable from the repository environment**
 - Stable target: **1.7.0**
 - Current promotable artifact: **1.7.0-rc.2**
+- CI evidence: **22/22 regression files + checksum validation passed**
