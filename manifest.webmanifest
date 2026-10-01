@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "TUNER — Guitar & Bass Tuner",
+  "name": "TUNER — Instrument Tuner",
   "short_name": "TUNER",
-  "description": "A precision guitar and bass tuner with strobe display, capo transposition, intonation setup, alternate tunings, guided tuning, reference tones and metronome.",
+  "description": "A precision multi-instrument tuner for guitar, bass, ukulele, violin, viola, cello, mandolin and banjo, with favorites, custom string sets, strobe mode and intonation tools.",
   "lang": "en",
   "dir": "ltr",
   "start_url": "./?source=pwa",
@@ -49,7 +49,7 @@
     {
       "name": "Tunings",
       "short_name": "Tunings",
-      "description": "Choose a guitar or bass tuning",
+      "description": "Browse instruments and tunings",
       "url": "./?view=tunings&source=shortcut"
     },
     {
