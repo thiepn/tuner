@@ -2480,14 +2480,18 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         }
       }
 
-      function resetTracker() {
+      function resetTracker({ preserveNoPitch = false } = {}) {
+        const silenceFrames = noPitchFrames;
         stableLogPitch = null;
         pitchHistory = [];
         noteChangeCandidate = null;
         octaveJumpCandidate = null;
-        noPitchFrames = 0;
+        noPitchFrames = preserveNoPitch ? silenceFrames : 0;
         inTuneFrames = 0;
         hapticFiredForLock = false;
+        transientHoldFrames = 0;
+        lastVoicedRms = 0;
+        lastVoicedAt = 0;
         setConfirmedLock(false);
       }
 
@@ -3016,6 +3020,106 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         return Math.abs((aLog - bLog) * 1200) <= cents;
       }
 
+      function nearestConfiguredPitchDistance(rawPitch) {
+        const targets = tuningTargets();
+        if (!targets.length || !Number.isFinite(rawPitch)) return Infinity;
+        return Math.min(...targets.map(target => Math.abs(centsBetween(rawPitch, freqForMidi(target.midi)))));
+      }
+
+      function correctConfiguredOctave(rawPitch, confidence = 1) {
+        if (selectedMidi != null || currentTuning.mode === 'chromatic' || !Number.isFinite(rawPitch)) return rawPitch;
+        if (confidence >= 0.94) return rawPitch;
+
+        const rawDistance = nearestConfiguredPitchDistance(rawPitch);
+        if (rawDistance <= 180) return rawPitch;
+
+        let bestPitch = rawPitch;
+        let bestDistance = rawDistance;
+        for (const candidate of [rawPitch * 0.5, rawPitch * 2]) {
+          if (candidate < DETECTOR_MIN_HZ || candidate > DETECTOR_MAX_HZ) continue;
+          const distance = nearestConfiguredPitchDistance(candidate);
+          if (distance <= 90 && rawDistance - distance >= 500 && distance < bestDistance) {
+            bestPitch = candidate;
+            bestDistance = distance;
+          }
+        }
+        return bestPitch;
+      }
+
+      function shouldHoldAttackTransient(result) {
+        if (!result?.pitch || !Number.isFinite(result.rms)) return false;
+        const now = performance.now();
+        const recentVoiced = lastVoicedAt > 0 && now - lastVoicedAt < 520;
+        const rmsJump = recentVoiced && lastVoicedRms > 0 &&
+          result.rms > Math.max(lastVoicedRms * 2.8, lastVoicedRms + 0.025);
+        const clippedUncertain = result.peak > 0.985 && result.confidence < 0.90;
+        const attackLike = (rmsJump && result.confidence < 0.90) || clippedUncertain;
+
+        if (attackLike && transientHoldFrames < 1) {
+          transientHoldFrames++;
+          return true;
+        }
+        transientHoldFrames = 0;
+        lastVoicedRms = result.rms;
+        lastVoicedAt = now;
+        return false;
+      }
+
+      function announceTuningStatus(targetDisplay) {
+        if (!tunerAnnouncement || !targetDisplay) return;
+        const stateText = confirmedLock
+          ? 'In tune'
+          : tuneState === 'in-tune'
+            ? 'Centering'
+            : tuneState === 'flat'
+              ? 'Tune up'
+              : tuneState === 'sharp'
+                ? 'Tune down'
+                : 'Waiting';
+        const signature = `${targetDisplay}|${stateText}`;
+        const now = performance.now();
+        if (signature === lastAnnouncedSignature || now - lastAnnouncementAt < 550) return;
+        lastAnnouncedSignature = signature;
+        lastAnnouncementAt = now;
+        tunerAnnouncement.textContent = `${prettyNote(targetDisplay)}. ${stateText}.`;
+      }
+
+      function updateCaptureDiagnostics(result, { force = false } = {}) {
+        const now = performance.now();
+        if (!force && now - lastDiagnosticsAt < DIAGNOSTICS_INTERVAL_MS) return;
+        lastDiagnosticsAt = now;
+        const inputDb = result?.rms > 0 ? (20 * Math.log10(result.rms)).toFixed(0) + ' dBFS' : 'no audio samples';
+        const cost = analysisCostMs > 0 ? `${analysisCostMs.toFixed(1)} ms analysis` : 'analysis idle';
+        const muted = trackMuted ? ' · track muted' : '';
+        $('captureDiagnostics').textContent = `Build 1.7.0-rc.1 · Audio ${audioContext?.state || 'stopped'} · ${captureProfile}${muted} · ${inputDb} · ${result?.reason || 'waiting'} · Confidence ${Math.round((result?.confidence || 0)*100)}% · ${cost}`;
+      }
+
+      function currentAnalysisInterval() {
+        return noPitchFrames >= 18 ? ANALYSIS_IDLE_INTERVAL_MS : ANALYSIS_INTERVAL_MS;
+      }
+
+      function clearAudioRecoveryTimer() {
+        if (!audioRecoveryTimer) return;
+        clearTimeout(audioRecoveryTimer);
+        audioRecoveryTimer = null;
+      }
+
+      function scheduleAudioRecovery() {
+        clearAudioRecoveryTimer();
+        if (!running || document.hidden || !audioContext || audioContext.state === 'running') return;
+        if (audioRecoveryAttempts >= 1) return;
+        audioRecoveryAttempts++;
+        audioRecoveryTimer = setTimeout(async () => {
+          audioRecoveryTimer = null;
+          if (!running || document.hidden || !audioContext || audioContext.state === 'running') return;
+          try { await audioContext.resume(); } catch (_) {}
+          if (audioContext?.state !== 'running') {
+            hint.classList.remove('error');
+            hint.textContent = 'Audio was interrupted. Tap Resume audio to continue.';
+          }
+        }, 280);
+      }
+
       function correctTargetOctave(rawPitch) {
         if (selectedMidi == null) return rawPitch;
 
@@ -3069,6 +3173,7 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       }
 
       function stabilizePitch(rawPitch, confidence) {
+        rawPitch = correctConfiguredOctave(rawPitch, confidence);
         rawPitch = correctTargetOctave(rawPitch);
         rawPitch = guardOctaveJump(rawPitch);
         const rawLog = Math.log2(rawPitch);
@@ -3108,7 +3213,8 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
         // bend/tuning-peg movement catches up quickly.
         let alpha = residualCents > 25 ? 0.48 : residualCents > 8 ? 0.30 : 0.17;
         if (confidence > 0.94) alpha += 0.06;
-        stableLogPitch += clamp(alpha, 0.17, 0.56) * (filteredLog - stableLogPitch);
+        else if (confidence < 0.82) alpha -= 0.05;
+        stableLogPitch += clamp(alpha, 0.12, 0.56) * (filteredLog - stableLogPitch);
 
         return Math.pow(2, stableLogPitch);
       }
