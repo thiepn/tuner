@@ -2237,6 +2237,10 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       }
 
       async function enterStageMode() {
+        if (guidedActive) stopGuidedTune({ keepTarget: false });
+        if (intonationActive) stopIntonation({ keepTarget: false });
+        stopReferenceTone({ immediate: true });
+        stopMetronome();
         navigateUiOverlay('stage');
         if (!running && navigator.mediaDevices?.getUserMedia) start().catch(() => {});
         if (document.fullscreenElement || !document.documentElement.requestFullscreen) return;
@@ -3741,6 +3745,12 @@ body.stage-mode .strobe-readout{font-size:clamp(10px,1.3vw,15px)}
       });
       window.addEventListener('popstate', (event) => {
         syncUiOverlay(event.state?.[UI_OVERLAY_KEY] || null);
+      });
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && stageFullscreenRequested && currentUiOverlay() === 'stage') {
+          stageFullscreenRequested = false;
+          navigateUiOverlay(null);
+        }
       });
       window.addEventListener('resize', syncViewportMetrics, { passive: true });
       window.addEventListener('orientationchange', syncViewportMetrics, { passive: true });
