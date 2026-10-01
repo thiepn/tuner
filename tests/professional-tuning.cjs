@@ -8,7 +8,7 @@ for(const fn of ['applyDisplayMode','applyCapo','updateStrobeDisplay','startInto
 }
 assert(source.includes("const STORAGE_DISPLAY_MODE = 'guitarTuner.displayMode.v1'"));
 assert(source.includes("const STORAGE_CAPO = 'guitarTuner.capo.v1'"));
-assert(source.includes("motion stops within 0.5¢"));
+assert(source.includes("const centered = abs <= 0.5;"));
 assert(source.includes("moving it away from the neck"));
 assert(source.includes("moving it toward the neck"));
 assert(source.includes("return { label: transpose ? midiToNote(midi) : baseLabel"));
